@@ -58,7 +58,7 @@ export function AtomCanvas({
         ref={canvas}
         id="gl"
         className="absolute inset-0 size-full"
-        aria-label={`Interactive illustration of ${element.n}; use the model controls to inspect shells and nucleus`}
+        aria-label={`Interactive illustration of ${element.n}; tap the central orb or use Element details to learn about it. Use the model controls to inspect shells and nucleus.`}
       />
       {unavailable && (
         <p

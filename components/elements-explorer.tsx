@@ -9,15 +9,7 @@ import {
   type CSSProperties,
   type PointerEvent,
 } from "react";
-import {
-  categories,
-  elements,
-  group,
-  neighbour,
-  period,
-  phases,
-  type Category,
-} from "@/lib/elements";
+import { categories, elements, group, neighbour, period, type Category } from "@/lib/elements";
 import { getScience, elementSlug } from "@/lib/science";
 import {
   claimMission,
@@ -183,7 +175,13 @@ export default function ElementsExplorer() {
       paused,
       open: sheet !== null,
     });
-    scene.current.onInspect = (hit) => setInspection(hit);
+    scene.current.onInspect = (hit) => {
+      if (hit.kind === "nucleus") {
+        document.getElementById("in")?.focus({ preventScroll: true });
+        setInspection(null);
+        setSheet("details");
+      } else setInspection(hit);
+    };
   }, [learning.settings, zoom, rotation, paused, sheet]);
   useEffect(() => {
     if (!celebrate) return;
@@ -352,6 +350,10 @@ export default function ElementsExplorer() {
     );
     if (start.movement > 8) {
       if (holdTimer.current) clearTimeout(holdTimer.current);
+      if (scene.current.hold) {
+        scene.current.hold = false;
+        setHold(false);
+      }
       if (rotation) {
         scene.current.rotationY = (scene.current.rotationY ?? 0) + dx * 0.008;
         scene.current.rotationX = Math.max(
@@ -857,7 +859,7 @@ export default function ElementsExplorer() {
               <div id="hint">
                 {rotation
                   ? "Drag to rotate · Pinch to zoom · Double-tap to reset"
-                  : "Swipe to travel · Hold to peek · Tap to bounce"}
+                  : "Swipe to travel · Hold to peek · Tap orb to learn"}
               </div>
               <div className="element-footer">
                 <Button
@@ -883,7 +885,11 @@ export default function ElementsExplorer() {
                   </span>
                   <h1>{element.n}</h1>
                   <small>
-                    {categories[element.c][0]} · {phases[element.f]}
+                    {categories[element.c][0]} ·{" "}
+                    {
+                      science.properties.find((property) => property.label === "Standard state")!
+                        .value
+                    }
                     <span>
                       Meet this element <Icon name="next" />
                     </span>
@@ -1141,8 +1147,9 @@ export default function ElementsExplorer() {
                   <Card variant="unstyled" className="feature-card">
                     <h3>Touch</h3>
                     <p>
-                      Hold to peek at particle counts. Tap to bounce and inspect. Switch to Rotate
-                      before dragging the model; pinch to zoom or use the camera buttons.
+                      Hold to peek at particle counts. Tap the orb for facts and everyday uses, or
+                      tap a scientific shell to inspect it. Switch to Rotate before dragging the
+                      model; pinch to zoom or use the camera buttons.
                     </p>
                   </Card>
                   <Card variant="unstyled" className="feature-card">

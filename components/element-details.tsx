@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { categories, group, period, phases, type Element } from "@/lib/elements";
+import { categories, group, period, type Element } from "@/lib/elements";
 import { elementSlug, getScience } from "@/lib/science";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
+import { ElementStructure } from "@/components/element-structure";
 
 export function ElementDetails({
   element,
@@ -24,9 +25,12 @@ export function ElementDetails({
   const facts = [
     ["Atomic no.", element.z],
     [`Atomic mass${mass.unit ? ` · ${mass.unit}` : ""}`, mass.value],
-    ["Phase", phases[element.f]],
+    [
+      "Standard state",
+      science.properties.find((property) => property.label === "Standard state")!.value,
+    ],
     ["Period", period(element)],
-    ["Group", group(element)],
+    ["Group", group(element) === "—" ? "f-block" : group(element)],
     ["Family", categories[element.c][0]],
   ];
   return (
@@ -47,51 +51,29 @@ export function ElementDetails({
         </Button>
       </div>
       <div id="dbody" className="panel-content">
-        <p className="lead-copy">{science.story}</p>
+        <p className="lead-copy">{science.description}</p>
+        <p className="panel-copy">{science.story}</p>
+        <section className="panel-section">
+          <h3>In your everyday world</h3>
+          <p>{science.everyday}</p>
+          <Card variant="unstyled" className="fact-callout">
+            <Icon name="spark" />
+            <p>{science.fact}</p>
+          </Card>
+        </section>
         <div className="detail-orbit">
-          <svg
-            viewBox="0 0 260 260"
-            width="190"
-            height="190"
-            role="img"
-            aria-label={`Electron shell populations for ${element.n}: ${science.shells.join(", ")}. Diagram is not to scale.`}
-          >
-            <circle cx="130" cy="130" r="12" fill={color} />
-            {science.shells.map((count, i) => {
-              const radius =
-                science.shells.length > 1 ? 26 + i * (98 / (science.shells.length - 1)) : 70;
-              return (
-                <g key={i}>
-                  <circle
-                    cx="130"
-                    cy="130"
-                    r={radius}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeOpacity=".3"
-                    strokeWidth="1.5"
-                  />
-                  {Array.from({ length: count }, (_, k) => {
-                    const angle = (k / count) * Math.PI * 2 + i;
-                    return (
-                      <circle
-                        key={k}
-                        cx={130 + radius * Math.cos(angle)}
-                        cy={130 + radius * Math.sin(angle)}
-                        r="3.4"
-                        fill={color}
-                      />
-                    );
-                  })}
-                </g>
-              );
-            })}
-          </svg>
+          <ElementStructure
+            key={element.z}
+            name={element.n}
+            shells={science.shells}
+            color={color}
+          />
           <div>
             <h3>Inside the atom</h3>
             <p className="panel-copy">
-              Neutral atoms have {element.z} protons and {element.z} electrons. Rings show electron
-              counts by principal shell, rather than literal orbital paths.
+              Neutral atoms have <span className="n">{element.z}</span> protons and{" "}
+              <span className="n">{element.z}</span> electrons. Rings show electron counts by
+              principal shell, rather than literal orbital paths.
             </p>
             <p className="configuration n">{science.configuration}</p>
             {science.configurationNote && <p className="panel-copy">{science.configurationNote}</p>}
@@ -104,7 +86,10 @@ export function ElementDetails({
                   onClick={() => onInspectShell(i + 1)}
                   aria-label={`Inspect shell ${i + 1}, ${count} electrons`}
                 >
-                  Shell {i + 1} · {count}
+                  Shell{" "}
+                  <span className="n">
+                    {i + 1} · {count}
+                  </span>
                 </Button>
               ))}
             </div>
@@ -114,18 +99,10 @@ export function ElementDetails({
           {facts.map(([label, value]) => (
             <Card variant="unstyled" key={label}>
               {label}
-              <b>{value}</b>
+              <b className={/^\d/.test(String(value)) ? "n" : undefined}>{value}</b>
             </Card>
           ))}
         </div>
-        <section className="panel-section">
-          <h3>In your everyday world</h3>
-          <p>{science.everyday}</p>
-          <Card variant="unstyled" className="fact-callout">
-            <Icon name="spark" />
-            <p>{science.fact}</p>
-          </Card>
-        </section>
         <section className="panel-section">
           <h3>One useful connection</h3>
           <p>{science.connection.explanation}</p>
@@ -144,7 +121,7 @@ export function ElementDetails({
               <div key={property.label}>
                 <dt>{property.label}</dt>
                 <dd>
-                  <span className="n">
+                  <span className={/^[-+]?\d/.test(property.value) ? "n" : undefined}>
                     {property.value}
                     {property.unit ? ` ${property.unit}` : ""}
                   </span>
@@ -155,8 +132,8 @@ export function ElementDetails({
           </dl>
           <p className="panel-copy">
             Atomic weights can depend on isotopic composition. Where stable isotopes do not exist,
-            listed mass numbers describe a representative isotope. Unavailable and calculated values
-            are labeled in the reference data.
+            the source mass value may describe a representative isotope rather than a standard
+            atomic weight. Unavailable and calculated values are labeled in the reference data.
           </p>
         </section>
         <section className="panel-section">

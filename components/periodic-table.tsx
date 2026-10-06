@@ -93,7 +93,8 @@ export function PeriodicTable({
           <Button
             variant="unstyled"
             key={element.z}
-            className={`c ${found.has(i) ? "" : "lk"} ${i === current ? "sel" : ""}`}
+            className={`c ${i === current ? "sel" : ""}`}
+            data-discovered={found.has(i)}
             data-i={i}
             aria-label={element.n}
             aria-pressed={i === current}
@@ -133,13 +134,13 @@ export function PeriodicTable({
             }}
           >
             <i>{element.z}</i>
-            <b>{found.has(i) ? element.s : "?"}</b>
+            <b>{element.s}</b>
           </Button>
         ))}
       </div>
       <div className="table-legend">
         <span id="table-navigation-hint">
-          ? · Ready to discover. Arrow keys explore the table; Enter selects.
+          All 118 elements are ready to explore. Arrow keys move through the table; Enter selects.
         </span>
         <Button
           variant="unstyled"

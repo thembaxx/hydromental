@@ -23,6 +23,15 @@ Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pn
 - Visual review found and fixed cramped long names and overlapping hint/mass text. The lower controls now flow together; camera controls remain usable with scientific inspection open.
 - Offline fixes clone navigation responses before asynchronous cache I/O and match already restricted public content independently of Next.js transport Vary headers. RSC, API, external and non-GET requests remain excluded.
 
+### Complete elements and animated details on October 6, 2026
+
+- All 118 table symbols are visible; opening the table does not grant discovery XP. Every record includes a required plain-language definition and everyday context, including honest research-only uses.
+- Orb taps open the element popup with focus restoration. SVG shell populations retain all electrons, support pause/resume without restarting, stop when hidden, and respond to live reduced-motion changes.
+- Root/background coverage, viewport-fit metadata, safe-area spacing, installed-iOS translucent status-bar metadata and browser theme-color synchronization are checked where browser automation supports them. Final system-bar appearance requires target-device review.
+- Numeric facts and comparison values use tabular monospace; prose, family names and state labels retain the body font. Source predictions replace generic unknown-state labels where available.
+- An initial full production run passed 75 of 76 cases and exposed a slow-frame hold-to-swipe bug. Movement now cancels a started hold. After the fix, all 50 affected mobile/desktop interaction, layout and science cases passed against a rebuilt production bundle, including an explicit long-hold-then-drag regression. All 21 learning tests, science validation, lint, formatting, types and build passed.
+- The complete suite now contains 76 browser/data cases. Use the published commit's GitHub Actions run to verify the complete final suite; earlier runs do not validate a later commit.
+
 ## Historical shadcn/pnpm migration
 
 - pnpm 12.9.1 installed the committed lockfile with its release-age policy enabled.

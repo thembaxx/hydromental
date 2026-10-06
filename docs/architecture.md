@@ -10,6 +10,10 @@ Owned shadcn components expose an unstyled variant alongside conventional varian
 
 Explore gestures navigate elements; Rotate gestures change the camera interaction without navigating. Explicit controls provide alternatives for zoom, reset and pause. The Three.js scene receives a mutable controls object and exposes inspection/reset through its canvas API, avoiding React rendering on every animation frame. Scene resources, animation frames, observers and listeners are cleaned up when the canvas is disposed.
 
+Raycasting the central orb opens the element details dialog in either model. Tapping a scientific shell still inspects that shell. Closing the orb-opened dialog restores focus to the Element details button. Every table cell shows its real symbol; visibility does not award discovery XP. The popup's SVG animates only the electron groups using browser-native transforms, pauses on request and when the document is hidden, and reacts immediately to reduced-motion preference changes. Its electron counts come from the same validated scientific snapshot as the reference pages.
+
+The root and body paint the theme background through the full dynamic viewport. Viewport-fit coverage, translucent installed-iOS status bars, safe-area spacing and theme-aware browser-chrome metadata support edge-to-edge presentation. Browser and operating-system policies control the final status/navigation-bar appearance; verify installed iOS and Android behavior on devices. Numeric facts use tabular JetBrains Mono while descriptions, family names and state labels retain Nunito.
+
 The playful scene uses representative orbiting electrons. The scientific mode is a shell-population schematic derived from the sourced neutral configuration; it is not a quantum-mechanical simulation. Rendering quality is configurable, reduced motion is respected, and unavailable WebGL has a visible fallback. Sound and ambient feedback use generated Web Audio after interaction rather than downloading media or starting automatically.
 
 ## Learning state

@@ -4,7 +4,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { categories, elements, group, period, phases } from "@/lib/elements";
+import { categories, elements, group, period } from "@/lib/elements";
 import { elementSlug, findElementBySlug, getScience } from "@/lib/science";
 import { jsonLd, siteOrigin } from "@/lib/site";
 
@@ -63,6 +63,7 @@ export default async function ElementPage({ params }: Props) {
             {element.s}
           </span>
           <h1>{element.n}</h1>
+          <p>{science.description}</p>
           <p>{science.story}</p>
           <Button asChild variant="unstyled" className="reference-action">
             <a href={`/?element=${element.s}`}>Explore {element.n}'s atom</a>
@@ -71,11 +72,11 @@ export default async function ElementPage({ params }: Props) {
         <dl className="reference-facts">
           <div>
             <dt>Atomic number</dt>
-            <dd>{element.z}</dd>
+            <dd className="n">{element.z}</dd>
           </div>
           <div>
             <dt>Atomic mass</dt>
-            <dd>
+            <dd className="n">
               {mass.value}
               {mass.unit && ` ${mass.unit}`}
             </dd>
@@ -86,15 +87,19 @@ export default async function ElementPage({ params }: Props) {
           </div>
           <div>
             <dt>Period</dt>
-            <dd>{period(element)}</dd>
+            <dd className="n">{period(element)}</dd>
           </div>
           <div>
             <dt>Group</dt>
-            <dd>{group(element)}</dd>
+            <dd className={typeof group(element) === "number" ? "n" : undefined}>
+              {group(element) === "—" ? "f-block" : group(element)}
+            </dd>
           </div>
           <div>
-            <dt>Phase near room temperature</dt>
-            <dd>{phases[element.f]}</dd>
+            <dt>Standard state</dt>
+            <dd>
+              {science.properties.find((property) => property.label === "Standard state")!.value}
+            </dd>
           </div>
         </dl>
         <div className="reference-content-grid">
@@ -158,8 +163,10 @@ export default async function ElementPage({ params }: Props) {
                 <div key={property.label}>
                   <dt>{property.label}</dt>
                   <dd>
-                    {property.value}
-                    {property.unit && ` ${property.unit}`}
+                    <span className={/^[-+]?\d/.test(property.value) ? "n" : undefined}>
+                      {property.value}
+                      {property.unit && ` ${property.unit}`}
+                    </span>
                     {property.note && <small>{property.note}</small>}
                   </dd>
                 </div>
@@ -171,8 +178,8 @@ export default async function ElementPage({ params }: Props) {
           <h2 id="sources-title">Follow the science</h2>
           <p>
             Use these original references to explore the data and context. Atomic weights can vary
-            with isotope composition; bracketed values identify a representative isotope's mass
-            number.
+            with isotope composition; values for elements without stable isotopes may describe a
+            representative isotope rather than a standard atomic weight.
           </p>
           <ul>
             {science.sources.map((source) => (

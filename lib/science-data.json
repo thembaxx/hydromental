@@ -66,7 +66,8 @@
           "label": "Royal Society of Chemistry: Hydrogen",
           "url": "https://www.rsc.org/periodic-table/element/1/hydrogen"
         }
-      ]
+      ],
+      "description": "Hydrogen is the lightest element, a colourless gas and the most abundant element in the universe."
     },
     {
       "atomicNumber": 2,
@@ -131,7 +132,8 @@
           "label": "Royal Society of Chemistry: Helium",
           "url": "https://www.rsc.org/periodic-table/element/2/helium"
         }
-      ]
+      ],
+      "description": "Helium is a very light noble gas that reacts rarely and remains liquid only at extremely low temperatures."
     },
     {
       "atomicNumber": 3,
@@ -197,7 +199,8 @@
           "label": "Royal Society of Chemistry: Lithium",
           "url": "https://www.rsc.org/periodic-table/element/3/lithium"
         }
-      ]
+      ],
+      "description": "Lithium is the lightest metal, a soft alkali metal that readily gives up an electron in chemical reactions."
     },
     {
       "atomicNumber": 4,
@@ -263,7 +266,8 @@
           "label": "Royal Society of Chemistry: Beryllium",
           "url": "https://www.rsc.org/periodic-table/element/4/beryllium"
         }
-      ]
+      ],
+      "description": "Beryllium is a light, stiff metal; its dust and many compounds are toxic."
     },
     {
       "atomicNumber": 5,
@@ -329,7 +333,8 @@
           "label": "Royal Society of Chemistry: Boron",
           "url": "https://www.rsc.org/periodic-table/element/5/boron"
         }
-      ]
+      ],
+      "description": "Boron is a hard metalloid whose compounds occur naturally in minerals such as borax."
     },
     {
       "atomicNumber": 6,
@@ -395,7 +400,8 @@
           "label": "Royal Society of Chemistry: Carbon",
           "url": "https://www.rsc.org/periodic-table/element/6/carbon"
         }
-      ]
+      ],
+      "description": "Carbon is a nonmetal that forms diamond, graphite and the molecular backbone of living things."
     },
     {
       "atomicNumber": 7,
@@ -461,7 +467,8 @@
           "label": "Royal Society of Chemistry: Nitrogen",
           "url": "https://www.rsc.org/periodic-table/element/7/nitrogen"
         }
-      ]
+      ],
+      "description": "Nitrogen is a colourless gas that makes up about four-fifths of Earth's atmosphere."
     },
     {
       "atomicNumber": 8,
@@ -527,7 +534,8 @@
           "label": "Royal Society of Chemistry: Oxygen",
           "url": "https://www.rsc.org/periodic-table/element/8/oxygen"
         }
-      ]
+      ],
+      "description": "Oxygen is a reactive nonmetal gas that supports respiration and is also bound into water and many minerals."
     },
     {
       "atomicNumber": 9,
@@ -593,7 +601,8 @@
           "label": "Royal Society of Chemistry: Fluorine",
           "url": "https://www.rsc.org/periodic-table/element/9/fluorine"
         }
-      ]
+      ],
+      "description": "Fluorine is a highly reactive halogen gas; its fluoride compounds have very different properties from the pure element."
     },
     {
       "atomicNumber": 10,
@@ -658,7 +667,8 @@
           "label": "Royal Society of Chemistry: Neon",
           "url": "https://www.rsc.org/periodic-table/element/10/neon"
         }
-      ]
+      ],
+      "description": "Neon is a colourless noble gas that emits orange-red light when excited in a discharge tube."
     },
     {
       "atomicNumber": 11,
@@ -724,7 +734,8 @@
           "label": "Royal Society of Chemistry: Sodium",
           "url": "https://www.rsc.org/periodic-table/element/11/sodium"
         }
-      ]
+      ],
+      "description": "Sodium is a soft, highly reactive alkali metal; in nature it occurs in compounds rather than as free metal."
     },
     {
       "atomicNumber": 12,
@@ -790,7 +801,8 @@
           "label": "Royal Society of Chemistry: Magnesium",
           "url": "https://www.rsc.org/periodic-table/element/12/magnesium"
         }
-      ]
+      ],
+      "description": "Magnesium is a lightweight metal that also occurs as ions in minerals and living cells."
     },
     {
       "atomicNumber": 13,
@@ -856,7 +868,8 @@
           "label": "Royal Society of Chemistry: Aluminium",
           "url": "https://www.rsc.org/periodic-table/element/13/aluminium"
         }
-      ]
+      ],
+      "description": "Aluminium is a lightweight metal protected from further corrosion by a thin surface oxide layer."
     },
     {
       "atomicNumber": 14,
@@ -922,7 +935,8 @@
           "label": "Royal Society of Chemistry: Silicon",
           "url": "https://www.rsc.org/periodic-table/element/14/silicon"
         }
-      ]
+      ],
+      "description": "Silicon is a metalloid and semiconductor; its compounds are abundant in sand, rocks and glass."
     },
     {
       "atomicNumber": 15,
@@ -988,7 +1002,8 @@
           "label": "Royal Society of Chemistry: Phosphorus",
           "url": "https://www.rsc.org/periodic-table/element/15/phosphorus"
         }
-      ]
+      ],
+      "description": "Phosphorus is a reactive nonmetal with several forms, including white and red phosphorus."
     },
     {
       "atomicNumber": 16,
@@ -1054,7 +1069,8 @@
           "label": "Royal Society of Chemistry: Sulfur",
           "url": "https://www.rsc.org/periodic-table/element/16/sulfur"
         }
-      ]
+      ],
+      "description": "Sulfur is a nonmetal commonly seen as a yellow solid, occurring in minerals and essential biological compounds."
     },
     {
       "atomicNumber": 17,
@@ -1120,7 +1136,8 @@
           "label": "Royal Society of Chemistry: Chlorine",
           "url": "https://www.rsc.org/periodic-table/element/17/chlorine"
         }
-      ]
+      ],
+      "description": "Chlorine is a reactive yellow-green halogen gas; chloride ions in salt are chemically different from the gas."
     },
     {
       "atomicNumber": 18,
@@ -1185,7 +1202,8 @@
           "label": "Royal Society of Chemistry: Argon",
           "url": "https://www.rsc.org/periodic-table/element/18/argon"
         }
-      ]
+      ],
+      "description": "Argon is a colourless noble gas that makes up nearly one percent of Earth's atmosphere."
     },
     {
       "atomicNumber": 19,
@@ -1251,7 +1269,8 @@
           "label": "Royal Society of Chemistry: Potassium",
           "url": "https://www.rsc.org/periodic-table/element/19/potassium"
         }
-      ]
+      ],
+      "description": "Potassium is a soft, reactive alkali metal; its ions help cells maintain electrical and chemical balance."
     },
     {
       "atomicNumber": 20,
@@ -1317,7 +1336,8 @@
           "label": "Royal Society of Chemistry: Calcium",
           "url": "https://www.rsc.org/periodic-table/element/20/calcium"
         }
-      ]
+      ],
+      "description": "Calcium is an alkaline-earth metal that occurs naturally in minerals and as ions in living organisms."
     },
     {
       "atomicNumber": 21,
@@ -1383,7 +1403,8 @@
           "label": "Royal Society of Chemistry: Scandium",
           "url": "https://www.rsc.org/periodic-table/element/21/scandium"
         }
-      ]
+      ],
+      "description": "Scandium is a light, silvery metal usually found dispersed in minerals rather than in concentrated deposits."
     },
     {
       "atomicNumber": 22,
@@ -1449,7 +1470,8 @@
           "label": "Royal Society of Chemistry: Titanium",
           "url": "https://www.rsc.org/periodic-table/element/22/titanium"
         }
-      ]
+      ],
+      "description": "Titanium is a strong, relatively lightweight metal with a corrosion-resistant oxide surface."
     },
     {
       "atomicNumber": 23,
@@ -1515,7 +1537,8 @@
           "label": "Royal Society of Chemistry: Vanadium",
           "url": "https://www.rsc.org/periodic-table/element/23/vanadium"
         }
-      ]
+      ],
+      "description": "Vanadium is a transition metal that forms compounds in several oxidation states."
     },
     {
       "atomicNumber": 24,
@@ -1581,7 +1604,8 @@
           "label": "Royal Society of Chemistry: Chromium",
           "url": "https://www.rsc.org/periodic-table/element/24/chromium"
         }
-      ]
+      ],
+      "description": "Chromium is a hard transition metal whose surface oxide can help protect alloys from corrosion."
     },
     {
       "atomicNumber": 25,
@@ -1647,7 +1671,8 @@
           "label": "Royal Society of Chemistry: Manganese",
           "url": "https://www.rsc.org/periodic-table/element/25/manganese"
         }
-      ]
+      ],
+      "description": "Manganese is a transition metal found in many minerals and needed in small amounts by living organisms."
     },
     {
       "atomicNumber": 26,
@@ -1713,7 +1738,8 @@
           "label": "Royal Society of Chemistry: Iron",
           "url": "https://www.rsc.org/periodic-table/element/26/iron"
         }
-      ]
+      ],
+      "description": "Iron is an abundant transition metal and the principal metallic ingredient of steel."
     },
     {
       "atomicNumber": 27,
@@ -1779,7 +1805,8 @@
           "label": "Royal Society of Chemistry: Cobalt",
           "url": "https://www.rsc.org/periodic-table/element/27/cobalt"
         }
-      ]
+      ],
+      "description": "Cobalt is a magnetic transition metal that also forms intensely coloured compounds."
     },
     {
       "atomicNumber": 28,
@@ -1845,7 +1872,8 @@
           "label": "Royal Society of Chemistry: Nickel",
           "url": "https://www.rsc.org/periodic-table/element/28/nickel"
         }
-      ]
+      ],
+      "description": "Nickel is a corrosion-resistant transition metal commonly combined with other metals in alloys."
     },
     {
       "atomicNumber": 29,
@@ -1911,7 +1939,8 @@
           "label": "Royal Society of Chemistry: Copper",
           "url": "https://www.rsc.org/periodic-table/element/29/copper"
         }
-      ]
+      ],
+      "description": "Copper is a reddish transition metal that conducts heat and electricity very well."
     },
     {
       "atomicNumber": 30,
@@ -1977,7 +2006,8 @@
           "label": "Royal Society of Chemistry: Zinc",
           "url": "https://www.rsc.org/periodic-table/element/30/zinc"
         }
-      ]
+      ],
+      "description": "Zinc is a metal that reacts preferentially to iron, helping protect coated steel from corrosion."
     },
     {
       "atomicNumber": 31,
@@ -2043,7 +2073,8 @@
           "label": "Royal Society of Chemistry: Gallium",
           "url": "https://www.rsc.org/periodic-table/element/31/gallium"
         }
-      ]
+      ],
+      "description": "Gallium is a soft metal that melts just above ordinary room temperature."
     },
     {
       "atomicNumber": 32,
@@ -2109,7 +2140,8 @@
           "label": "Royal Society of Chemistry: Germanium",
           "url": "https://www.rsc.org/periodic-table/element/32/germanium"
         }
-      ]
+      ],
+      "description": "Germanium is a metalloid with semiconductor properties, often recovered as a by-product of other metal production."
     },
     {
       "atomicNumber": 33,
@@ -2175,7 +2207,8 @@
           "label": "Royal Society of Chemistry: Arsenic",
           "url": "https://www.rsc.org/periodic-table/element/33/arsenic"
         }
-      ]
+      ],
+      "description": "Arsenic is a metalloid with several solid forms; many of its compounds are highly toxic."
     },
     {
       "atomicNumber": 34,
@@ -2241,7 +2274,8 @@
           "label": "Royal Society of Chemistry: Selenium",
           "url": "https://www.rsc.org/periodic-table/element/34/selenium"
         }
-      ]
+      ],
+      "description": "Selenium is a nonmetal that is an essential trace nutrient but can be toxic in excessive amounts."
     },
     {
       "atomicNumber": 35,
@@ -2307,7 +2341,8 @@
           "label": "Royal Society of Chemistry: Bromine",
           "url": "https://www.rsc.org/periodic-table/element/35/bromine"
         }
-      ]
+      ],
+      "description": "Bromine is a halogen that forms a reddish-brown liquid near room temperature."
     },
     {
       "atomicNumber": 36,
@@ -2373,7 +2408,8 @@
           "label": "Royal Society of Chemistry: Krypton",
           "url": "https://www.rsc.org/periodic-table/element/36/krypton"
         }
-      ]
+      ],
+      "description": "Krypton is a colourless noble gas present in very small amounts in the atmosphere."
     },
     {
       "atomicNumber": 37,
@@ -2439,7 +2475,8 @@
           "label": "Royal Society of Chemistry: Rubidium",
           "url": "https://www.rsc.org/periodic-table/element/37/rubidium"
         }
-      ]
+      ],
+      "description": "Rubidium is a soft, highly reactive alkali metal with atomic transitions useful for precision measurement."
     },
     {
       "atomicNumber": 38,
@@ -2505,7 +2542,8 @@
           "label": "Royal Society of Chemistry: Strontium",
           "url": "https://www.rsc.org/periodic-table/element/38/strontium"
         }
-      ]
+      ],
+      "description": "Strontium is an alkaline-earth metal whose compounds can give flames a vivid red colour."
     },
     {
       "atomicNumber": 39,
@@ -2571,7 +2609,8 @@
           "label": "Royal Society of Chemistry: Yttrium",
           "url": "https://www.rsc.org/periodic-table/element/39/yttrium"
         }
-      ]
+      ],
+      "description": "Yttrium is a silvery metal commonly found alongside rare-earth elements in minerals."
     },
     {
       "atomicNumber": 40,
@@ -2637,7 +2676,8 @@
           "label": "Royal Society of Chemistry: Zirconium",
           "url": "https://www.rsc.org/periodic-table/element/40/zirconium"
         }
-      ]
+      ],
+      "description": "Zirconium is a corrosion-resistant transition metal commonly extracted from zircon minerals."
     },
     {
       "atomicNumber": 41,
@@ -2703,7 +2743,8 @@
           "label": "Royal Society of Chemistry: Niobium",
           "url": "https://www.rsc.org/periodic-table/element/41/niobium"
         }
-      ]
+      ],
+      "description": "Niobium is a transition metal that can improve alloys and form superconducting materials."
     },
     {
       "atomicNumber": 42,
@@ -2769,7 +2810,8 @@
           "label": "Royal Society of Chemistry: Molybdenum",
           "url": "https://www.rsc.org/periodic-table/element/42/molybdenum"
         }
-      ]
+      ],
+      "description": "Molybdenum is a transition metal with a high melting point and useful catalytic properties."
     },
     {
       "atomicNumber": 43,
@@ -2835,7 +2877,8 @@
           "label": "Royal Society of Chemistry: Technetium",
           "url": "https://www.rsc.org/periodic-table/element/43/technetium"
         }
-      ]
+      ],
+      "description": "Technetium is a radioactive transition metal with no stable isotopes."
     },
     {
       "atomicNumber": 44,
@@ -2901,7 +2944,8 @@
           "label": "Royal Society of Chemistry: Ruthenium",
           "url": "https://www.rsc.org/periodic-table/element/44/ruthenium"
         }
-      ]
+      ],
+      "description": "Ruthenium is a hard transition metal in the platinum group, resistant to many forms of corrosion."
     },
     {
       "atomicNumber": 45,
@@ -2967,7 +3011,8 @@
           "label": "Royal Society of Chemistry: Rhodium",
           "url": "https://www.rsc.org/periodic-table/element/45/rhodium"
         }
-      ]
+      ],
+      "description": "Rhodium is a rare, corrosion-resistant platinum-group metal with strong catalytic activity."
     },
     {
       "atomicNumber": 46,
@@ -3033,7 +3078,8 @@
           "label": "Royal Society of Chemistry: Palladium",
           "url": "https://www.rsc.org/periodic-table/element/46/palladium"
         }
-      ]
+      ],
+      "description": "Palladium is a platinum-group metal that can absorb hydrogen and catalyse many chemical reactions."
     },
     {
       "atomicNumber": 47,
@@ -3099,7 +3145,8 @@
           "label": "Royal Society of Chemistry: Silver",
           "url": "https://www.rsc.org/periodic-table/element/47/silver"
         }
-      ]
+      ],
+      "description": "Silver is a lustrous precious metal with the highest electrical conductivity of any metal near room temperature."
     },
     {
       "atomicNumber": 48,
@@ -3165,7 +3212,8 @@
           "label": "Royal Society of Chemistry: Cadmium",
           "url": "https://www.rsc.org/periodic-table/element/48/cadmium"
         }
-      ]
+      ],
+      "description": "Cadmium is a soft metal often obtained alongside zinc; it and many of its compounds are toxic."
     },
     {
       "atomicNumber": 49,
@@ -3231,7 +3279,8 @@
           "label": "Royal Society of Chemistry: Indium",
           "url": "https://www.rsc.org/periodic-table/element/49/indium"
         }
-      ]
+      ],
+      "description": "Indium is a soft, silvery metal whose compounds can combine transparency with electrical conductivity."
     },
     {
       "atomicNumber": 50,
@@ -3297,7 +3346,8 @@
           "label": "Royal Society of Chemistry: Tin",
           "url": "https://www.rsc.org/periodic-table/element/50/tin"
         }
-      ]
+      ],
+      "description": "Tin is a soft metal that can coat other metals and form useful low-melting alloys."
     },
     {
       "atomicNumber": 51,
@@ -3363,7 +3413,8 @@
           "label": "Royal Society of Chemistry: Antimony",
           "url": "https://www.rsc.org/periodic-table/element/51/antimony"
         }
-      ]
+      ],
+      "description": "Antimony is a brittle metalloid whose compounds and alloys have specialised industrial properties."
     },
     {
       "atomicNumber": 52,
@@ -3429,7 +3480,8 @@
           "label": "Royal Society of Chemistry: Tellurium",
           "url": "https://www.rsc.org/periodic-table/element/52/tellurium"
         }
-      ]
+      ],
+      "description": "Tellurium is a brittle metalloid that forms useful semiconducting compounds."
     },
     {
       "atomicNumber": 53,
@@ -3495,7 +3547,8 @@
           "label": "Royal Society of Chemistry: Iodine",
           "url": "https://www.rsc.org/periodic-table/element/53/iodine"
         }
-      ]
+      ],
+      "description": "Iodine is a halogen that forms a dark solid and a violet vapour; iodide is an essential nutrient."
     },
     {
       "atomicNumber": 54,
@@ -3561,7 +3614,8 @@
           "label": "Royal Society of Chemistry: Xenon",
           "url": "https://www.rsc.org/periodic-table/element/54/xenon"
         }
-      ]
+      ],
+      "description": "Xenon is a heavy noble gas that can form some compounds despite its usually low reactivity."
     },
     {
       "atomicNumber": 55,
@@ -3627,7 +3681,8 @@
           "label": "Royal Society of Chemistry: Caesium",
           "url": "https://www.rsc.org/periodic-table/element/55/caesium"
         }
-      ]
+      ],
+      "description": "Caesium is a soft, very reactive alkali metal with an atomic transition used to define the second."
     },
     {
       "atomicNumber": 56,
@@ -3693,7 +3748,8 @@
           "label": "Royal Society of Chemistry: Barium",
           "url": "https://www.rsc.org/periodic-table/element/56/barium"
         }
-      ]
+      ],
+      "description": "Barium is an alkaline-earth metal; the properties and toxicity of its compounds depend strongly on their solubility."
     },
     {
       "atomicNumber": 57,
@@ -3759,7 +3815,8 @@
           "label": "Royal Society of Chemistry: Lanthanum",
           "url": "https://www.rsc.org/periodic-table/element/57/lanthanum"
         }
-      ]
+      ],
+      "description": "Lanthanum is a soft rare-earth metal commonly found with other lanthanides."
     },
     {
       "atomicNumber": 58,
@@ -3825,7 +3882,8 @@
           "label": "Royal Society of Chemistry: Cerium",
           "url": "https://www.rsc.org/periodic-table/element/58/cerium"
         }
-      ]
+      ],
+      "description": "Cerium is an abundant rare-earth metal whose compounds readily switch between oxidation states."
     },
     {
       "atomicNumber": 59,
@@ -3891,7 +3949,8 @@
           "label": "Royal Society of Chemistry: Praseodymium",
           "url": "https://www.rsc.org/periodic-table/element/59/praseodymium"
         }
-      ]
+      ],
+      "description": "Praseodymium is a rare-earth metal whose compounds often have distinctive colours."
     },
     {
       "atomicNumber": 60,
@@ -3957,7 +4016,8 @@
           "label": "Royal Society of Chemistry: Neodymium",
           "url": "https://www.rsc.org/periodic-table/element/60/neodymium"
         }
-      ]
+      ],
+      "description": "Neodymium is a rare-earth metal that forms very strong permanent magnets when alloyed with iron and boron."
     },
     {
       "atomicNumber": 61,
@@ -4022,7 +4082,8 @@
           "label": "Royal Society of Chemistry: Promethium",
           "url": "https://www.rsc.org/periodic-table/element/61/promethium"
         }
-      ]
+      ],
+      "description": "Promethium is a radioactive lanthanide with no stable isotopes and very little natural occurrence."
     },
     {
       "atomicNumber": 62,
@@ -4088,7 +4149,8 @@
           "label": "Royal Society of Chemistry: Samarium",
           "url": "https://www.rsc.org/periodic-table/element/62/samarium"
         }
-      ]
+      ],
+      "description": "Samarium is a rare-earth metal useful in magnetic alloys and neutron-absorbing materials."
     },
     {
       "atomicNumber": 63,
@@ -4153,7 +4215,8 @@
           "label": "Royal Society of Chemistry: Europium",
           "url": "https://www.rsc.org/periodic-table/element/63/europium"
         }
-      ]
+      ],
+      "description": "Europium is a rare-earth metal whose ions can emit vivid colours in suitable host materials."
     },
     {
       "atomicNumber": 64,
@@ -4219,7 +4282,8 @@
           "label": "Royal Society of Chemistry: Gadolinium",
           "url": "https://www.rsc.org/periodic-table/element/64/gadolinium"
         }
-      ]
+      ],
+      "description": "Gadolinium is a rare-earth metal with notable magnetic behaviour and a strong ability to absorb neutrons."
     },
     {
       "atomicNumber": 65,
@@ -4284,7 +4348,8 @@
           "label": "Royal Society of Chemistry: Terbium",
           "url": "https://www.rsc.org/periodic-table/element/65/terbium"
         }
-      ]
+      ],
+      "description": "Terbium is a rare-earth metal whose compounds can produce green light."
     },
     {
       "atomicNumber": 66,
@@ -4350,7 +4415,8 @@
           "label": "Royal Society of Chemistry: Dysprosium",
           "url": "https://www.rsc.org/periodic-table/element/66/dysprosium"
         }
-      ]
+      ],
+      "description": "Dysprosium is a rare-earth metal whose magnetic properties can improve the heat resistance of certain magnets."
     },
     {
       "atomicNumber": 67,
@@ -4416,7 +4482,8 @@
           "label": "Royal Society of Chemistry: Holmium",
           "url": "https://www.rsc.org/periodic-table/element/67/holmium"
         }
-      ]
+      ],
+      "description": "Holmium is a rare-earth metal with a large magnetic moment and useful optical transitions."
     },
     {
       "atomicNumber": 68,
@@ -4482,7 +4549,8 @@
           "label": "Royal Society of Chemistry: Erbium",
           "url": "https://www.rsc.org/periodic-table/element/68/erbium"
         }
-      ]
+      ],
+      "description": "Erbium is a rare-earth metal whose ions can amplify light used in fibre-optic communications."
     },
     {
       "atomicNumber": 69,
@@ -4548,7 +4616,8 @@
           "label": "Royal Society of Chemistry: Thulium",
           "url": "https://www.rsc.org/periodic-table/element/69/thulium"
         }
-      ]
+      ],
+      "description": "Thulium is one of the least abundant lanthanides and has useful laser transitions."
     },
     {
       "atomicNumber": 70,
@@ -4613,7 +4682,8 @@
           "label": "Royal Society of Chemistry: Ytterbium",
           "url": "https://www.rsc.org/periodic-table/element/70/ytterbium"
         }
-      ]
+      ],
+      "description": "Ytterbium is a rare-earth metal studied for its optical and atomic properties."
     },
     {
       "atomicNumber": 71,
@@ -4679,7 +4749,8 @@
           "label": "Royal Society of Chemistry: Lutetium",
           "url": "https://www.rsc.org/periodic-table/element/71/lutetium"
         }
-      ]
+      ],
+      "description": "Lutetium is a dense rare-earth metal at the end of the lanthanide sequence."
     },
     {
       "atomicNumber": 72,
@@ -4745,7 +4816,8 @@
           "label": "Royal Society of Chemistry: Hafnium",
           "url": "https://www.rsc.org/periodic-table/element/72/hafnium"
         }
-      ]
+      ],
+      "description": "Hafnium is a transition metal chemically similar to zirconium but much more effective at absorbing neutrons."
     },
     {
       "atomicNumber": 73,
@@ -4811,7 +4883,8 @@
           "label": "Royal Society of Chemistry: Tantalum",
           "url": "https://www.rsc.org/periodic-table/element/73/tantalum"
         }
-      ]
+      ],
+      "description": "Tantalum is a corrosion-resistant transition metal with a stable oxide useful in electronic components."
     },
     {
       "atomicNumber": 74,
@@ -4877,7 +4950,8 @@
           "label": "Royal Society of Chemistry: Tungsten",
           "url": "https://www.rsc.org/periodic-table/element/74/tungsten"
         }
-      ]
+      ],
+      "description": "Tungsten is a dense transition metal with the highest melting point of any metal."
     },
     {
       "atomicNumber": 75,
@@ -4943,7 +5017,8 @@
           "label": "Royal Society of Chemistry: Rhenium",
           "url": "https://www.rsc.org/periodic-table/element/75/rhenium"
         }
-      ]
+      ],
+      "description": "Rhenium is a rare transition metal that retains useful strength at high temperatures."
     },
     {
       "atomicNumber": 76,
@@ -5009,7 +5084,8 @@
           "label": "Royal Society of Chemistry: Osmium",
           "url": "https://www.rsc.org/periodic-table/element/76/osmium"
         }
-      ]
+      ],
+      "description": "Osmium is a very dense platinum-group metal; its volatile tetroxide compound is highly toxic."
     },
     {
       "atomicNumber": 77,
@@ -5075,7 +5151,8 @@
           "label": "Royal Society of Chemistry: Iridium",
           "url": "https://www.rsc.org/periodic-table/element/77/iridium"
         }
-      ]
+      ],
+      "description": "Iridium is a dense platinum-group metal with exceptional resistance to corrosion."
     },
     {
       "atomicNumber": 78,
@@ -5141,7 +5218,8 @@
           "label": "Royal Society of Chemistry: Platinum",
           "url": "https://www.rsc.org/periodic-table/element/78/platinum"
         }
-      ]
+      ],
+      "description": "Platinum is a precious transition metal valued for corrosion resistance and catalytic activity."
     },
     {
       "atomicNumber": 79,
@@ -5207,7 +5285,8 @@
           "label": "Royal Society of Chemistry: Gold",
           "url": "https://www.rsc.org/periodic-table/element/79/gold"
         }
-      ]
+      ],
+      "description": "Gold is a dense, malleable precious metal that resists oxidation under ordinary conditions."
     },
     {
       "atomicNumber": 80,
@@ -5273,7 +5352,8 @@
           "label": "Royal Society of Chemistry: Mercury",
           "url": "https://www.rsc.org/periodic-table/element/80/mercury"
         }
-      ]
+      ],
+      "description": "Mercury is a toxic metal that is liquid near room temperature."
     },
     {
       "atomicNumber": 81,
@@ -5339,7 +5419,8 @@
           "label": "Royal Society of Chemistry: Thallium",
           "url": "https://www.rsc.org/periodic-table/element/81/thallium"
         }
-      ]
+      ],
+      "description": "Thallium is a soft metal whose many compounds are highly toxic."
     },
     {
       "atomicNumber": 82,
@@ -5405,7 +5486,8 @@
           "label": "Royal Society of Chemistry: Lead",
           "url": "https://www.rsc.org/periodic-table/element/82/lead"
         }
-      ]
+      ],
+      "description": "Lead is a dense, soft metal; exposure to lead and its compounds can damage health."
     },
     {
       "atomicNumber": 83,
@@ -5471,7 +5553,8 @@
           "label": "Royal Society of Chemistry: Bismuth",
           "url": "https://www.rsc.org/periodic-table/element/83/bismuth"
         }
-      ]
+      ],
+      "description": "Bismuth is a heavy metal with distinctive crystals and compounds used in specialised products."
     },
     {
       "atomicNumber": 84,
@@ -5537,7 +5620,8 @@
           "label": "Royal Society of Chemistry: Polonium",
           "url": "https://www.rsc.org/periodic-table/element/84/polonium"
         }
-      ]
+      ],
+      "description": "Polonium is a radioactive element with no stable isotopes, occurring in trace amounts in decay chains."
     },
     {
       "atomicNumber": 85,
@@ -5602,7 +5686,8 @@
           "label": "Royal Society of Chemistry: Astatine",
           "url": "https://www.rsc.org/periodic-table/element/85/astatine"
         }
-      ]
+      ],
+      "description": "Astatine is an extremely scarce radioactive halogen whose isotopes decay quickly."
     },
     {
       "atomicNumber": 86,
@@ -5667,7 +5752,8 @@
           "label": "Royal Society of Chemistry: Radon",
           "url": "https://www.rsc.org/periodic-table/element/86/radon"
         }
-      ]
+      ],
+      "description": "Radon is a radioactive noble gas formed naturally by the decay of heavier elements in rocks and soil."
     },
     {
       "atomicNumber": 87,
@@ -5731,7 +5817,8 @@
           "label": "Royal Society of Chemistry: Francium",
           "url": "https://www.rsc.org/periodic-table/element/87/francium"
         }
-      ]
+      ],
+      "description": "Francium is a highly radioactive alkali metal that exists naturally only in minute, short-lived quantities."
     },
     {
       "atomicNumber": 88,
@@ -5797,7 +5884,8 @@
           "label": "Royal Society of Chemistry: Radium",
           "url": "https://www.rsc.org/periodic-table/element/88/radium"
         }
-      ]
+      ],
+      "description": "Radium is a radioactive alkaline-earth metal formed in natural radioactive decay chains."
     },
     {
       "atomicNumber": 89,
@@ -5863,7 +5951,8 @@
           "label": "Royal Society of Chemistry: Actinium",
           "url": "https://www.rsc.org/periodic-table/element/89/actinium"
         }
-      ]
+      ],
+      "description": "Actinium is a radioactive metal at the beginning of the actinide sequence."
     },
     {
       "atomicNumber": 90,
@@ -5929,7 +6018,8 @@
           "label": "Royal Society of Chemistry: Thorium",
           "url": "https://www.rsc.org/periodic-table/element/90/thorium"
         }
-      ]
+      ],
+      "description": "Thorium is a naturally occurring radioactive actinide metal, most commonly found as thorium-232."
     },
     {
       "atomicNumber": 91,
@@ -5994,7 +6084,8 @@
           "label": "Royal Society of Chemistry: Protactinium",
           "url": "https://www.rsc.org/periodic-table/element/91/protactinium"
         }
-      ]
+      ],
+      "description": "Protactinium is a scarce radioactive actinide metal found in traces in uranium-bearing minerals."
     },
     {
       "atomicNumber": 92,
@@ -6060,7 +6151,8 @@
           "label": "Royal Society of Chemistry: Uranium",
           "url": "https://www.rsc.org/periodic-table/element/92/uranium"
         }
-      ]
+      ],
+      "description": "Uranium is a dense, naturally occurring radioactive actinide metal with isotopes used in nuclear energy."
     },
     {
       "atomicNumber": 93,
@@ -6126,7 +6218,8 @@
           "label": "Royal Society of Chemistry: Neptunium",
           "url": "https://www.rsc.org/periodic-table/element/93/neptunium"
         }
-      ]
+      ],
+      "description": "Neptunium is a radioactive actinide beyond uranium, produced mainly through nuclear reactions."
     },
     {
       "atomicNumber": 94,
@@ -6192,7 +6285,8 @@
           "label": "Royal Society of Chemistry: Plutonium",
           "url": "https://www.rsc.org/periodic-table/element/94/plutonium"
         }
-      ]
+      ],
+      "description": "Plutonium is a radioactive actinide produced mainly in nuclear reactions; its isotopes have different energy applications."
     },
     {
       "atomicNumber": 95,
@@ -6258,7 +6352,8 @@
           "label": "Royal Society of Chemistry: Americium",
           "url": "https://www.rsc.org/periodic-table/element/95/americium"
         }
-      ]
+      ],
+      "description": "Americium is a synthetic radioactive actinide whose isotopes include americium-241."
     },
     {
       "atomicNumber": 96,
@@ -6324,7 +6419,8 @@
           "label": "Royal Society of Chemistry: Curium",
           "url": "https://www.rsc.org/periodic-table/element/96/curium"
         }
-      ]
+      ],
+      "description": "Curium is a synthetic radioactive actinide produced in nuclear reactions."
     },
     {
       "atomicNumber": 97,
@@ -6389,7 +6485,8 @@
           "label": "Royal Society of Chemistry: Berkelium",
           "url": "https://www.rsc.org/periodic-table/element/97/berkelium"
         }
-      ]
+      ],
+      "description": "Berkelium is a synthetic radioactive actinide made in very small quantities."
     },
     {
       "atomicNumber": 98,
@@ -6453,7 +6550,8 @@
           "label": "Royal Society of Chemistry: Californium",
           "url": "https://www.rsc.org/periodic-table/element/98/californium"
         }
-      ]
+      ],
+      "description": "Californium is a synthetic radioactive actinide; some isotopes emit neutrons through spontaneous fission."
     },
     {
       "atomicNumber": 99,
@@ -6517,7 +6615,8 @@
           "label": "Royal Society of Chemistry: Einsteinium",
           "url": "https://www.rsc.org/periodic-table/element/99/einsteinium"
         }
-      ]
+      ],
+      "description": "Einsteinium is a synthetic radioactive actinide available only in tiny amounts for research."
     },
     {
       "atomicNumber": 100,
@@ -6581,7 +6680,8 @@
           "label": "Royal Society of Chemistry: Fermium",
           "url": "https://www.rsc.org/periodic-table/element/100/fermium"
         }
-      ]
+      ],
+      "description": "Fermium is a synthetic radioactive actinide whose isotopes are made in nuclear reactions."
     },
     {
       "atomicNumber": 101,
@@ -6645,7 +6745,8 @@
           "label": "Royal Society of Chemistry: Mendelevium",
           "url": "https://www.rsc.org/periodic-table/element/101/mendelevium"
         }
-      ]
+      ],
+      "description": "Mendelevium is a synthetic radioactive actinide typically studied a few atoms at a time."
     },
     {
       "atomicNumber": 102,
@@ -6709,7 +6810,8 @@
           "label": "Royal Society of Chemistry: Nobelium",
           "url": "https://www.rsc.org/periodic-table/element/102/nobelium"
         }
-      ]
+      ],
+      "description": "Nobelium is a synthetic radioactive actinide with short-lived isotopes."
     },
     {
       "atomicNumber": 103,
@@ -6772,7 +6874,8 @@
           "label": "Royal Society of Chemistry: Lawrencium",
           "url": "https://www.rsc.org/periodic-table/element/103/lawrencium"
         }
-      ]
+      ],
+      "description": "Lawrencium is a synthetic radioactive element at the end of the actinide sequence, with an unusual ground-state electron arrangement."
     },
     {
       "atomicNumber": 104,
@@ -6833,7 +6936,8 @@
           "label": "Royal Society of Chemistry: Rutherfordium",
           "url": "https://www.rsc.org/periodic-table/element/104/rutherfordium"
         }
-      ]
+      ],
+      "description": "Rutherfordium is a synthetic, radioactive group-4 element whose chemistry is studied using very small numbers of atoms."
     },
     {
       "atomicNumber": 105,
@@ -6894,7 +6998,8 @@
           "label": "Royal Society of Chemistry: Dubnium",
           "url": "https://www.rsc.org/periodic-table/element/105/dubnium"
         }
-      ]
+      ],
+      "description": "Dubnium is a synthetic, radioactive group-5 element studied through short-lived atoms made in laboratories."
     },
     {
       "atomicNumber": 106,
@@ -6955,7 +7060,8 @@
           "label": "Royal Society of Chemistry: Seaborgium",
           "url": "https://www.rsc.org/periodic-table/element/106/seaborgium"
         }
-      ]
+      ],
+      "description": "Seaborgium is a synthetic, radioactive group-6 element with chemistry investigated in tiny laboratory samples."
     },
     {
       "atomicNumber": 107,
@@ -7016,7 +7122,8 @@
           "label": "Royal Society of Chemistry: Bohrium",
           "url": "https://www.rsc.org/periodic-table/element/107/bohrium"
         }
-      ]
+      ],
+      "description": "Bohrium is a synthetic, radioactive group-7 element whose short-lived atoms are produced for research."
     },
     {
       "atomicNumber": 108,
@@ -7077,7 +7184,8 @@
           "label": "Royal Society of Chemistry: Hassium",
           "url": "https://www.rsc.org/periodic-table/element/108/hassium"
         }
-      ]
+      ],
+      "description": "Hassium is a synthetic, radioactive group-8 element with some chemical properties investigated atom by atom."
     },
     {
       "atomicNumber": 109,
@@ -7138,7 +7246,8 @@
           "label": "Royal Society of Chemistry: Meitnerium",
           "url": "https://www.rsc.org/periodic-table/element/109/meitnerium"
         }
-      ]
+      ],
+      "description": "Meitnerium is a synthetic, radioactive group-9 element; much of its chemistry remains predicted rather than measured."
     },
     {
       "atomicNumber": 110,
@@ -7199,7 +7308,8 @@
           "label": "Royal Society of Chemistry: Darmstadtium",
           "url": "https://www.rsc.org/periodic-table/element/110/darmstadtium"
         }
-      ]
+      ],
+      "description": "Darmstadtium is a synthetic, radioactive group-10 element whose short-lived atoms cannot be collected as ordinary bulk material."
     },
     {
       "atomicNumber": 111,
@@ -7260,7 +7370,8 @@
           "label": "Royal Society of Chemistry: Roentgenium",
           "url": "https://www.rsc.org/periodic-table/element/111/roentgenium"
         }
-      ]
+      ],
+      "description": "Roentgenium is a synthetic, radioactive group-11 element with largely predicted chemical properties."
     },
     {
       "atomicNumber": 112,
@@ -7321,7 +7432,8 @@
           "label": "Royal Society of Chemistry: Copernicium",
           "url": "https://www.rsc.org/periodic-table/element/112/copernicium"
         }
-      ]
+      ],
+      "description": "Copernicium is a synthetic, radioactive group-12 element whose behaviour is affected by relativistic effects in its electrons."
     },
     {
       "atomicNumber": 113,
@@ -7382,7 +7494,8 @@
           "label": "Royal Society of Chemistry: Nihonium",
           "url": "https://www.rsc.org/periodic-table/element/113/nihonium"
         }
-      ]
+      ],
+      "description": "Nihonium is a synthetic, radioactive group-13 element made in minute quantities for nuclear research."
     },
     {
       "atomicNumber": 114,
@@ -7443,7 +7556,8 @@
           "label": "Royal Society of Chemistry: Flerovium",
           "url": "https://www.rsc.org/periodic-table/element/114/flerovium"
         }
-      ]
+      ],
+      "description": "Flerovium is a synthetic, radioactive group-14 element investigated to understand superheavy atoms and nuclei."
     },
     {
       "atomicNumber": 115,
@@ -7504,7 +7618,8 @@
           "label": "Royal Society of Chemistry: Moscovium",
           "url": "https://www.rsc.org/periodic-table/element/115/moscovium"
         }
-      ]
+      ],
+      "description": "Moscovium is a synthetic, radioactive group-15 element known from short-lived atoms produced in laboratories."
     },
     {
       "atomicNumber": 116,
@@ -7565,7 +7680,8 @@
           "label": "Royal Society of Chemistry: Livermorium",
           "url": "https://www.rsc.org/periodic-table/element/116/livermorium"
         }
-      ]
+      ],
+      "description": "Livermorium is a synthetic, radioactive group-16 element; many of its chemical properties remain theoretical."
     },
     {
       "atomicNumber": 117,
@@ -7626,7 +7742,8 @@
           "label": "Royal Society of Chemistry: Tennessine",
           "url": "https://www.rsc.org/periodic-table/element/117/tennessine"
         }
-      ]
+      ],
+      "description": "Tennessine is a synthetic, radioactive group-17 element whose chemistry is largely predicted and may differ from lighter halogens."
     },
     {
       "atomicNumber": 118,
@@ -7687,7 +7804,8 @@
           "label": "Royal Society of Chemistry: Oganesson",
           "url": "https://www.rsc.org/periodic-table/element/118/oganesson"
         }
-      ]
+      ],
+      "description": "Oganesson is a synthetic, radioactive group-18 element; despite its table position, theory predicts behaviour unlike familiar noble gases."
     }
   ]
 }

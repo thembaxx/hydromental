@@ -23,6 +23,7 @@
 }
 
 :root {
+  --chrome: #f0f5fc;
   --bg: linear-gradient(135deg, #f0f5fc, #f9f7f1);
   --ink: #202b48;
   --ctrl: rgba(255, 255, 255, 0.9);
@@ -43,6 +44,7 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
+    --chrome: #0a1028;
     --bg: linear-gradient(135deg, #0a1028, #111a36);
     --ink: #f5f7ff;
     --ctrl: #1a2548;
@@ -61,6 +63,7 @@
   }
 }
 :root[data-theme="midnight"] {
+  --chrome: #0a1028;
   --bg: linear-gradient(135deg, #0a1028, #111a36);
   --ink: #f5f7ff;
   --ctrl: #1a2548;
@@ -78,6 +81,7 @@
   color-scheme: dark;
 }
 :root[data-theme="dusk"] {
+  --chrome: #232b65;
   --bg:
     radial-gradient(ellipse at 10% 50%, #455299, transparent 65%),
     linear-gradient(135deg, #232b65, #343d81);
@@ -121,13 +125,19 @@
 }
 html {
   min-height: 100%;
+  background: var(--bg);
+  background-attachment: fixed;
   scroll-behavior: smooth;
 }
 body {
   margin: 0;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   min-width: 280px;
   min-height: 100svh;
+  min-height: 100dvh;
   background: var(--bg);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: Nunito, system-ui, sans-serif;
   font-size: 16px;
@@ -1076,7 +1086,11 @@ button.tag {
   inset: 50% auto auto 50%;
   translate: -50% -50%;
   width: min(760px, calc(100vw - 32px));
-  max-height: min(88dvh, 900px);
+  max-height: min(
+    88dvh,
+    900px,
+    calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px)
+  );
   background: var(--dw);
   color: var(--ink);
   border: 1px solid var(--line);
@@ -1286,9 +1300,45 @@ input[type="file"].form-input {
   align-items: center;
   margin: 20px 0;
 }
-.detail-orbit svg {
+.element-structure > svg {
   max-width: 100%;
   height: auto;
+}
+.element-structure {
+  margin: 0;
+  text-align: center;
+}
+.element-structure > svg {
+  display: block;
+  margin: auto;
+}
+.element-structure figcaption {
+  margin-top: 12px;
+}
+.structure-electrons {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: structure-orbit var(--orbit-duration) linear infinite;
+  animation-play-state: paused;
+}
+.element-structure[data-playing="true"] .structure-electrons {
+  animation-play-state: running;
+}
+.structure-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+@keyframes structure-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .structure-electrons {
+    animation: none !important;
+  }
 }
 .configuration {
   font-size: 13px;
@@ -1312,7 +1362,6 @@ input[type="file"].form-input {
 }
 .fa b {
   display: block;
-  font-family: "JetBrains Mono", monospace;
   font-size: 14px;
   font-weight: 700;
   color: var(--ink);
@@ -1661,12 +1710,6 @@ input[type="file"].form-input {
 .c:active b {
   transform: scale(0.88);
 }
-.c.lk b {
-  background: var(--dim);
-  box-shadow: none;
-  color: var(--mut);
-  font-weight: 600;
-}
 .c.sel {
   background: var(--sel);
   border-color: var(--accent);
@@ -1909,7 +1952,6 @@ input[type="file"].form-input {
   font-weight: 700;
 }
 .reference-facts dd {
-  font-family: "JetBrains Mono", monospace;
   font-size: 16px;
   margin: 6px 0 0;
 }
@@ -2269,14 +2311,17 @@ input[type="file"].form-input {
   }
   .dialog-content {
     width: calc(100vw - 16px);
-    max-height: 90dvh;
+    max-height: min(
+      90dvh,
+      calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px)
+    );
     border-radius: 24px;
     inset: auto auto calc(8px + env(safe-area-inset-bottom)) 50%;
     translate: -50% 0;
   }
   .dialog-content.search-dialog {
     inset: calc(12px + env(safe-area-inset-top)) auto auto 50%;
-    max-height: calc(100dvh - 24px);
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);
     translate: -50% 0;
   }
   .dh {
@@ -2327,7 +2372,7 @@ input[type="file"].form-input {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .detail-orbit > svg {
+  .detail-orbit .element-structure > svg {
     margin: auto;
     width: 160px;
   }

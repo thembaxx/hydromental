@@ -8,7 +8,8 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 
 - Explore with swipe, arrow keys, period/group controls, a searchable periodic table, and typo-tolerant search by name, symbol or atomic number. Filter search by element family.
 - Switch between Explore and Rotate gestures. Pinch or use explicit zoom controls, reset the camera, pause motion, and inspect the nucleus or scientific shells. Hold the scene to reveal proton and electron counts.
-- Read original element stories, everyday uses, connections and source-linked physical properties. Compare two elements, try the bonding/material sandbox, and export a discovery postcard as SVG.
+- Explore all 118 visible symbols without discovery placeholders. Tap the central orb for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support.
+- Read original element stories, connections and source-linked physical properties. Compare two elements, try the bonding/material sandbox, and export a discovery postcard as SVG.
 - Save favorites, revisit recent discoveries, follow collections and expeditions, and earn daily mission rewards. Standard, review, mystery and everyday-context quizzes build a spaced-review queue.
 - Choose device-following, Day, Midnight or Dusk appearance, adaptive rendering quality, optional sounds and ambient audio, and supported haptics. Reduced-motion preferences apply to animation and feedback.
 - Export and import validated progress backups. Install when supported, explore the cached playground offline, and read previously visited reference pages offline.

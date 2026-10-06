@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { PwaManager } from "@/components/pwa-manager";
+import { BrowserChrome } from "@/components/browser-chrome";
 import { jsonLd, siteOrigin } from "@/lib/site";
 import "./globals.css";
 
@@ -41,8 +42,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f8fc" },
-    { media: "(prefers-color-scheme: dark)", color: "#101422" },
+    { media: "(prefers-color-scheme: light)", color: "#f0f5fc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a1028" },
   ],
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <PwaManager />
+        <BrowserChrome />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -93,6 +93,7 @@ test("radioactive mass values retain source precision and their isotope caveat",
 test("each editorial record has non-self connections and authoritative citations", () => {
   for (const science of scienceRecords) {
     for (const text of [
+      science.description,
       science.story,
       science.everyday,
       science.fact,
@@ -180,7 +181,10 @@ test("snapshot validation rejects corrupted science instead of silently displayi
       broken.records[0].connection.atomicNumber = 1;
     },
     (broken: typeof snapshot) => {
-      broken.records[0].fact = "";
+      broken.records[0].description = "";
+    },
+    (broken: typeof snapshot) => {
+      broken.records[0].properties[1].label = "Atomic mass";
     },
     (broken: typeof snapshot) => {
       broken.records[0].sources[0].url = "http://example.com/";

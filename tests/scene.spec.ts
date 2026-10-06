@@ -48,6 +48,13 @@ test("rotation drag keeps the element; Explore swipe navigates and hold is not a
   await page.mouse.up();
   await expect(page.locator("#pk")).not.toHaveClass(/on/);
   await expect(page.locator(".inspection-card")).toHaveCount(0);
+  // Once movement begins, a long press becomes a drag rather than swallowing it.
+  await page.mouse.down();
+  await expect(page.locator("#pk")).toHaveClass(/on/);
+  await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.42, { steps: 3 });
+  await expect(page.locator("#pk")).not.toHaveClass(/on/);
+  await page.mouse.up();
+  await expect(page.locator("#in")).toContainText("Neon");
   expect(errors).toEqual([]);
 });
 

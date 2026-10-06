@@ -6,6 +6,7 @@ export interface ScienceRecord {
   configuration: string;
   configurationNote: string;
   shells: number[];
+  description: string;
   story: string;
   everyday: string;
   fact: string;

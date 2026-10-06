@@ -27,7 +27,7 @@ Orbiting dots are an illustrative count model. Electrons occupy quantum states, 
 
 ## Original editorial content
 
-Each element has an original short story, everyday context, interesting fact and connection to another element. These are concise paraphrases and educational explanations, rather than copied reference prose. Each record links to its individual [Royal Society of Chemistry element entry](https://www.rsc.org/periodic-table/) and to PubChem. Research-only elements are described as such instead of being given invented everyday uses.
+Each element has an original plain-language definition, short story, everyday context, interesting fact and connection to another element. These are concise paraphrases and educational explanations, rather than copied reference prose. Each record links to its individual [Royal Society of Chemistry element entry](https://www.rsc.org/periodic-table/) and to PubChem. Research-only elements are described as such instead of being given invented everyday uses.
 
 Expedition trails are curated examples, not comprehensive material inventories. Phone construction varies between manufacturers. Biological presence does not imply that the pure element is safe or nutritionally interchangeable with its compounds.
 
