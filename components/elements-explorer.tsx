@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -7,467 +8,117 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent,
-  type RefObject,
 } from "react";
-import { createAtomScene, type SceneControls } from "@/lib/atom-scene";
 import {
   categories,
   elements,
-  electronShells,
   group,
   neighbour,
   period,
   phases,
-  type Element,
+  type Category,
 } from "@/lib/elements";
-
+import { getScience, elementSlug } from "@/lib/science";
+import {
+  claimMission,
+  discoverElement,
+  exportProgress,
+  getDailyMissions,
+  getDueElements,
+  getLevel,
+  importProgress,
+  initialLearningState,
+  loadLearningState,
+  recordAnswer,
+  saveLearningState,
+  toggleFavorite,
+  type LearningSettings,
+  type MissionId,
+} from "@/lib/learning";
+import { feedback, cleanupFeedback, setAmbientAudio } from "@/lib/feedback";
+import type { AtomInspection, SceneControls } from "@/lib/atom-scene";
+import { AtomCanvas, type AtomSceneApi } from "@/components/atom-canvas";
+import { BrandMark } from "@/components/brand-mark";
+import { DialogShell } from "@/components/dialog-shell";
+import { SearchPalette } from "@/components/search-palette";
+import { NavigationScrubber } from "@/components/navigation-scrubber";
+import { PeriodicTable } from "@/components/periodic-table";
+import { ElementDetails } from "@/components/element-details";
+import { ElementQuiz, type QuizMode } from "@/components/element-quiz";
+import { LearningHub } from "@/components/learning-hub";
+import { ComparisonPanel } from "@/components/comparison-panel";
+import { SandboxPanel } from "@/components/sandbox-panel";
+import { SettingsPanel } from "@/components/settings-panel";
+import { DiscoveryCard } from "@/components/discovery-card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
-import { MotionQuizCard } from "@/components/motion-quiz-card";
 
 type Direction = "u" | "d" | "l" | "r";
-type Theme = "" | "midnight" | "dusk" | "day";
-type Sheet = "table" | "details" | "quiz" | null;
-type Progress = { f: number[]; x: number; s: number };
-const initialProgress: Progress = { f: Array.from({ length: 12 }, (_, i) => i), x: 120, s: 0 };
-function vibrate(pattern: number | number[]) {
-  try {
-    navigator.vibrate?.(pattern);
-  } catch {
-    /* Optional device feedback. */
-  }
-}
-
-function AtomCanvas({
-  element,
-  controls,
-}: {
-  element: Element;
-  controls: RefObject<SceneControls>;
-}) {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const scene = useRef<ReturnType<typeof createAtomScene> | null>(null);
-  const [unavailable, setUnavailable] = useState(false);
-  useEffect(() => {
-    try {
-      scene.current = createAtomScene(canvas.current!, controls.current, elements[7]);
-    } catch {
-      // oxlint-disable-next-line react/set-state-in-effect -- WebGL availability is discovered when the browser creates the renderer.
-      setUnavailable(true);
-    }
-    return () => {
-      scene.current?.dispose();
-      scene.current = null;
-    };
-  }, [controls]);
-  useEffect(() => {
-    scene.current?.setElement(element);
-  }, [element]);
+type Sheet =
+  | "table"
+  | "details"
+  | "quiz"
+  | "learning"
+  | "compare"
+  | "sandbox"
+  | "settings"
+  | "share"
+  | "help"
+  | null;
+const titles: Record<Exclude<Sheet, null>, string> = {
+  table: "Periodic table",
+  details: "Element details",
+  quiz: "Quiz",
+  learning: "Your discovery journal",
+  compare: "Compare elements",
+  sandbox: "Bonding playground",
+  settings: "Make it yours",
+  share: "Your elemental postcard",
+  help: "How to explore",
+};
+function PanelHeading({ title, close }: { title: string; close: () => void }) {
   return (
-    <>
-      <canvas
-        ref={canvas}
-        id="gl"
-        className="absolute inset-0 size-full"
-        aria-label={`Decorative 3D model of ${element.n}`}
-      />
-      {unavailable && (
-        <p className="absolute inset-x-0 top-[55%] text-center text-sm" role="status">
-          3D is unavailable in this browser. You can still explore every element.
-        </p>
-      )}
-    </>
-  );
-}
-
-function Scrubber({
-  id,
-  label,
-  value,
-  vertical,
-  onNavigate,
-}: {
-  id: string;
-  label: string;
-  value: number | string;
-  vertical?: boolean;
-  onNavigate: (d: Direction) => void;
-}) {
-  const start = useRef<number | null>(null);
-  const [offset, setOffset] = useState(0);
-  const end = () => {
-    start.current = null;
-    setOffset(0);
-  };
-  return (
-    <div
-      id={id}
-      className={`wp ${vertical ? "left-3" : "right-3"}`}
-      role="slider"
-      tabIndex={0}
-      aria-label={label}
-      aria-orientation={vertical ? "vertical" : "horizontal"}
-      aria-valuemin={1}
-      aria-valuemax={vertical ? 7 : 18}
-      aria-valuenow={typeof value === "number" ? value : undefined}
-      aria-valuetext={String(value)}
-      style={{ transform: `translate${vertical ? "Y" : "X"}(${offset}px)` }}
-      onPointerDown={(e) => {
-        start.current = vertical ? e.clientY : e.clientX;
-        e.currentTarget.setPointerCapture(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (start.current === null) return;
-        const current = vertical ? e.clientY : e.clientX,
-          delta = current - start.current;
-        setOffset(Math.max(-16, Math.min(16, delta * 0.3)));
-        if (Math.abs(delta) > 34) {
-          start.current = current;
-          onNavigate(vertical ? (delta > 0 ? "d" : "u") : delta > 0 ? "r" : "l");
-        }
-      }}
-      onPointerUp={end}
-      onPointerCancel={end}
-      onKeyDown={(e) => {
-        const d: Record<string, Direction> = {
-          ArrowUp: "u",
-          ArrowDown: "d",
-          ArrowLeft: "l",
-          ArrowRight: "r",
-        };
-        if (d[e.key]) {
-          e.preventDefault();
-          e.stopPropagation();
-          onNavigate(d[e.key]);
-        }
-      }}
-    >
-      {label} <span className="n">{value}</span>
-    </div>
-  );
-}
-
-function Details({ element, close }: { element: Element; close: () => void }) {
-  const shells = electronShells(element.z),
-    color = categories[element.c][1];
-  const facts = [
-    ["Atomic no.", element.z],
-    ["Mass", element.m],
-    ["Phase", phases[element.f]],
-    ["Period", period(element)],
-    ["Group", group(element)],
-    ["Type", categories[element.c][0]],
-  ];
-  return (
-    <div id="dt" className="sheet open" role="dialog" aria-label="Element details">
-      <div className="dh">
-        <span className="w-10" />
-        <b id="dn">{element.n}</b>
-        <Button
-          variant="unstyled"
-          id="dx"
-          className="btn quiz-close"
-          aria-label="Close"
-          onClick={close}
-        >
-          <Icon name="close" />
-        </Button>
-      </div>
-      <div id="dbody">
-        <svg
-          viewBox="0 0 260 260"
-          width="190"
-          height="190"
-          className="mx-auto block"
-          role="img"
-          aria-label="Idealised electron shells"
-        >
-          <circle cx="130" cy="130" r="12" fill={color} />
-          {shells.map((count, i) => {
-            const r = shells.length > 1 ? 26 + i * (98 / (shells.length - 1)) : 70;
-            return (
-              <g key={i}>
-                <circle
-                  cx="130"
-                  cy="130"
-                  r={r}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeOpacity=".25"
-                  strokeWidth="1.5"
-                />
-                {Array.from({ length: count }, (_, k) => {
-                  const angle = (k / count) * Math.PI * 2 + i;
-                  return (
-                    <circle
-                      key={k}
-                      cx={130 + r * Math.cos(angle)}
-                      cy={130 + r * Math.sin(angle)}
-                      r="4"
-                      fill={color}
-                    />
-                  );
-                })}
-              </g>
-            );
-          })}
-        </svg>
-        <div className="fa">
-          {facts.map(([label, value]) => (
-            <Card variant="unstyled" key={label}>
-              {label}
-              <b>{value}</b>
-            </Card>
-          ))}
-        </div>
-        <p className="n mx-3.5 mt-3 text-center text-[13px] text-[var(--mut)]">
-          Shells (idealised): {shells.join(" · ")}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function PeriodicTable({
-  current,
-  found,
-  pick,
-  close,
-  quiz,
-}: {
-  current: number;
-  found: Set<number>;
-  pick: (index: number) => void;
-  close: () => void;
-  quiz: () => void;
-}) {
-  const table = useRef<HTMLDivElement>(null);
-  const pointers = useRef(new Map<number, [number, number]>());
-  const pinch = useRef({ distance: 1, size: 56 });
-  const [size, setSize] = useState(56);
-  const zoom = (value: number) => setSize(Math.max(30, Math.min(78, value)));
-  const distance = () => {
-    const [a, b] = [...pointers.current.values()];
-    return Math.hypot(a[0] - b[0], a[1] - b[1]);
-  };
-  useEffect(() => {
-    const root = table.current!;
-    const selected = root.querySelector<HTMLButtonElement>(".sel");
-    if (selected)
-      root.scrollTo({
-        left: selected.offsetLeft - root.clientWidth / 2 + 28,
-        top: selected.offsetTop - 40,
-      });
-    const wheel = (e: WheelEvent) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-        setSize((prev) => Math.max(30, Math.min(78, prev * (e.deltaY < 0 ? 1.08 : 0.93))));
-      }
-    };
-    root.addEventListener("wheel", wheel, { passive: false });
-    return () => root.removeEventListener("wheel", wheel);
-  }, []);
-  const end = (e: PointerEvent) => pointers.current.delete(e.pointerId);
-  return (
-    <div id="dw" className="open" role="dialog" aria-label="Periodic table">
-      <div className="dh">
-        <span className="w-10" />
-        <b>Periodic Table</b>
-        <Button variant="unstyled" id="ck" className="btn" aria-label="Done" onClick={close}>
-          <Icon name="done" />
-        </Button>
-      </div>
-      <div className="chips">
-        <Badge variant="unstyled" className="chip n" id="c1">
-          {found.size} / {elements.length}
-        </Badge>
-        <Button variant="unstyled" id="qb" className="chip border-0" onClick={quiz}>
-          Quiz
-        </Button>
-      </div>
-      <div
-        ref={table}
-        id="tb"
-        style={{ "--cs": `${size}px` } as CSSProperties}
-        onPointerDown={(e) => {
-          pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
-          if (pointers.current.size === 2) pinch.current = { distance: distance() || 1, size };
-        }}
-        onPointerMove={(e) => {
-          if (!pointers.current.has(e.pointerId)) return;
-          pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
-          if (pointers.current.size === 2)
-            zoom((pinch.current.size * distance()) / pinch.current.distance);
-        }}
-        onPointerUp={end}
-        onPointerCancel={end}
-        onPointerLeave={end}
-      >
-        {Array.from({ length: 18 }, (_, i) => (
-          <em key={i} style={{ gridColumn: i + 1, gridRow: 1 }}>
-            {i + 1}
-          </em>
-        ))}
-        {elements.map((element, i) => (
-          <Button
-            variant="unstyled"
-            key={element.z}
-            className={`c ${found.has(i) ? "" : "lk"} ${i === current ? "sel" : ""}`}
-            data-i={i}
-            aria-label={element.n}
-            aria-pressed={i === current}
-            style={
-              {
-                gridColumn: element.g,
-                gridRow: element.p + 1,
-                "--c": categories[element.c][1],
-                "--d": `${i * 14}ms`,
-              } as CSSProperties
-            }
-            onClick={() => {
-              pick(i);
-              close();
-            }}
-          >
-            <i>{element.z}</i>
-            <b>{found.has(i) ? element.s : "?"}</b>
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-type Question = { element: Element; type: number; answer: string; options: string[] };
-function makeQuestion(found: number[]): Question {
-  const pool = found.length >= 6 ? found : elements.map((_, i) => i);
-  const element = elements[pool[Math.floor(Math.random() * pool.length)]];
-  const type = Math.floor(Math.random() * 3),
-    key = (["s", "n", "z"] as const)[type];
-  const answer = String(element[key]),
-    options = new Set([answer]);
-  while (options.size < 4)
-    options.add(String(elements[Math.floor(Math.random() * elements.length)][key]));
-  const shuffled = [...options];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return { element, type, answer, options: shuffled };
-}
-
-function Quiz({
-  found,
-  streak,
-  close,
-  result,
-}: {
-  found: number[];
-  streak: number;
-  close: () => void;
-  result: (correct: boolean) => void;
-}) {
-  const [question, setQuestion] = useState<Question | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const answered = useRef(false);
-  const latestFound = useRef(found);
-  useEffect(() => {
-    latestFound.current = found;
-  }, [found]);
-  useEffect(() => {
-    setQuestion(makeQuestion(latestFound.current));
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, []);
-  const answer = (value: string) => {
-    if (answered.current || !question) return;
-    answered.current = true;
-    setSelected(value);
-    result(value === question.answer);
-    timer.current = setTimeout(() => {
-      setQuestion(makeQuestion(latestFound.current));
-      setSelected(null);
-      answered.current = false;
-    }, 1000);
-  };
-  return (
-    <div id="qz" className="sheet open" role="dialog" aria-label="Quiz">
-      <div className="dh">
-        <span id="qs" className="n w-[90px] text-[13px]">
-          Streak {streak}
-        </span>
-        <b>Quiz</b>
-        <Button
-          variant="unstyled"
-          id="qx"
-          className="btn quiz-close"
-          aria-label="Close"
-          onClick={close}
-        >
-          <Icon name="close" />
-        </Button>
-      </div>
-      <MotionQuizCard key={question ? `${question.element.z}-${question.type}` : "loading"}>
-        <CardTitle variant="unstyled" id="qq">
-          {question &&
-            (question.type === 0 ? (
-              <>
-                Symbol for <b>{question.element.n}</b>?
-              </>
-            ) : question.type === 1 ? (
-              <>
-                Which element is <b className="n">{question.element.s}</b>?
-              </>
-            ) : (
-              <>
-                Atomic number of <b>{question.element.n}</b>?
-              </>
-            ))}
-        </CardTitle>
-        <CardContent variant="unstyled" id="qa">
-          {question?.options.map((value) => (
-            <Button
-              variant="unstyled"
-              key={value}
-              className={`opt ${selected && value === question.answer ? "ok" : selected === value ? "no" : ""}`}
-              disabled={selected !== null}
-              onClick={() => answer(value)}
-            >
-              {value}
-            </Button>
-          ))}
-        </CardContent>
-      </MotionQuizCard>
+    <div className="dh">
+      <h2>{title}</h2>
+      <Button variant="unstyled" className="icon-button" aria-label="Close" onClick={close}>
+        <Icon name="close" />
+      </Button>
     </div>
   );
 }
 
 export default function ElementsExplorer() {
-  const [current, setCurrent] = useState(7),
-    [progress, setProgress] = useState(initialProgress);
-  const [hydrated, setHydrated] = useState(false),
-    [theme, setTheme] = useState<Theme>("");
-  const [sheet, setSheet] = useState<Sheet>(null),
-    [menu, setMenu] = useState(false),
-    [search, setSearch] = useState(false);
-  const [query, setQuery] = useState(""),
-    [invalid, setInvalid] = useState(false),
-    [hint, setHint] = useState(true);
-  const [hold, setHold] = useState(false),
-    [spread, setSpread] = useState(false),
-    [toast, setToast] = useState("");
+  const [current, setCurrent] = useState(7);
+  const [learning, setLearning] = useState(initialLearningState);
+  const [hydrated, setHydrated] = useState(false);
+  const [storageAvailable, setStorageAvailable] = useState(true);
+  const [sheet, setSheet] = useState<Sheet>(null);
+  const [quizMode, setQuizMode] = useState<QuizMode>("standard");
+  const [search, setSearch] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [hold, setHold] = useState(false);
+  const [spread, setSpread] = useState(false);
+  const [rotation, setRotation] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [inspection, setInspection] = useState<AtomInspection | null>(null);
+  const [toast, setToast] = useState("");
   const [celebrate, setCelebrate] = useState(false);
-  const input = useRef<HTMLInputElement>(null),
-    toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pointer = useRef<{ x: number; y: number; lx: number; ly: number; movement: number } | null>(
-    null,
-  );
+  const pointer = useRef<{
+    x: number;
+    y: number;
+    lx: number;
+    ly: number;
+    movement: number;
+    time: number;
+  } | null>(null);
+  const pointers = useRef(new Map<number, [number, number]>());
+  const pinch = useRef({ distance: 1, zoom: 1 });
+  const atomApi = useRef<AtomSceneApi | null>(null);
   const scene = useRef<SceneControls>({
     spin: 0,
     tilt: 0,
@@ -478,60 +129,62 @@ export default function ElementsExplorer() {
     hold: false,
     spread: false,
     open: false,
+    zoom: 1,
   });
   const element = elements[current],
-    found = new Set(progress.f);
-  /* oxlint-disable react/set-state-in-effect -- Restore external browser storage after server hydration. */
+    science = getScience(element.z);
+  const found = new Set(learning.discovered.map((z) => z - 1));
+  const favorite = learning.favorites.includes(element.z),
+    level = getLevel(learning.xp),
+    missions = getDailyMissions(learning),
+    due = getDueElements(learning);
+
+  /* oxlint-disable react/set-state-in-effect -- Restore external device storage and URL selection after server hydration. */
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem("el") || "null") as Progress | null;
-      if (saved && Array.isArray(saved.f) && Number.isFinite(saved.x))
-        setProgress({
-          f: [
-            ...new Set(saved.f.filter((i) => Number.isInteger(i) && i >= 0 && i < elements.length)),
-          ],
-          x: Math.max(0, saved.x),
-          s: Number.isInteger(saved.s) ? Math.max(0, saved.s) : 0,
-        });
-      const selected = localStorage.getItem("th") || "";
-      if (["", "midnight", "dusk", "day"].includes(selected)) setTheme(selected as Theme);
-    } catch {
-      /* Storage is optional. */
-    }
+    const saved = loadLearningState();
+    const requested = new URLSearchParams(window.location.search)
+      .get("element")
+      ?.trim()
+      .toLowerCase();
+    const selected = requested
+      ? elements.find(
+          (e) =>
+            e.s.toLowerCase() === requested ||
+            e.n.toLowerCase() === requested ||
+            String(e.z) === requested,
+        )
+      : undefined;
+    setLearning(selected ? discoverElement(saved, selected.z) : saved);
+    if (selected) setCurrent(selected.z - 1);
+    else if (saved.history.length) setCurrent(saved.history.at(-1)!.z - 1);
     setHydrated(true);
     return () => {
       if (toastTimer.current) clearTimeout(toastTimer.current);
       if (holdTimer.current) clearTimeout(holdTimer.current);
+      cleanupFeedback();
     };
   }, []);
+  useEffect(() => {
+    if (hydrated) setStorageAvailable(saveLearningState(learning));
+  }, [learning, hydrated]);
   /* oxlint-enable react/set-state-in-effect */
   useEffect(() => {
-    if (hydrated) {
-      try {
-        localStorage.setItem("el", JSON.stringify(progress));
-      } catch {
-        /* Storage is optional. */
-      }
-    }
-  }, [progress, hydrated]);
-  useEffect(() => {
-    if (theme) document.documentElement.dataset.theme = theme;
+    if (!hydrated) return;
+    if (learning.settings.theme) document.documentElement.dataset.theme = learning.settings.theme;
     else delete document.documentElement.dataset.theme;
-    if (hydrated) {
-      try {
-        localStorage.setItem("th", theme);
-      } catch {
-        /* Storage is optional. */
-      }
-    }
-  }, [theme, hydrated]);
+  }, [learning.settings.theme, hydrated]);
   useEffect(() => {
-    scene.current.open = sheet !== null;
-  }, [sheet]);
-  useEffect(() => {
-    if (search) input.current?.focus();
-    else input.current?.blur();
-  }, [search]);
+    Object.assign(scene.current, {
+      quality: learning.settings.quality,
+      model: learning.settings.model,
+      labels: learning.settings.labels,
+      zoom,
+      rotationMode: rotation,
+      paused,
+      open: sheet !== null,
+    });
+    scene.current.onInspect = (hit) => setInspection(hit);
+  }, [learning.settings, zoom, rotation, paused, sheet]);
   useEffect(() => {
     if (!celebrate) return;
     const timer = setTimeout(() => setCelebrate(false), 1200);
@@ -540,332 +193,1010 @@ export default function ElementsExplorer() {
   const notify = useCallback((message: string) => {
     setToast(message);
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(""), 1800);
+    toastTimer.current = setTimeout(() => setToast(""), 2600);
   }, []);
+  const settings = (change: Partial<LearningSettings>) => {
+    setLearning((previous) => ({ ...previous, settings: { ...previous.settings, ...change } }));
+    if (change.ambient !== undefined) setAmbientAudio(change.ambient);
+    if (change.sound === true) feedback("tap", { sound: true, haptics: learning.settings.haptics });
+  };
   const pick = useCallback(
     (index: number) => {
-      const isNew = !progress.f.includes(index);
+      if (!Number.isInteger(index) || index < 0 || index >= elements.length) return;
+      const selected = elements[index],
+        isNew = !learning.discovered.includes(selected.z),
+        next = discoverElement(learning, selected.z);
+      setLearning({ ...next, onboardingDismissed: true });
       setCurrent(index);
-      setHint(false);
+      setInspection(null);
+      scene.current.selectedShell = null;
+      const url = new URL(window.location.href);
+      url.searchParams.set("element", selected.s);
+      window.history.replaceState(null, "", url);
       if (isNew) {
-        setProgress((prev) => ({ ...prev, f: [...new Set([...prev.f, index])], x: prev.x + 10 }));
-        notify(`Discovered ${elements[index].n} · +10 XP`);
-        vibrate([12, 30, 12]);
-      } else vibrate(10);
-      scene.current.spin = 14;
+        notify(`Discovered ${selected.n} · +10 XP`);
+        if (getLevel(next.xp).level > level.level) setCelebrate(true);
+      }
+      feedback(isNew ? "discover" : "tap", learning.settings);
+      if (learning.settings.ambient) setAmbientAudio(true);
+      scene.current.spin = rotation ? 0 : 14;
       scene.current.bounce = -5;
     },
-    [progress.f, notify],
+    [learning, level.level, notify, rotation],
   );
   const navigate = useCallback(
     (direction: Direction) => {
       const next = neighbour(current, direction);
-      if (next !== null) pick(next);
-      else {
-        scene.current.spin = direction === "r" ? -6 : direction === "l" ? 6 : 0;
+      if (next !== null) {
+        scene.current.direction = direction;
+        pick(next);
+      } else {
         scene.current.bounce = -3;
-        vibrate(6);
+        feedback("tap", learning.settings);
+        notify("You've reached the edge. Try another direction.");
       }
     },
-    [current, pick],
+    [current, pick, learning.settings, notify],
   );
+  const openQuiz = (mode: QuizMode) => {
+    setQuizMode(mode);
+    setSheet("quiz");
+    setSearch(false);
+    setMenu(false);
+  };
   useEffect(() => {
-    const keyboard = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return;
-      if (e.key === "Escape") {
+    const keyboard = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest("input,textarea,select,[role=combobox],[role=listbox]")
+      )
+        return;
+      if (event.key === "Escape") {
         setSheet(null);
         setMenu(false);
         setSearch(false);
         return;
       }
-      if (sheet) return;
+      if (sheet || search || menu) return;
       const direction = (
         { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d" } as const
-      )[e.key as "ArrowLeft"];
+      )[event.key as "ArrowLeft"];
       if (direction) {
-        e.preventDefault();
+        event.preventDefault();
         navigate(direction);
       }
-      if (e.key === "g") setSheet("table");
+      if (event.key === "g") {
+        event.preventDefault();
+        setSheet("table");
+      }
+      if (event.key === "/") {
+        event.preventDefault();
+        setSearch(true);
+      }
+      if (event.key === "?") {
+        event.preventDefault();
+        setSheet("help");
+      }
     };
     window.addEventListener("keydown", keyboard);
     return () => window.removeEventListener("keydown", keyboard);
-  }, [navigate, sheet]);
-  const peek = (on: boolean) => {
-    scene.current.hold = on;
-    setHold(on);
-    if (on) vibrate(15);
-  };
+  }, [navigate, sheet, search, menu]);
   const cancelPointer = () => {
     pointer.current = null;
     scene.current.dragging = false;
     if (holdTimer.current) clearTimeout(holdTimer.current);
-    peek(false);
+    scene.current.hold = false;
+    setHold(false);
   };
-  const pointerDown = (e: PointerEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest("button,input,#dw,#mn,.wp,#in,.sheet")) return;
-    pointer.current = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, movement: 0 };
+  const pointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (
+      (event.target as HTMLElement).closest(
+        "button,input,a,select,textarea,.wp,.inspection-card,.onboarding-card",
+      )
+    )
+      return;
+    if (pointers.current.size >= 2) return;
+    pointers.current.set(event.pointerId, [event.clientX, event.clientY]);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      pinch.current = { distance: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, zoom };
+      cancelPointer();
+      return;
+    }
+    pointer.current = {
+      x: event.clientX,
+      y: event.clientY,
+      lx: event.clientX,
+      ly: event.clientY,
+      movement: 0,
+      time: performance.now(),
+    };
     scene.current.dragging = true;
-    e.currentTarget.setPointerCapture(e.pointerId);
     holdTimer.current = setTimeout(() => {
-      if (pointer.current && pointer.current.movement < 8 && !sheet) peek(true);
+      if (pointer.current && pointer.current.movement < 8 && !sheet) {
+        scene.current.hold = true;
+        setHold(true);
+        feedback("tap", learning.settings);
+      }
     }, 450);
   };
-  const pointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    const bounds = e.currentTarget.getBoundingClientRect();
-    scene.current.x = (e.clientX - bounds.left) / bounds.width - 0.5;
-    scene.current.y = (e.clientY - bounds.top) / bounds.height - 0.5;
-    const p = pointer.current;
-    if (!p) return;
-    const dx = e.clientX - p.lx,
-      dy = e.clientY - p.ly;
-    p.lx = e.clientX;
-    p.ly = e.clientY;
-    p.movement = Math.max(p.movement, Math.hypot(e.clientX - p.x, e.clientY - p.y));
-    if (p.movement > 8) {
+  const pointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    scene.current.x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    scene.current.y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    if (pointers.current.has(event.pointerId))
+      pointers.current.set(event.pointerId, [event.clientX, event.clientY]);
+    if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      setZoom(
+        Math.max(
+          0.65,
+          Math.min(
+            1.7,
+            (pinch.current.zoom * Math.hypot(a[0] - b[0], a[1] - b[1])) / pinch.current.distance,
+          ),
+        ),
+      );
+      return;
+    }
+    const start = pointer.current;
+    if (!start) return;
+    const dx = event.clientX - start.lx,
+      dy = event.clientY - start.ly;
+    start.lx = event.clientX;
+    start.ly = event.clientY;
+    start.movement = Math.max(
+      start.movement,
+      Math.hypot(event.clientX - start.x, event.clientY - start.y),
+    );
+    if (start.movement > 8) {
       if (holdTimer.current) clearTimeout(holdTimer.current);
-      scene.current.spin = dx * 0.6;
-      scene.current.tilt = Math.max(-0.6, Math.min(0.6, scene.current.tilt + dy * 0.005));
+      if (rotation) {
+        scene.current.rotationY = (scene.current.rotationY ?? 0) + dx * 0.008;
+        scene.current.rotationX = Math.max(
+          -1.2,
+          Math.min(1.2, (scene.current.rotationX ?? 0) + dy * 0.008),
+        );
+      } else {
+        scene.current.spin = dx * 0.6;
+        scene.current.tilt = Math.max(-0.6, Math.min(0.6, scene.current.tilt + dy * 0.005));
+      }
     }
   };
-  const pointerUp = (e: PointerEvent<HTMLDivElement>) => {
-    const p = pointer.current;
-    if (!p) return;
-    const dx = e.clientX - p.x,
-      dy = e.clientY - p.y,
+  const pointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    pointers.current.delete(event.pointerId);
+    const start = pointer.current;
+    if (!start) {
+      cancelPointer();
+      return;
+    }
+    const dx = event.clientX - start.x,
+      dy = event.clientY - start.y,
       wasHold = scene.current.hold;
     cancelPointer();
     if (wasHold) return;
-    if (p.movement < 8) {
-      if (sheet) setSheet(null);
-      else {
-        scene.current.bounce = -7;
-        vibrate(8);
-      }
+    if (start.movement < 8) {
+      scene.current.bounce = -7;
+      feedback("tap", learning.settings);
+      if (performance.now() - start.time < 350)
+        atomApi.current?.inspect(event.clientX, event.clientY);
       return;
     }
-    if (!sheet && Math.max(Math.abs(dx), Math.abs(dy)) > 70)
+    if (!rotation && Math.max(Math.abs(dx), Math.abs(dy)) > 70)
       navigate(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "r" : "l") : dy < 0 ? "d" : "u");
   };
-  const submitSearch = () => {
-    const value = query.trim().toLowerCase();
-    const index = elements.findIndex(
-      (e) =>
-        e.s.toLowerCase() === value || e.n.toLowerCase().startsWith(value) || String(e.z) === value,
+  const resetCamera = () => {
+    atomApi.current?.resetCamera();
+    setZoom(1);
+    setInspection(null);
+    notify("Camera reset");
+  };
+  const inspectShell = (shell: number) => {
+    settings({ model: "scientific", labels: true });
+    scene.current.selectedShell = shell;
+    setInspection({
+      kind: "shell",
+      atomicNumber: element.z,
+      shell,
+      electrons: science.shells[shell - 1],
+    });
+    setSheet(null);
+  };
+  const quizResult = (z: number, correct: boolean) => {
+    const next = recordAnswer(learning, z, correct);
+    setLearning(next);
+    feedback(correct ? "correct" : "incorrect", learning.settings);
+    notify(
+      correct
+        ? next.xp > learning.xp
+          ? "+5 XP · Knowledge is growing"
+          : "Mastery is growing · Today's XP already earned"
+        : "Good practice. We'll revisit this one.",
     );
-    if (value && index >= 0) {
-      pick(index);
-      setQuery("");
-      setSearch(false);
-      setInvalid(false);
-    } else {
-      setInvalid(true);
-      notify("No matching element");
-    }
+    if (correct && (next.quizStreak % 3 === 0 || getLevel(next.xp).level > level.level))
+      setCelebrate(true);
   };
-  const quizResult = (correct: boolean) => {
-    setProgress((prev) => ({
-      ...prev,
-      s: correct ? prev.s + 1 : 0,
-      x: prev.x + (correct ? 5 : 0),
-    }));
-    vibrate(correct ? [10, 20, 10] : 30);
-    if (correct) {
-      notify("+5 XP");
-      if ((progress.s + 1) % 3 === 0) setCelebrate(true);
-    }
+  const exportSave = () => {
+    const url = URL.createObjectURL(
+      new Blob([exportProgress(learning)], { type: "application/json" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "elementals-progress.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    notify("Progress exported. Keep this file for another device.");
   };
+  const importSave = (text: string) => {
+    const imported = importProgress(text);
+    setLearning(imported);
+    setAmbientAudio(false);
+    notify("Progress restored on this device");
+  };
+  const claim = (id: string) => {
+    if (!["discover", "quiz", "review"].includes(id)) return;
+    const next = claimMission(learning, id as MissionId);
+    if (next.xp === learning.xp) return;
+    setLearning(next);
+    setCelebrate(true);
+    feedback("discover", learning.settings);
+    notify(`Mission complete · +${next.xp - learning.xp} XP`);
+  };
+  const close = () => setSheet(null);
+
   return (
-    <main
-      id="app"
-      data-ready={hydrated}
-      onPointerDown={pointerDown}
-      onPointerMove={pointerMove}
-      onPointerUp={pointerUp}
-      onPointerCancel={cancelPointer}
-    >
-      <AtomCanvas element={element} controls={scene} />
-      <div
-        id="tn"
-        className="ab"
-        style={{
-          background: `radial-gradient(60vmax 60vmax at 50% 48%,${categories[element.c][1]}20,transparent)`,
-        }}
-      />
-      <div id="gh" className="n">
-        {String(element.z).padStart(2, "0")}
-      </div>
-      <Button
-        variant="unstyled"
-        id="sb"
-        className="btn g left-3 top-2"
-        aria-label="Search elements"
-        aria-expanded={search}
-        onClick={() => setSearch((v) => !v)}
-      >
-        <Icon name="search" />
-      </Button>
-      <div id="pr" className="n" style={{ opacity: search ? 0 : 1 }}>
-        {found.size} / {elements.length} · {progress.x} XP
-      </div>
-      <Input
-        variant="unstyled"
-        ref={input}
-        id="si"
-        className={`g ${search ? "on" : ""} ${invalid ? "no" : ""}`}
-        placeholder="Symbol, name or number"
-        aria-label="Search elements"
-        aria-invalid={invalid}
-        autoComplete="off"
-        tabIndex={search ? 0 : -1}
-        value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setInvalid(false);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") submitSearch();
-          if (e.key === "Escape") setSearch(false);
-        }}
-      />
-      <Button
-        variant="unstyled"
-        id="mb"
-        className="btn g right-3 top-2"
-        aria-label="Theme and more"
-        aria-expanded={menu}
-        onClick={() => setMenu((v) => !v)}
-      >
-        <Icon name="menu" />
-      </Button>
-      {menu && (
-        <div id="mn" className="menu g on" role="group" aria-label="Theme">
-          {(
-            [
-              ["", "Auto"],
-              ["midnight", "Midnight"],
-              ["dusk", "Dusk"],
-              ["day", "Day"],
-            ] as const
-          ).map(([value, label]) => (
+    <div className="explorer-shell">
+      <a href="#app" className="skip-link">
+        Skip to atom explorer
+      </a>
+      <header className="site-header">
+        <Link href="/" className="brand-link" aria-label="Elementals home">
+          <BrandMark />
+          <span>
+            <strong>Elementals</strong>
+            <small>A little curiosity. A whole universe.</small>
+          </span>
+        </Link>
+        <div className="header-actions">
+          <Link href="/elements" className="library-link">
+            Element library
+          </Link>
+          <Button
+            variant="unstyled"
+            id="sb"
+            className="icon-button"
+            aria-label="Search elements"
+            aria-expanded={search}
+            onClick={() => {
+              setMenu(false);
+              setSearch(true);
+            }}
+          >
+            <Icon name="search" />
+          </Button>
+          <Button
+            variant="unstyled"
+            id="mb"
+            className="icon-button"
+            aria-label="Theme and more"
+            aria-expanded={menu}
+            onClick={() => setMenu((value) => !value)}
+          >
+            <Icon name="menu" />
+          </Button>
+          <Button
+            variant="unstyled"
+            className="icon-button settings-trigger"
+            aria-label="Settings"
+            onClick={() => {
+              setMenu(false);
+              setSheet("settings");
+            }}
+          >
+            <Icon name="settings" />
+          </Button>
+        </div>
+        {menu && (
+          <div id="mn" className="menu g on" role="group" aria-label="Theme">
+            {(
+              [
+                ["", "Auto"],
+                ["midnight", "Midnight"],
+                ["dusk", "Dusk"],
+                ["day", "Day"],
+              ] as const
+            ).map(([value, label]) => (
+              <Button
+                variant="unstyled"
+                key={value}
+                data-t={value}
+                className={learning.settings.theme === value ? "on" : ""}
+                aria-pressed={learning.settings.theme === value}
+                onClick={() => {
+                  settings({ theme: value });
+                  setMenu(false);
+                }}
+              >
+                {label}
+              </Button>
+            ))}
             <Button
               variant="unstyled"
-              key={value}
-              data-t={value}
-              className={theme === value ? "on" : ""}
-              aria-pressed={theme === value}
+              aria-label="More settings"
               onClick={() => {
-                setTheme(value);
                 setMenu(false);
+                setSheet("settings");
               }}
             >
-              {label}
+              <Icon name="settings" />
             </Button>
-          ))}
+          </div>
+        )}
+      </header>
+      <main className="explorer-layout">
+        <aside className="journey-rail" aria-label="Learning journey">
+          <Card variant="unstyled" className="rail-card journey-card">
+            <div className="eyebrow">
+              <Icon name="award" />
+              Your curiosity, collected
+            </div>
+            <h2>{level.title}</h2>
+            <p className="level-copy">
+              Level {level.level}
+              <span className="n">{learning.xp} XP</span>
+            </p>
+            <progress
+              className="learning-progress"
+              value={level.progress}
+              max={1}
+              aria-label="Progress to next explorer level"
+            />
+            <p className="panel-copy">
+              {learning.discovered.length} of 118 elements discovered. Every encounter is a place to
+              begin.
+            </p>
+            <Button
+              variant="unstyled"
+              className="action-button primary-action"
+              onClick={() => setSheet("learning")}
+            >
+              Open your journal <Icon name="learn" />
+            </Button>
+          </Card>
+          <Card variant="unstyled" className="rail-card">
+            <div className="section-heading">
+              <h3>Today's little missions</h3>
+              <Badge variant="unstyled" className="tag">
+                Optional
+              </Badge>
+            </div>
+            {missions.map((mission) => (
+              <div className="mission-mini" key={mission.id}>
+                <div>
+                  <b>{mission.title}</b>
+                  <small>
+                    {mission.progress} / {mission.target} · {mission.reward} XP
+                  </small>
+                </div>
+                {mission.complete && !mission.claimed ? (
+                  <Button variant="unstyled" className="tag" onClick={() => claim(mission.id)}>
+                    Claim
+                  </Button>
+                ) : (
+                  <span
+                    role="img"
+                    aria-label={mission.claimed ? "Reward collected" : "In progress"}
+                  >
+                    {mission.claimed ? <Icon name="done" /> : <span className="mission-dot" />}
+                  </span>
+                )}
+              </div>
+            ))}
+            <Button
+              variant="unstyled"
+              className="text-button"
+              onClick={() => openQuiz(due.length ? "review" : "standard")}
+            >
+              {due.length ? `Review ${due.length} due elements` : "Try a quick quiz"}
+              <Icon name="next" />
+            </Button>
+          </Card>
+          <Card variant="unstyled" className="rail-card family-card">
+            <h3>Follow a family</h3>
+            <div className="family-list">
+              {(Object.entries(categories) as [Category, readonly [string, string]][]).map(
+                ([key, [label, color]]) => (
+                  <Button
+                    variant="unstyled"
+                    key={key}
+                    className="family-link"
+                    onClick={() => pick(elements.find((e) => e.c === key)!.z - 1)}
+                  >
+                    <span style={{ background: color }} />
+                    {label}
+                    <Icon name="next" />
+                  </Button>
+                ),
+              )}
+            </div>
+          </Card>
+        </aside>
+        <div className="atom-column">
+          <div id="pr" className="n">
+            {found.size} / {elements.length} · {learning.xp} XP
+            <span className="save-indicator">
+              {storageAvailable ? "Saved on this device" : "Session only · Export to keep progress"}
+            </span>
+          </div>
+          <div
+            id="app"
+            className="atom-stage"
+            data-ready={hydrated}
+            tabIndex={-1}
+            aria-label="Interactive atom explorer"
+            onPointerDown={pointerDown}
+            onPointerMove={pointerMove}
+            onPointerUp={pointerUp}
+            onPointerCancel={() => {
+              pointers.current.clear();
+              cancelPointer();
+            }}
+            onDoubleClick={() => {
+              if (rotation) resetCamera();
+            }}
+          >
+            <AtomCanvas element={element} controls={scene} apiRef={atomApi} />
+            <div
+              id="tn"
+              className="ab"
+              style={{
+                background: `radial-gradient(60vmax 60vmax at 50% 48%,${categories[element.c][1]}20,transparent)`,
+              }}
+            />
+            <div id="gh" className="n" aria-hidden="true">
+              {String(element.z).padStart(2, "0")}
+            </div>
+            <div className="stage-topline">
+              <Badge
+                variant="unstyled"
+                className="family-badge"
+                style={{ "--family-color": categories[element.c][1] } as CSSProperties}
+              >
+                <span />
+                {categories[element.c][0]}
+              </Badge>
+              <Button
+                variant="unstyled"
+                className={`icon-button ${favorite ? "is-favorite" : ""}`}
+                aria-label={
+                  favorite ? `Remove ${element.n} from favorites` : `Favorite ${element.n}`
+                }
+                aria-pressed={favorite}
+                onClick={() => {
+                  setLearning((previous) => toggleFavorite(previous, element.z));
+                  feedback("tap", learning.settings);
+                }}
+              >
+                <Icon name="favorite" />
+              </Button>
+            </div>
+            <div className="stage-modes">
+              <div className="segmented" aria-label="Atom interaction mode">
+                <Button
+                  variant="unstyled"
+                  aria-pressed={!rotation}
+                  onClick={() => setRotation(false)}
+                >
+                  Explore
+                </Button>
+                <Button
+                  variant="unstyled"
+                  aria-pressed={rotation}
+                  onClick={() => setRotation(true)}
+                >
+                  <Icon name="rotate" />
+                  Rotate
+                </Button>
+              </div>
+              <Button
+                variant="unstyled"
+                className="model-button"
+                aria-label={`Switch to ${learning.settings.model === "playful" ? "scientific" : "playful"} model`}
+                onClick={() => {
+                  settings({
+                    model: learning.settings.model === "playful" ? "scientific" : "playful",
+                  });
+                  setInspection(null);
+                  scene.current.selectedShell = null;
+                }}
+              >
+                {learning.settings.model === "playful" ? "Playful model" : "Scientific model"}
+                <Icon name="spark" />
+              </Button>
+            </div>
+            <NavigationScrubber
+              id="pl"
+              label="Period"
+              value={period(element)}
+              vertical
+              onNavigate={navigate}
+            />
+            <NavigationScrubber
+              id="pg"
+              label="Group"
+              value={group(element)}
+              onNavigate={navigate}
+            />
+            <Button
+              variant="unstyled"
+              id="au"
+              className="ar g"
+              aria-label="Up the group"
+              onClick={() => navigate("u")}
+            >
+              <Icon name="up" />
+            </Button>
+            <Button
+              variant="unstyled"
+              id="ad"
+              className="ar g"
+              aria-label="Down the group"
+              onClick={() => navigate("d")}
+            >
+              <Icon name="down" />
+            </Button>
+            {learning.settings.model === "scientific" && (
+              <div className="shell-inspector">
+                <label htmlFor="shell-select">Inspect a shell</label>
+                <select
+                  id="shell-select"
+                  value={inspection?.kind === "shell" ? inspection.shell : 0}
+                  onChange={(event) => {
+                    const n = Number(event.target.value);
+                    if (n) inspectShell(n);
+                    else {
+                      scene.current.selectedShell = null;
+                      setInspection({ kind: "nucleus", atomicNumber: element.z });
+                    }
+                  }}
+                >
+                  <option value={0}>Nucleus · {element.z} protons</option>
+                  {science.shells.map((count, i) => (
+                    <option key={i} value={i + 1}>
+                      Shell {i + 1} · {count} electrons
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {!learning.onboardingDismissed && (
+              <div className="onboarding-card">
+                <span>Try a swipe. Meet a new element.</span>
+                <Button
+                  variant="unstyled"
+                  className="text-button"
+                  onClick={() =>
+                    setLearning((previous) => ({ ...previous, onboardingDismissed: true }))
+                  }
+                >
+                  Got it
+                </Button>
+              </div>
+            )}
+            <div className="stage-lower">
+              <div className="scene-feedback">
+                {inspection && (
+                  <div className="inspection-card" role="status">
+                    <div>
+                      <b>
+                        {inspection.kind === "nucleus"
+                          ? `${element.z} protons in the nucleus`
+                          : `Shell ${inspection.shell} · ${inspection.electrons} electrons`}
+                      </b>
+                      <p>
+                        {inspection.kind === "nucleus"
+                          ? "Proton count defines the element. Isotopes differ in neutron count."
+                          : "A shell population, not a literal path. Real electrons occupy quantum states."}
+                      </p>
+                    </div>
+                    <Button
+                      variant="unstyled"
+                      className="icon-button"
+                      aria-label="Close atom inspection"
+                      onClick={() => {
+                        setInspection(null);
+                        scene.current.selectedShell = null;
+                      }}
+                    >
+                      <Icon name="close" />
+                    </Button>
+                  </div>
+                )}
+                <div className="camera-tools" aria-label="Camera controls">
+                  <Button
+                    variant="unstyled"
+                    className="icon-button"
+                    aria-label="Zoom out"
+                    disabled={zoom <= 0.65}
+                    onClick={() => setZoom((value) => Math.max(0.65, value - 0.15))}
+                  >
+                    <Icon name="zoomOut" />
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    className="icon-button"
+                    aria-label="Zoom in"
+                    disabled={zoom >= 1.7}
+                    onClick={() => setZoom((value) => Math.min(1.7, value + 0.15))}
+                  >
+                    <Icon name="zoomIn" />
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    className="icon-button"
+                    aria-label="Reset camera"
+                    onClick={resetCamera}
+                  >
+                    <Icon name="reset" />
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    className="icon-button"
+                    aria-label={paused ? "Resume atom animation" : "Pause atom animation"}
+                    aria-pressed={paused}
+                    onClick={() => setPaused((value) => !value)}
+                  >
+                    <Icon name={paused ? "play" : "pause"} />
+                  </Button>
+                </div>
+              </div>
+              <div id="pk" className={`g n ${hold ? "on" : ""}`}>
+                {element.z} protons · {element.z} electrons
+              </div>
+              <div id="hint">
+                {rotation
+                  ? "Drag to rotate · Pinch to zoom · Double-tap to reset"
+                  : "Swipe to travel · Hold to peek · Tap to bounce"}
+              </div>
+              <div className="element-footer">
+                <Button
+                  variant="unstyled"
+                  className="icon-button element-nav"
+                  aria-label="Previous element"
+                  onClick={() => navigate("l")}
+                >
+                  <Icon name="previous" />
+                </Button>
+                <Button
+                  variant="unstyled"
+                  id="in"
+                  className="element-identity"
+                  data-long-name={element.n.length > 11}
+                  aria-label="Element details"
+                  onClick={() => setSheet("details")}
+                >
+                  <span className="element-number n">
+                    {element.s} ·{" "}
+                    {science.properties.find((property) => property.label === "Atomic mass")?.value}{" "}
+                    u
+                  </span>
+                  <h1>{element.n}</h1>
+                  <small>
+                    {categories[element.c][0]} · {phases[element.f]}
+                    <span>
+                      Meet this element <Icon name="next" />
+                    </span>
+                  </small>
+                </Button>
+                <Button
+                  variant="unstyled"
+                  className="icon-button element-nav"
+                  aria-label="Next element"
+                  onClick={() => navigate("r")}
+                >
+                  <Icon name="next" />
+                </Button>
+              </div>
+            </div>
+            <div className="stage-bottom-tools">
+              <Button
+                variant="unstyled"
+                id="ab"
+                className={`tool-button ${spread ? "act" : ""}`}
+                aria-label="Spread electrons"
+                aria-pressed={spread}
+                onClick={() => {
+                  scene.current.spread = !spread;
+                  setSpread(!spread);
+                  feedback("tap", learning.settings);
+                }}
+              >
+                <Icon name="spread" />
+                <span>Spread</span>
+              </Button>
+              <span className="model-caption">
+                {learning.settings.model === "playful"
+                  ? "Playful illustration · Representative electrons"
+                  : "Shell-population illustration · Not to scale"}
+              </span>
+              <Button
+                variant="unstyled"
+                className="tool-button"
+                aria-label="Share element"
+                onClick={() => setSheet("share")}
+              >
+                <Icon name="share" />
+                <span>Share</span>
+              </Button>
+            </div>
+            {celebrate &&
+              Array.from({ length: 28 }, (_, i) => (
+                <i
+                  key={i}
+                  className="cf"
+                  style={
+                    {
+                      left: "50%",
+                      top: "45%",
+                      background: Object.values(categories)[i % 10][1],
+                      "--x": `${Math.sin(i * 7) * 170}px`,
+                      "--y": `${-120 - (i % 7) * 36}px`,
+                      "--r": `${i * 27}deg`,
+                    } as CSSProperties
+                  }
+                />
+              ))}
+          </div>
+          <nav className="explorer-nav" aria-label="Explore and learn">
+            <Button
+              variant="unstyled"
+              id="gb"
+              aria-label="Open periodic table"
+              onClick={() => setSheet("table")}
+            >
+              <Icon name="table" />
+              <span>Table</span>
+            </Button>
+            <Button
+              variant="unstyled"
+              aria-label="Open discovery journal"
+              onClick={() => setSheet("learning")}
+            >
+              <Icon name="learn" />
+              <span>Journal</span>
+            </Button>
+            <Button
+              variant="unstyled"
+              aria-label="Compare elements"
+              onClick={() => setSheet("compare")}
+            >
+              <Icon name="compare" />
+              <span>Compare</span>
+            </Button>
+            <Button
+              variant="unstyled"
+              aria-label="Open bonding playground"
+              onClick={() => setSheet("sandbox")}
+            >
+              <Icon name="sandbox" />
+              <span>Playground</span>
+            </Button>
+            <Button
+              variant="unstyled"
+              aria-label="Exploration help"
+              onClick={() => setSheet("help")}
+            >
+              <Icon name="help" />
+              <span>Help</span>
+            </Button>
+          </nav>
         </div>
-      )}
-      <div id="ts" className={`g n ${toast ? "on" : ""}`} role="status">
+        <aside className="story-rail" aria-label={`${element.n} story`}>
+          <Card variant="unstyled" className="rail-card story-card">
+            <span className="eyebrow">From atom to everyday life</span>
+            <span
+              className="story-symbol n"
+              style={{ color: `color-mix(in srgb, ${categories[element.c][1]} 60%, var(--ink))` }}
+            >
+              {element.s}
+            </span>
+            <h2>Meet {element.n.toLowerCase()}.</h2>
+            <p className="lead-copy">{science.story}</p>
+            <p>{science.everyday}</p>
+            <div className="fact-callout">
+              <Icon name="spark" />
+              <p>{science.fact}</p>
+            </div>
+            <Button
+              variant="unstyled"
+              className="action-button"
+              onClick={() => setSheet("details")}
+            >
+              Go a little deeper <Icon name="next" />
+            </Button>
+            <Link className="text-link" href={`/elements/${elementSlug(element)}`}>
+              Read the sourced reference <Icon name="next" />
+            </Link>
+          </Card>
+          <Card variant="unstyled" className="rail-card connection-card">
+            <span className="eyebrow">Everything connects</span>
+            <p>{science.connection.explanation}</p>
+            <Button
+              variant="unstyled"
+              className="text-button"
+              onClick={() => pick(science.connection.atomicNumber - 1)}
+            >
+              Follow the connection <Icon name="next" />
+            </Button>
+          </Card>
+        </aside>
+      </main>
+      <div id="ts" className={`toast ${toast ? "on" : ""}`} role="status" aria-live="polite">
         {toast}
       </div>
-      <Scrubber id="pl" label="Period" value={period(element)} vertical onNavigate={navigate} />
-      <Scrubber id="pg" label="Group" value={group(element)} onNavigate={navigate} />
-      <Button
-        variant="unstyled"
-        id="au"
-        className="ar g top-[24%]"
-        aria-label="Up the group"
-        onClick={() => navigate("u")}
-      >
-        <Icon name="up" />
-      </Button>
-      <Button
-        variant="unstyled"
-        id="ad"
-        className="ar g top-[54%]"
-        aria-label="Down the group"
-        onClick={() => navigate("d")}
-      >
-        <Icon name="down" />
-      </Button>
-      <div id="hint" style={{ opacity: hint ? 1 : 0 }}>
-        Swipe to travel · Hold to peek · Tap to bounce
-      </div>
-      <div id="pk" className={`g n ${hold ? "on" : ""}`}>
-        {element.z} protons · {element.z} electrons ·{" "}
-        {Math.max(0, Math.round(Number(element.m)) - element.z)} neutrons
-      </div>
-      <Button
-        variant="unstyled"
-        id="ab"
-        className={`btn g bt left-3 ${spread ? "act" : ""}`}
-        aria-label="Spread electrons"
-        aria-pressed={spread}
-        onClick={() => {
-          scene.current.spread = !spread;
-          setSpread(!spread);
-          vibrate(8);
+      <SearchPalette
+        open={search}
+        onClose={() => setSearch(false)}
+        onPick={(z) => {
+          pick(z - 1);
+          setSearch(false);
         }}
+        favorites={learning.favorites}
+        recent={learning.history
+          .map((item) => item.z)
+          .reverse()
+          .slice(0, 8)}
+      />
+      <DialogShell
+        open={sheet !== null}
+        onOpenChange={(open) => {
+          if (!open) close();
+        }}
+        title={sheet ? titles[sheet] : "Explore"}
+        className={sheet === "table" ? "table-dialog" : undefined}
       >
-        <Icon name="spread" />
-      </Button>
-      <Button
-        variant="unstyled"
-        id="in"
-        className="g bt border-0"
-        aria-label="Element details"
-        onClick={() => setSheet("details")}
-      >
-        <b>
-          {element.n} <span className="n">{element.m}</span>
-        </b>
-        <small>
-          {categories[element.c][0]} · {phases[element.f]}
-        </small>
-      </Button>
-      <Button
-        variant="unstyled"
-        id="gb"
-        className="btn g bt right-3"
-        aria-label="Open periodic table"
-        onClick={() => setSheet("table")}
-      >
-        <Icon name="table" />
-      </Button>
-      {sheet === "table" && (
-        <PeriodicTable
-          current={current}
-          found={found}
-          pick={pick}
-          close={() => setSheet(null)}
-          quiz={() => setSheet("quiz")}
-        />
-      )}
-      {sheet === "details" && <Details element={element} close={() => setSheet(null)} />}
-      {sheet === "quiz" && (
-        <Quiz
-          found={progress.f}
-          streak={progress.s}
-          close={() => setSheet(null)}
-          result={quizResult}
-        />
-      )}
-      {celebrate &&
-        Array.from({ length: 28 }, (_, i) => (
-          <i
-            key={i}
-            className="cf"
-            style={
-              {
-                left: "50%",
-                top: "45%",
-                background: Object.values(categories)[i % 8][1],
-                "--x": `${Math.sin(i * 7) * 170}px`,
-                "--y": `${-120 - (i % 7) * 36}px`,
-                "--r": `${i * 27}deg`,
-              } as CSSProperties
-            }
+        {sheet === "table" && (
+          <PeriodicTable
+            current={current}
+            found={found}
+            pick={pick}
+            close={close}
+            quiz={() => openQuiz("standard")}
           />
-        ))}
-    </main>
+        )}
+        {sheet === "details" && (
+          <ElementDetails
+            element={element}
+            close={close}
+            onPick={(z) => {
+              pick(z - 1);
+              close();
+            }}
+            onInspectShell={inspectShell}
+          />
+        )}
+        {sheet === "quiz" && (
+          <ElementQuiz state={learning} mode={quizMode} close={close} result={quizResult} />
+        )}
+        {sheet && !["table", "details", "quiz"].includes(sheet) && (
+          <>
+            <PanelHeading title={titles[sheet]} close={close} />
+            {sheet === "learning" && (
+              <LearningHub
+                state={learning}
+                onPick={(z) => {
+                  pick(z - 1);
+                  close();
+                }}
+                onQuiz={openQuiz}
+                onClaim={claim}
+                onExport={exportSave}
+                onImport={importSave}
+              />
+            )}{" "}
+            {sheet === "compare" && (
+              <ComparisonPanel
+                current={element}
+                onPick={(z) => {
+                  pick(z - 1);
+                  close();
+                }}
+              />
+            )}
+            {sheet === "sandbox" && (
+              <SandboxPanel
+                onPick={(z) => {
+                  pick(z - 1);
+                  close();
+                }}
+              />
+            )}
+            {sheet === "settings" && (
+              <SettingsPanel
+                settings={learning.settings}
+                onChange={settings}
+                onResetCamera={resetCamera}
+              />
+            )}
+            {sheet === "share" && (
+              <DiscoveryCard
+                element={element}
+                discovered={learning.discovered.includes(element.z)}
+                mastery={learning.mastery[String(element.z)]?.correct}
+                playful={learning.settings.model === "playful"}
+              />
+            )}
+            {sheet === "help" && (
+              <div className="panel-content">
+                <p className="lead-copy">Your curiosity is the only entry requirement.</p>
+                <div className="feature-grid">
+                  <Card variant="unstyled" className="feature-card">
+                    <h3>Travel</h3>
+                    <p>
+                      Swipe across a period or vertically through a group. Arrow buttons and keys do
+                      the same. Drag the Period and Group controls to scrub.
+                    </p>
+                  </Card>
+                  <Card variant="unstyled" className="feature-card">
+                    <h3>Touch</h3>
+                    <p>
+                      Hold to peek at particle counts. Tap to bounce and inspect. Switch to Rotate
+                      before dragging the model; pinch to zoom or use the camera buttons.
+                    </p>
+                  </Card>
+                  <Card variant="unstyled" className="feature-card">
+                    <h3>Understand</h3>
+                    <p>
+                      Scientific model shows shell populations. Select a shell with the menu or tap
+                      its boundary. Both models are illustrations; cloud dots do not calculate
+                      orbital wavefunctions.
+                    </p>
+                  </Card>
+                  <Card variant="unstyled" className="feature-card">
+                    <h3>Make it yours</h3>
+                    <p>
+                      Favorite elements, choose a theme, and adjust rendering quality in Settings.
+                      Audio is optional and starts only after you enable it.
+                    </p>
+                  </Card>
+                </div>
+                <h3>Keyboard shortcuts</h3>
+                <dl className="keyboard-help">
+                  <div>
+                    <dt>Arrow keys</dt>
+                    <dd>Travel through the table</dd>
+                  </div>
+                  <div>
+                    <dt>G</dt>
+                    <dd>Open the periodic table</dd>
+                  </div>
+                  <div>
+                    <dt>/</dt>
+                    <dd>Search</dd>
+                  </div>
+                  <div>
+                    <dt>?</dt>
+                    <dd>Show this guide</dd>
+                  </div>
+                  <div>
+                    <dt>Escape</dt>
+                    <dd>Close the current panel</dd>
+                  </div>
+                </dl>
+                <p className="panel-copy">
+                  Progress stays on your device. Export it from your journal to move to another
+                  device or keep a backup. Daily missions are optional, reset at midnight UTC, and
+                  never remove earned XP or collections.
+                </p>
+                <Link href="/elements" className="action-button">
+                  Browse all 118 sourced element pages <Icon name="next" />
+                </Link>
+              </div>
+            )}
+          </>
+        )}
+      </DialogShell>
+    </div>
   );
 }

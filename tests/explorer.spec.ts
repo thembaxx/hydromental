@@ -27,6 +27,7 @@ async function answerQuiz(page: Page, correct = true) {
       .getByRole("button", { name: values.find((value) => value !== answer)!, exact: true })
       .click();
   }
+  return element!.z;
 }
 
 test("reduced motion keeps the quiz visible, interactive and free of entry animations", async ({
@@ -166,8 +167,11 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("el")!).f.includes(25))).toBe(
     true,
   );
-  expect(await page.locator("#app").evaluate((e) => e.clientWidth)).toBe(
-    info.project.name === "mobile" ? 390 : 520,
+  const stageWidth = await page.locator("#app").evaluate((e) => e.clientWidth);
+  expect(stageWidth).toBeGreaterThanOrEqual(info.project.name === "mobile" ? 320 : 520);
+  expect(stageWidth).toBeLessThanOrEqual(page.viewportSize()!.width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+    page.viewportSize()!.width,
   );
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
@@ -185,7 +189,7 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   await expect(page.locator("#pr")).toContainText("130 XP");
   await page.locator("#gb").click();
   await page.locator("#qb").click();
-  await answerQuiz(page);
+  const firstCorrectZ = await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");
   await expect(page.locator("#pr")).toContainText("135 XP");
   await page.locator("#qx").click();
@@ -199,10 +203,12 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   await expect(page.locator("#qa .ok")).toHaveCount(1);
   await expect(page.locator("#pr")).toContainText("135 XP");
   await expect(page.locator("#qa button").first()).toBeEnabled();
-  await answerQuiz(page);
+  const secondCorrectZ = await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");
   await page.keyboard.press("Escape");
   await page.reload();
-  await expect(page.locator("#pr")).toContainText("140 XP");
+  await expect(page.locator("#pr")).toContainText(
+    `${secondCorrectZ === firstCorrectZ ? 135 : 140} XP`,
+  );
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("el")!).s)).toBe(1);
 });

@@ -1,7 +1,7 @@
 # Third-party notices
 
 - **Three.js 0.186.1** — MIT license, included in `docs/THREE-LICENSE.txt`. https://github.com/mrdoob/three.js
-- **Nunito** — SIL Open Font License 1.1, included in `public/fonts/NUNITO-OFL.txt`. https://github.com/google/fonts/tree/main/ofl/nunito
+- **Nunito** — SIL Open Font License 1.1, included in `public/fonts/NUNITO-OFL.txt`. https://github.com/google/fonts/tree/main/ofl/nunito. The production `nunito-variable.woff2` was converted from the upstream `Nunito[wght].ttf` variable font on October 6, 2026 using fontTools with Brotli compression. The font contains weights 200–1000, with 200–900 declared by the app's stylesheet; format conversion preserves the typeface and license. Earlier static TTF assets remain available in the font directory.
 - **JetBrains Mono** — SIL Open Font License 1.1, included in `public/fonts/JETBRAINS-MONO-OFL.txt`. https://github.com/google/fonts/tree/main/ofl/jetbrainsmono
 
 The archived original prototype used Three.js r128 and remotely hosted fonts. The production application uses the npm Three.js package and self-hosted fonts.

@@ -31,6 +31,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Lint, formatting and types
         run: pnpm check
+      - name: Learning rules and science data validation
+        run: pnpm test:unit && pnpm science:check
       - name: Production build
         run: pnpm build
       - name: Install the test browser

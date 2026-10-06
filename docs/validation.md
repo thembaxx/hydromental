@@ -1,4 +1,29 @@
-# Verification of the shadcn/pnpm migration
+# Validation record
+
+## Current expanded app
+
+The expanded app changes layout, learning, the Three.js scene, data, accessibility, and offline behavior. The historical prototype comparisons below establish the earlier migration baseline; they do not establish visual equivalence for the current redesign.
+
+The current verification suite covers:
+
+- Pure learning-state migration, XP deduplication, daily rewards, spaced review, forgiving streaks, import validation and storage failures.
+- All 118 scientific records, orbital capacities and electron totals, exceptional configurations, source hosts, editorial completeness and route slugs.
+- Production browser interactions on mobile and desktop: exploration, rotate/pinch/hold gestures, camera controls, scientific inspection, search, focus traps, keyboard navigation, reduced motion and narrow/enlarged-text layouts.
+- Journal, rewards, favorites, progress backup, comparison, sandbox, SVG postcards and persisted settings without audio autoplay.
+- Server-rendered element pages without JavaScript, canonical/structured metadata, source links, sitemap, manifest, public data, installation affordances and actual offline navigation.
+
+Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pnpm test:e2e` against the current production build. Confirm the final GitHub Actions result for the published commit. A passing earlier commit does not validate later changes. Platform-specific installation, haptics, GPU performance and native sharing still need checks on the target devices.
+
+### Expanded app verification on October 6, 2026
+
+- Frozen pnpm 12.9.1 installation, oxlint, oxfmt, TypeScript and the production build passed.
+- All 21 learning-rule unit tests passed; scientific validation checked all 118 records, citations, connections, capacities and neutral electron totals.
+- All 68 mobile/desktop browser and data cases were verified locally against production output; the responsive typography test was rechecked after waiting for hydrated layout before measuring. These include real offline reloads and a deliberate differing HTTP cache variant, focus traps, touch cancellation, original quiz-flip interpolation, rewards/backups, comparison, sandbox, postcards, audio preferences and responsive long-name layouts.
+- Axe audits cover the explorer themes/search, learning, comparison, playground, postcards, table, quiz, element details and readable references. Automated accessibility checks complement manual and target-device review.
+- Visual review found and fixed cramped long names and overlapping hint/mass text. The lower controls now flow together; camera controls remain usable with scientific inspection open.
+- Offline fixes clone navigation responses before asynchronous cache I/O and match already restricted public content independently of Next.js transport Vary headers. RSC, API, external and non-GET requests remain excluded.
+
+## Historical shadcn/pnpm migration
 
 - pnpm 12.9.1 installed the committed lockfile with its release-age policy enabled.
 - oxlint, oxfmt, TypeScript and the Next.js production build passed.
