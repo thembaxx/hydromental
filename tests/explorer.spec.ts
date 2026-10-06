@@ -180,6 +180,8 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
 test("all 118 table cells, discovery, quiz scoring and closing pending questions", async ({
   page,
 }) => {
+  // This flow loads several panels and waits for real quiz timers on software WebGL in CI.
+  test.setTimeout(60_000);
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await page.locator("#gb").click();
