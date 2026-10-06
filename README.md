@@ -7,6 +7,8 @@ A Next.js App Router conversion of the supplied Claude prototype. It preserves t
 - Next.js 16.3.8 and React 19.3.0
 - Tailwind CSS 4.3.3, with the original visual tokens and custom animation styles
 - shadcn/ui Button, Input, Badge and Card primitives, adapted to preserve the prototype
+- Hugeicons React 1.1.10 with the free icon pack 4.3.5; also selected in shadcn's configuration
+- Motion 14.0.0 via `motion/react` for the quiz-card flip
 - pnpm 12.9.1 as the default package manager
 - Three.js 0.186.1
 - TypeScript 7.0.2
@@ -38,7 +40,11 @@ pnpm start           # serve production build
 
 ## shadcn/ui and UI preservation
 
-All buttons, the search input, discovery badge, quiz card/title/content, and element fact cards use local shadcn/ui components. Their `unstyled` variant preserves the existing native element, class names, dimensions, focus treatment, CSS animations and pointer handlers. The standard shadcn variants remain available for future features. The custom theme menu, drawers, scene and scrubbers retain their current interaction behavior. The Three.js scene and original stylesheet are unchanged.
+All buttons, the search input, discovery badge, quiz card/title/content, and element fact cards use local shadcn/ui components. Their `unstyled` variant preserves the existing native element, class names, dimensions, focus treatment and pointer handlers. The standard shadcn variants remain available for future features. The custom theme menu, drawers, scene and scrubbers retain their current interaction behavior. The Three.js scene is unchanged.
+
+The shared `components/ui/icon.tsx` renders Hugeicons' free stroke icons at the original 20px size and 2.2px stroke weight. Accessible names remain on their buttons. Scientific electron-shell diagrams remain custom SVGs. `components.json` selects `hugeicons` and the modern `radix-nova` registry for new shadcn components; that registry supports icon-library substitution. Existing owned components and styling are retained.
+
+`components/motion-quiz-card.tsx` animates the shadcn Card using `motion/react-mini`'s native animation hook and `motion/react`'s reduced-motion hook. It retains the original 600ms flip, perspective, rotation and cubic Bézier easing, cleans up on unmount and respects reduced motion. Native keyframes preserve CSS's perspective interpolation to `none`. Other CSS animations, pointer gestures, table pinch zoom, hold timing and Three.js physics retain their existing implementations.
 
 `components.json` and `lib/utils.ts` support the shadcn CLI (`pnpm ui:add <component>`). Preserve the custom `unstyled` variants when updating components; do not run an initializer that replaces the prototype theme or animations. The CLI is pinned to 4.21.1, a mature release accepted by pnpm's 24-hour minimum release-age policy.
 

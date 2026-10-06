@@ -1,6 +1,6 @@
 # GitHub Actions and Vercel setup
 
-Repository: https://github.com/thembaxx/elementals
+Repository: https://github.com/thembaxx/hydromental
 
 ## Continuous integration
 
@@ -10,7 +10,7 @@ CI calls the reusable Security workflow, which performs CodeQL analysis for Java
 
 ## Vercel project
 
-1. Create/import a Next.js Vercel project linked to thembaxx/elementals. Set the production branch to main and select Node.js 24.
+1. Create/import a Next.js Vercel project linked to thembaxx/hydromental. Set the production branch to main and select Node.js 24.
 2. Keep the committed vercel.json configuration: pnpm install --frozen-lockfile, pnpm build, and native main-branch auto-deployments disabled. Other Git branches can use Vercel's native preview integration.
 3. Copy the project ID and team/account ID from Vercel project settings. Create a Vercel token for the account/team that owns the project.
 4. In GitHub Settings → Secrets and variables → Actions , add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID. Do not commit credentials or paste them into source files.

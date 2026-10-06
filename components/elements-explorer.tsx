@@ -7,7 +7,6 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent,
-  type ReactNode,
   type RefObject,
 } from "react";
 import { createAtomScene, type SceneControls } from "@/lib/atom-scene";
@@ -26,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Icon } from "@/components/ui/icon";
+import { MotionQuizCard } from "@/components/motion-quiz-card";
 
 type Direction = "u" | "d" | "l" | "r";
 type Theme = "" | "midnight" | "dusk" | "day";
@@ -38,61 +39,6 @@ function vibrate(pattern: number | number[]) {
   } catch {
     /* Optional device feedback. */
   }
-}
-
-function Icon({
-  name,
-}: {
-  name: "search" | "menu" | "up" | "down" | "spread" | "table" | "done" | "close";
-}) {
-  const shapes: Record<typeof name, ReactNode> = {
-    search: (
-      <>
-        <circle cx="11" cy="11" r="7" />
-        <path d="M20 20l-3.5-3.5" />
-      </>
-    ),
-    menu: (
-      <>
-        <circle cx="5" cy="12" r="1.6" fill="currentColor" />
-        <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-        <circle cx="19" cy="12" r="1.6" fill="currentColor" />
-      </>
-    ),
-    up: <path d="M12 19V5M6 11l6-6 6 6" />,
-    down: <path d="M12 5v14M6 13l6 6 6-6" />,
-    spread: (
-      <>
-        <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" />
-        <path d="M12 12l8-4.5M12 12L4 7.5M12 12v9" />
-      </>
-    ),
-    table: (
-      <>
-        <rect x="3" y="3" width="7" height="7" rx="2" />
-        <rect x="14" y="3" width="7" height="7" rx="2" />
-        <rect x="3" y="14" width="7" height="7" rx="2" />
-        <rect x="14" y="14" width="7" height="7" rx="2" />
-      </>
-    ),
-    done: <path d="M5 12.5l4.5 4.5L19 7.5" />,
-    close: <path d="M6 6l12 12M18 6L6 18" />,
-  };
-  return (
-    <svg
-      aria-hidden="true"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {shapes[name]}
-    </svg>
-  );
 }
 
 function AtomCanvas({
@@ -466,12 +412,7 @@ function Quiz({
           <Icon name="close" />
         </Button>
       </div>
-      <Card
-        variant="unstyled"
-        id="qc"
-        key={question ? `${question.element.z}-${question.type}` : "loading"}
-        className="card g flip"
-      >
+      <MotionQuizCard key={question ? `${question.element.z}-${question.type}` : "loading"}>
         <CardTitle variant="unstyled" id="qq">
           {question &&
             (question.type === 0 ? (
@@ -501,7 +442,7 @@ function Quiz({
             </Button>
           ))}
         </CardContent>
-      </Card>
+      </MotionQuizCard>
     </div>
   );
 }

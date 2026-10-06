@@ -29,6 +29,92 @@ async function answerQuiz(page: Page, correct = true) {
   }
 }
 
+test("reduced motion keeps the quiz visible, interactive and free of entry animations", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
+  await page.locator("#gb").click();
+  await page.locator("#qb").click();
+  await expect(page.locator("#qa .opt")).toHaveCount(4);
+  await expect(page.locator("#qc")).toHaveCSS("opacity", "1");
+  await expect(page.locator("#qc")).toHaveCSS("transform", "none");
+  expect(await page.locator("#qc").evaluate((card) => card.getAnimations().length)).toBe(0);
+  await answerQuiz(page);
+  await expect(page.locator("#qs")).toHaveText("Streak 1");
+  await page.locator("#qx").click();
+  await expect(page.locator("#qz")).toHaveCount(0);
+});
+
+test("quiz flip preserves the prototype's perspective, easing and opacity", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.addInitScript(() => {
+    const animations: Animation[] = [];
+    Object.defineProperty(window, "quizAnimations", { value: animations });
+    const originalAnimate = Element.prototype.animate;
+    Element.prototype.animate = function (...args: Parameters<Element["animate"]>) {
+      const animation = originalAnimate.apply(this, args);
+      if (this.id === "qc") {
+        animations.push(animation);
+        queueMicrotask(() => animation.pause());
+      }
+      return animation;
+    };
+  });
+  await page.goto("/");
+  await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
+  await page.locator("#gb").click();
+  await page.locator("#qb").click();
+  await expect(page.locator("#qa .opt")).toHaveCount(4);
+  const result = await page.evaluate(async () => {
+    const card = document.querySelector("#qc")!;
+    const animations = (window as unknown as { quizAnimations: Animation[] }).quizAnimations.filter(
+      (animation) => (animation.effect as KeyframeEffect).target === card,
+    );
+    const reference = document.createElement("div");
+    reference.style.cssText = "position:fixed;left:-10000px;width:300px;height:220px";
+    document.body.append(reference);
+    // The original prototype's CSS flip, represented as browser-native keyframes.
+    const original = reference.animate(
+      [
+        { transform: "perspective(600px) rotateY(-90deg)", opacity: 0 },
+        { transform: "none", opacity: 1 },
+      ],
+      { duration: 600, easing: "cubic-bezier(0.34, 1.5, 0.5, 1)", fill: "both" },
+    );
+    original.pause();
+    const samples = [];
+    for (const time of [0, 90, 180, 270, 420, 600]) {
+      original.currentTime = time;
+      for (const animation of animations) {
+        animation.pause();
+        animation.currentTime = time;
+      }
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      const actual = getComputedStyle(card),
+        expected = getComputedStyle(reference);
+      samples.push({
+        time,
+        actual: { transform: actual.transform, opacity: actual.opacity },
+        expected: { transform: expected.transform, opacity: expected.opacity },
+      });
+    }
+    const timings = animations.map((animation) => animation.effect!.getTiming());
+    original.cancel();
+    reference.remove();
+    return { timings, samples };
+  });
+  expect(result.timings.length).toBeGreaterThan(0);
+  for (const timing of result.timings) {
+    expect(timing.duration).toBe(600);
+    expect(timing.easing).toBe("cubic-bezier(0.34, 1.5, 0.5, 1)");
+  }
+  for (const sample of result.samples) expect(sample.actual).toEqual(sample.expected);
+});
+
 test("3D scene, search, gestures, navigation, details, themes and persistence", async ({
   page,
 }, info) => {
