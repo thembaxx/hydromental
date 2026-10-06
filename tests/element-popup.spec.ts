@@ -90,6 +90,7 @@ test("browser theme colour follows selected themes and the background covers the
   );
   for (const [label, color] of [
     ["Midnight", "#0a1028"],
+    ["Noir", "#000"],
     ["Dusk", "#232b65"],
     ["Day", "#f0f5fc"],
   ]) {

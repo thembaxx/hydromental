@@ -62,15 +62,17 @@ test("a damaged legacy save does not discard an intact theme", () => {
 });
 
 test("storage writes round-trip and preserve legacy compatibility", () => {
-  const saved = storage();
-  let state = discoverElement(initialLearningState(), 26, now);
-  state = toggleFavorite(state, 26);
-  state.settings.theme = "midnight";
-  state.onboardingDismissed = true;
-  assert.equal(saveLearningState(state, saved), true);
-  assert.deepEqual(loadLearningState(saved), state);
-  assert.equal(JSON.parse(saved.getItem("el")).f.at(-1), 25);
-  assert.equal(saved.getItem("th"), "midnight");
+  for (const theme of ["midnight", "noir"]) {
+    const saved = storage();
+    let state = discoverElement(initialLearningState(), 26, now);
+    state = toggleFavorite(state, 26);
+    state.settings.theme = theme;
+    state.onboardingDismissed = true;
+    assert.equal(saveLearningState(state, saved), true);
+    assert.deepEqual(loadLearningState(saved), state);
+    assert.equal(JSON.parse(saved.getItem("el")).f.at(-1), 25);
+    assert.equal(saved.getItem("th"), theme);
+  }
 });
 
 test("unavailable storage never prevents an in-memory session", () => {

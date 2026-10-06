@@ -1,5 +1,5 @@
 /** Local-first learning progress. Atomic numbers are 1-based throughout this module. */
-export type Theme = "" | "day" | "midnight" | "dusk";
+export type Theme = "" | "day" | "midnight" | "dusk" | "noir";
 export type MissionId = "discover" | "quiz" | "review";
 export interface LearningSettings {
   theme: Theme;
@@ -126,7 +126,7 @@ function sanitizeState(value: unknown): LearningState {
   const fallback = initialLearningState();
   if (!isRecord(value) || value.version !== 2) return fallback;
   const rawSettings = isRecord(value.settings) ? value.settings : {};
-  const theme = ["", "day", "midnight", "dusk"].includes(String(rawSettings.theme))
+  const theme = ["", "day", "midnight", "dusk", "noir"].includes(String(rawSettings.theme))
     ? (rawSettings.theme as Theme)
     : "";
   const mastery: Record<string, Mastery> = {};
@@ -248,7 +248,7 @@ export function loadLearningState(
       initial.quizStreak = safeCount(legacy.s);
     }
     const theme = storage.getItem("th") ?? storage.getItem("elt");
-    if (theme && ["day", "midnight", "dusk"].includes(theme))
+    if (theme && ["day", "midnight", "dusk", "noir"].includes(theme))
       initial.settings.theme = theme as Theme;
   } catch {
     // Browsers with unavailable or full storage still allow an in-memory session.

@@ -136,6 +136,7 @@ export function createAtomScene(
   const clouds: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>[] = [];
   const labels: THREE.Sprite[] = [];
   let element = initial;
+  let monochrome = document.documentElement.dataset.theme === "noir";
   let distance = 10;
   let shift = 2.5;
   let disposed = false;
@@ -165,16 +166,16 @@ export function createAtomScene(
   function skin() {
     const context = textureCanvas.getContext("2d")!;
     context.shadowBlur = 0;
-    context.fillStyle = categories[element.c][1];
+    context.fillStyle = monochrome ? "#606060" : categories[element.c][1];
     context.fillRect(0, 0, 1024, 512);
     const gradient = context.createLinearGradient(0, 0, 0, 512);
-    gradient.addColorStop(0, "rgba(255,255,255,.28)");
+    gradient.addColorStop(0, monochrome ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.28)");
     gradient.addColorStop(0.55, "rgba(255,255,255,0)");
-    gradient.addColorStop(1, "rgba(0,0,40,.35)");
+    gradient.addColorStop(1, monochrome ? "rgba(0,0,0,.35)" : "rgba(0,0,40,.35)");
     context.fillStyle = gradient;
     context.fillRect(0, 0, 1024, 512);
     for (let i = 0; i < 110; i++) {
-      context.fillStyle = "rgba(0,0,30,.10)";
+      context.fillStyle = monochrome ? "rgba(0,0,0,.10)" : "rgba(0,0,30,.10)";
       context.beginPath();
       context.arc(
         random(i + element.z) * 1024,
@@ -188,9 +189,9 @@ export function createAtomScene(
     context.font = `800 ${element.s.length > 2 ? 150 : element.s.length > 1 ? 190 : 230}px Nunito,sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
-    context.shadowColor = "rgba(5,10,40,.45)";
+    context.shadowColor = monochrome ? "rgba(0,0,0,.45)" : "rgba(5,10,40,.45)";
     context.shadowBlur = 18;
-    context.fillStyle = element.c === "t" ? "#0B1031" : "#fff";
+    context.fillStyle = monochrome ? "#ddd" : element.c === "t" ? "#0B1031" : "#fff";
     [0, 0.25, 0.5, 0.75, 1].forEach((u) => context.fillText(element.s, u * 1024, 262));
     texture.needsUpdate = true;
   }
@@ -217,7 +218,7 @@ export function createAtomScene(
     populations.forEach((population, index) => {
       const radius = 1.3 + index * 0.25;
       const material = new THREE.MeshBasicMaterial({
-        color: categories[element.c][1],
+        color: monochrome ? "#aaa" : categories[element.c][1],
         transparent: true,
         opacity: 0.055,
         depthWrite: false,
@@ -245,7 +246,7 @@ export function createAtomScene(
       const cloud = new THREE.Points(
         geometry,
         new THREE.PointsMaterial({
-          color: categories[element.c][1],
+          color: monochrome ? "#bbb" : categories[element.c][1],
           size: 0.035,
           transparent: true,
           opacity: 0.5,
@@ -258,11 +259,11 @@ export function createAtomScene(
       labelCanvas.width = 512;
       labelCanvas.height = 80;
       const context = labelCanvas.getContext("2d")!;
-      context.fillStyle = "rgba(11,16,49,.88)";
+      context.fillStyle = monochrome ? "rgba(18,18,18,.92)" : "rgba(11,16,49,.88)";
       context.roundRect(0, 0, 512, 80, 25);
       context.fill();
       context.font = "700 32px Nunito,sans-serif";
-      context.fillStyle = "#fff";
+      context.fillStyle = monochrome ? "#ddd" : "#fff";
       context.textAlign = "center";
       context.textBaseline = "middle";
       context.fillText(
@@ -285,8 +286,22 @@ export function createAtomScene(
     const root = document.documentElement;
     ring.material.color.set(getComputedStyle(root).getPropertyValue("--ring").trim() || "#8FA6D8");
     const selected = root.dataset.theme;
+    const nextMonochrome = selected === "noir";
+    if (nextMonochrome !== monochrome) {
+      monochrome = nextMonochrome;
+      skin();
+      buildShells();
+    }
+    fill.color.set(monochrome ? 0xbbbbbb : 0x9fb4ff);
+    rim.color.set(monochrome ? 0xb8b8b8 : 0xc4d9ff);
+    light.intensity = (monochrome ? 0.65 : 0.85) * Math.PI;
+    electrons.forEach((electron) => {
+      electron.material.color.set(monochrome ? 0xc4c4c4 : 0xffffff);
+      electron.material.emissive.set(monochrome ? 0x777777 : 0x8899ff);
+    });
+    arc.material.color.set(monochrome ? 0x999999 : 0xffffff);
     const dark = selected ? selected !== "day" : matchMedia("(prefers-color-scheme: dark)").matches;
-    dust.material.color.set(dark ? 0xffffff : 0x8fa6d8);
+    dust.material.color.set(monochrome ? 0x777777 : dark ? 0xffffff : 0x8fa6d8);
   }
   function updateQuality() {
     const next =

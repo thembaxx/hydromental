@@ -11,7 +11,7 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 - Explore all 118 visible symbols without discovery placeholders. Tap the central orb for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support.
 - Read original element stories, connections and source-linked physical properties. Compare two elements, try the bonding/material sandbox, and export a discovery postcard as SVG.
 - Save favorites, revisit recent discoveries, follow collections and expeditions, and earn daily mission rewards. Standard, review, mystery and everyday-context quizzes build a spaced-review queue.
-- Choose device-following, Day, Midnight or Dusk appearance, adaptive rendering quality, optional sounds and ambient audio, and supported haptics. Reduced-motion preferences apply to animation and feedback.
+- Choose device-following, Day, Midnight, Dusk or Noir appearance. Noir uses true-black backgrounds, softer text and entirely grayscale visuals for low-light reading. Adaptive rendering quality, optional sounds and ambient audio, and supported haptics remain available.
 - Export and import validated progress backups. Install when supported, explore the cached playground offline, and read previously visited reference pages offline.
 - Share directly addressable `/elements/<name>` reference pages. These pages remain readable without JavaScript; the interactive playground requires JavaScript and WebGL.
 
@@ -57,6 +57,8 @@ Run `pnpm build` before browser tests. If a server is already listening on port 
 Buttons, inputs, badges, cards and dialog behavior use owned shadcn/Radix components where they fit the interaction. Their `unstyled` variants preserve the custom visual system and pointer handlers; standard variants remain available. `components.json` selects the `radix-nova` registry and Hugeicons. Add components with `pnpm ui:add <component>` and preserve the owned variants instead of replacing the theme with an initializer.
 
 The quiz flip uses `motion/react-mini` native animation and `motion/react` reduced-motion detection. It retains the prototype's 600ms perspective flip and easing. Dialog entry motion, responsive layout, focus behavior and the enhanced Three.js scene are implemented separately. Electron-shell diagrams and postcard artwork remain custom SVGs.
+
+The icon-only dock uses Motion's shared layout and spring transitions for its sliding selection pill and press feedback. It follows live reduced-motion preferences and keeps accessible names and dialog focus restoration. Gesture and model tips show for eight seconds, then fade without shifting the controls; switching modes shows the relevant tip again. Full guidance remains in Help and Settings.
 
 ## Learning and data
 

@@ -46,6 +46,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
+import { ExplorationDock } from "@/components/exploration-dock";
+import { LearningTip } from "@/components/learning-tip";
 
 type Direction = "u" | "d" | "l" | "r";
 type Sheet =
@@ -457,7 +459,6 @@ export default function ElementsExplorer() {
           <BrandMark />
           <span>
             <strong>Elementals</strong>
-            <small>A little curiosity. A whole universe.</small>
           </span>
         </Link>
         <div className="header-actions">
@@ -505,6 +506,7 @@ export default function ElementsExplorer() {
               [
                 ["", "Auto"],
                 ["midnight", "Midnight"],
+                ["noir", "Noir"],
                 ["dusk", "Dusk"],
                 ["day", "Day"],
               ] as const
@@ -654,9 +656,11 @@ export default function ElementsExplorer() {
             <div
               id="tn"
               className="ab"
-              style={{
-                background: `radial-gradient(60vmax 60vmax at 50% 48%,${categories[element.c][1]}20,transparent)`,
-              }}
+              style={
+                {
+                  "--family-glow": `${categories[element.c][1]}20`,
+                } as CSSProperties
+              }
             />
             <div id="gh" className="n" aria-hidden="true">
               {String(element.z).padStart(2, "0")}
@@ -860,11 +864,11 @@ export default function ElementsExplorer() {
               <div id="pk" className={`g n ${hold ? "on" : ""}`}>
                 {element.z} protons · {element.z} electrons
               </div>
-              <div id="hint">
+              <LearningTip id="hint" key={rotation ? "rotate" : "travel"} active={hydrated}>
                 {rotation
                   ? "Drag to rotate · Pinch to zoom · Double-tap to reset"
                   : "Swipe to travel · Hold to peek · Tap orb to learn"}
-              </div>
+              </LearningTip>
               <div className="element-footer">
                 <Button
                   variant="unstyled"
@@ -913,8 +917,9 @@ export default function ElementsExplorer() {
               <Button
                 variant="unstyled"
                 id="ab"
-                className={`tool-button ${spread ? "act" : ""}`}
+                className={`tool-button icon-action ${spread ? "act" : ""}`}
                 aria-label="Spread electrons"
+                title="Spread electrons"
                 aria-pressed={spread}
                 onClick={() => {
                   scene.current.spread = !spread;
@@ -923,13 +928,16 @@ export default function ElementsExplorer() {
                 }}
               >
                 <Icon name="spread" />
-                <span>Spread</span>
               </Button>
-              <span className="model-caption">
+              <LearningTip
+                className="model-caption"
+                key={learning.settings.model}
+                active={hydrated}
+              >
                 {learning.settings.model === "playful"
                   ? "Playful illustration · Representative electrons"
                   : "Shell-population illustration · Not to scale"}
-              </span>
+              </LearningTip>
               <Button
                 variant="unstyled"
                 className="tool-button icon-action"
@@ -958,49 +966,13 @@ export default function ElementsExplorer() {
                 />
               ))}
           </div>
-          <nav className="explorer-nav" aria-label="Explore and learn">
-            <Button
-              variant="unstyled"
-              id="gb"
-              aria-label="Open periodic table"
-              title="Periodic table"
-              onClick={() => setSheet("table")}
-            >
-              <Icon name="table" />
-            </Button>
-            <Button
-              variant="unstyled"
-              aria-label="Open discovery journal"
-              title="Discovery journal"
-              onClick={() => setSheet("learning")}
-            >
-              <Icon name="learn" />
-            </Button>
-            <Button
-              variant="unstyled"
-              aria-label="Compare elements"
-              title="Compare elements"
-              onClick={() => setSheet("compare")}
-            >
-              <Icon name="compare" />
-            </Button>
-            <Button
-              variant="unstyled"
-              aria-label="Open bonding playground"
-              title="Bonding playground"
-              onClick={() => setSheet("sandbox")}
-            >
-              <Icon name="sandbox" />
-            </Button>
-            <Button
-              variant="unstyled"
-              aria-label="Exploration help"
-              title="Exploration help"
-              onClick={() => setSheet("help")}
-            >
-              <Icon name="help" />
-            </Button>
-          </nav>
+          <ExplorationDock
+            open={sheet}
+            onOpen={(destination) => {
+              setSheet(destination);
+              feedback("tap", learning.settings);
+            }}
+          />
         </div>
         <aside className="story-rail" aria-label={`${element.n} story`}>
           <Card variant="unstyled" className="rail-card story-card">

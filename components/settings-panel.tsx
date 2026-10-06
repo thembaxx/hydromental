@@ -32,6 +32,7 @@ export function SettingsPanel({
           <option value="">Follow device</option>
           <option value="day">Day</option>
           <option value="midnight">Midnight</option>
+          <option value="noir">Noir · grayscale, true black</option>
           <option value="dusk">Dusk</option>
         </select>
       </section>

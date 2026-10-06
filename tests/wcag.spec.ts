@@ -25,13 +25,17 @@ test("explorer themes and search satisfy automated WCAG checks", async ({ page }
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await audit(page);
-  for (const theme of ["dusk", "midnight"]) {
+  for (const theme of ["dusk", "midnight", "noir"]) {
     await page.locator("#mb").click();
     await page.locator(`[data-t="${theme}"]`).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.locator("#pl")).toHaveCSS(
       "color",
-      theme === "dusk" ? "rgb(255, 255, 255)" : "rgb(245, 247, 255)",
+      theme === "dusk"
+        ? "rgb(255, 255, 255)"
+        : theme === "noir"
+          ? "rgb(214, 214, 214)"
+          : "rgb(245, 247, 255)",
     );
     await audit(page);
   }

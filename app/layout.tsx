@@ -60,7 +60,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{
-            __html: `try{const saved=JSON.parse(localStorage.getItem('elementals.learning.v2')||'null');const theme=saved?.version===2?saved.settings?.theme:(localStorage.getItem('th')||localStorage.getItem('elt'));if(['day','midnight','dusk'].includes(theme))document.documentElement.dataset.theme=theme}catch{}`,
+            __html: `try{const saved=JSON.parse(localStorage.getItem('elementals.learning.v2')||'null');const theme=saved?.version===2?saved.settings?.theme:(localStorage.getItem('th')||localStorage.getItem('elt'));if(['day','midnight','dusk','noir'].includes(theme))document.documentElement.dataset.theme=theme}catch{}`,
           }}
         />
       </head>

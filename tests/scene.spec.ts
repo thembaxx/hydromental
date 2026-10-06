@@ -62,6 +62,8 @@ test("scientific shell selection matches real populations and camera reset clear
   page,
 }) => {
   const errors = await openExplorer(page);
+  await page.locator("#mb").click();
+  await page.getByRole("button", { name: "Noir", exact: true }).click();
   await page.getByRole("button", { name: "Switch to scientific model" }).click();
   await expect(page.locator("#shell-select option")).toHaveText([
     "Nucleus · 8 protons",
