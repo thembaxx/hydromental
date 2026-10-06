@@ -16,8 +16,7 @@ export function SettingsPanel({
 }) {
   return (
     <div className="panel-content">
-      <section className="panel-section">
-        <h3 className="panel-title">Make it yours</h3>
+      <section className="panel-section" aria-label="Appearance preferences">
         <p className="panel-copy">
           Preferences stay on this device and travel with your progress export.
         </p>

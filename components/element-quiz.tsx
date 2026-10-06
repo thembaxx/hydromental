@@ -172,8 +172,14 @@ export function ElementQuiz({
             {selected === question.answer ? "Nicely spotted." : `The answer is ${question.answer}.`}
           </b>
           <p>{getScience(question.element.z).fact}</p>
-          <Button variant="unstyled" className="action-button" onClick={next}>
-            Next question <Icon name="next" />
+          <Button
+            variant="unstyled"
+            className="action-button icon-action"
+            aria-label="Next question"
+            title="Next question"
+            onClick={next}
+          >
+            <Icon name="next" />
           </Button>
         </div>
       )}

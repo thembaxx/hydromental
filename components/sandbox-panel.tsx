@@ -26,25 +26,27 @@ export function SandboxPanel({ onPick }: { onPick: (z: number) => void }) {
         Explore curated combinations that connect elements to familiar materials. This is a concept
         playground with symbolic shapes; positions, proportions, and bonds are illustrative.
       </p>
-      <label className="field-label" htmlFor="sandbox-recipe">
-        Choose a combination
-      </label>
-      <select
-        className="form-input"
-        id="sandbox-recipe"
-        value={recipeId}
-        onChange={(event) => {
-          setRecipeId(event.target.value);
-          setConnected(false);
-          setSelected(null);
-        }}
-      >
-        {sandboxRecipes.map((item) => (
-          <option value={item.id} key={item.id}>
-            {item.title} · {item.formula}
-          </option>
-        ))}
-      </select>
+      <div className="field-group">
+        <label className="field-label" htmlFor="sandbox-recipe">
+          Choose a combination
+        </label>
+        <select
+          className="form-input"
+          id="sandbox-recipe"
+          value={recipeId}
+          onChange={(event) => {
+            setRecipeId(event.target.value);
+            setConnected(false);
+            setSelected(null);
+          }}
+        >
+          {sandboxRecipes.map((item) => (
+            <option value={item.id} key={item.id}>
+              {item.title} · {item.formula}
+            </option>
+          ))}
+        </select>
+      </div>
       <Card variant="unstyled" className="feature-card sandbox-illustration">
         <Badge variant="unstyled" className="tag">
           Illustrative model

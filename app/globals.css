@@ -23,6 +23,10 @@
 }
 
 :root {
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
   --chrome: #f0f5fc;
   --bg: linear-gradient(135deg, #f0f5fc, #f9f7f1);
   --ink: #202b48;
@@ -352,12 +356,32 @@ small {
   min-width: 0;
 }
 .rail-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
   background: var(--dw);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   border-radius: var(--radius-card);
   padding: 22px;
   overflow: hidden;
+}
+.rail-card > *,
+.rail-card > p,
+.rail-card > .eyebrow,
+.rail-card > .level-copy,
+.rail-card > .learning-progress,
+.rail-card > .story-symbol,
+.rail-card > .section-heading,
+.rail-card > .family-list,
+.rail-card > .fact-callout {
+  margin-block: 0;
+}
+.rail-card > .action-button,
+.rail-card > .text-link,
+.rail-card > .text-button {
+  justify-self: start;
+  margin-top: 0;
 }
 .eyebrow,
 .reference-eyebrow {
@@ -415,8 +439,17 @@ small {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding: 11px 0;
+  padding: var(--space-3) 0;
   border-bottom: 1px solid var(--line);
+}
+.rail-card:has(.mission-mini) {
+  gap: 0;
+}
+.rail-card:has(.mission-mini) > .section-heading {
+  margin-bottom: var(--space-2);
+}
+.rail-card:has(.mission-mini) > .text-button {
+  margin-top: var(--space-4);
 }
 .mission-mini b {
   font-size: 14px;
@@ -913,22 +946,22 @@ small {
   justify-content: space-around;
   align-items: center;
   gap: 4px;
-  min-height: 70px;
-  padding-top: 8px;
+  min-height: 60px;
+  padding-block: var(--space-2);
   flex-shrink: 0;
 }
 .explorer-nav button {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
   flex: 1;
+  max-width: 64px;
   border: 0;
   border-radius: 16px;
   background: transparent;
-  padding: 8px 4px;
-  min-height: 56px;
+  padding: 0;
+  min-height: 44px;
   color: var(--mut);
   font-size: 11px;
   font-weight: 800;
@@ -1109,7 +1142,7 @@ button.tag {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 22px 24px 14px;
+  padding: 22px 24px 12px;
   position: sticky;
   top: 0;
   background: var(--dw);
@@ -1127,18 +1160,61 @@ button.tag {
   font-weight: 800;
 }
 .panel-content {
-  padding: 8px 24px 26px;
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-6) var(--space-6);
 }
-.panel-content p {
-  margin-top: 10px;
+.panel-content > * {
+  margin-block: 0;
+}
+.panel-content > p {
+  margin: 0;
+}
+.panel-content > .comparison-scroll,
+.panel-content > .sandbox-illustration,
+.panel-content > .search-suggestions,
+.panel-content > .field-label {
+  margin: 0;
+}
+.field-group {
+  display: grid;
+  gap: var(--space-2);
+}
+.field-group > .field-label {
+  margin: 0;
 }
 .panel-section {
-  padding-top: 22px;
-  margin-top: 22px;
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  margin: 0;
   border-top: 1px solid var(--line);
 }
-.panel-section h3 {
-  margin-bottom: 12px;
+.panel-section > * {
+  margin-block: 0;
+}
+.panel-section > h3,
+.panel-section > p,
+.panel-section > .panel-title,
+.panel-section > .field-label,
+.panel-section > .text-link,
+.panel-section > .text-button {
+  margin: 0;
+}
+.panel-section > .learning-progress,
+.panel-section > .property-list,
+.feature-card > .learning-progress,
+.feature-card > .element-chips {
+  margin: 0;
+}
+.panel-section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.panel-content > .action-button,
+.panel-section > .action-button,
+.panel-section > .tag {
+  justify-self: start;
 }
 .panel-title {
   margin-bottom: 14px;
@@ -1147,15 +1223,29 @@ button.tag {
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
+  gap: var(--space-4);
+  margin: 0;
 }
 .feature-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
   border: 1px solid var(--line);
   background: var(--chip);
   border-radius: 20px;
   padding: 18px;
   min-width: 0;
+}
+.feature-card > * {
+  margin-block: 0;
+}
+.feature-card > .tag,
+.feature-card > .action-button {
+  justify-self: start;
+}
+.feature-card .panel-title,
+.feature-card p {
+  margin: 0;
 }
 .feature-card h3 {
   font-size: 17px;
@@ -1166,14 +1256,14 @@ button.tag {
   line-height: 1.5;
 }
 .feature-card .action-button {
-  margin-top: 14px;
+  margin-top: 0;
   background: var(--dw);
 }
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin: 14px 0;
+  margin: 0;
 }
 .stat {
   border: 1px solid var(--line);
@@ -1182,6 +1272,7 @@ button.tag {
   background: var(--chip);
   display: flex;
   flex-direction: column;
+  gap: 4px;
   align-items: start;
 }
 .stat strong,
@@ -1229,6 +1320,14 @@ button.tag {
   font-size: 14px;
   font-weight: 800;
   margin: 16px 0 7px;
+}
+.field-label:has(> svg) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.field-label > svg {
+  flex-shrink: 0;
 }
 .form-input {
   display: block;
@@ -1293,12 +1392,48 @@ input[type="file"].form-input {
   font-size: 13px;
   font-weight: 700;
 }
+.action-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.icon-action,
+.tool-button.icon-action,
+.action-button.icon-action,
+.chip.icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  flex-shrink: 0;
+}
+.icon-action > svg {
+  width: 20px;
+  height: 20px;
+}
+.segmented button.icon-action {
+  width: 44px;
+  padding-inline: 0;
+  min-height: 34px;
+  height: auto;
+}
 .detail-orbit {
   display: grid;
   grid-template-columns: 190px minmax(0, 1fr);
   gap: 24px;
   align-items: center;
-  margin: 20px 0;
+  margin: 0;
+}
+.detail-atom-copy {
+  display: grid;
+  gap: var(--space-3);
+}
+.detail-atom-copy > * {
+  margin: 0;
 }
 .element-structure > svg {
   max-width: 100%;
@@ -1351,7 +1486,7 @@ input[type="file"].form-input {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 20px;
+  margin: 0;
 }
 .fa > div {
   background: var(--chip);
@@ -1426,9 +1561,18 @@ input[type="file"].form-input {
   padding: 24px;
   position: relative;
   overflow: hidden;
-  margin: 12px 0 20px;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+.discovery-card > * {
+  margin-block: 0;
+}
+.discovery-card > .tag {
+  justify-self: start;
 }
 .discovery-card-number {
+  display: block;
   font-size: 12px;
   color: var(--mut);
 }
@@ -1438,10 +1582,22 @@ input[type="file"].form-input {
   line-height: 1.15;
   font-weight: 700;
   color: var(--ink);
-  margin: 12px 0;
+  margin: 0;
 }
-.discovery-card .tag {
-  margin-top: 14px;
+.discovery-card .panel-title,
+.discovery-card p {
+  margin: 0;
+}
+.panel-content p[role="status"]:empty {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .discovery-personality {
   font-style: italic;
@@ -1657,7 +1813,10 @@ input[type="file"].form-input {
   touch-action: pan-x pan-y;
   display: grid;
   grid-template-columns: repeat(18, var(--cs));
-  grid-template-rows: 26px repeat(7, calc(var(--cs)*1.2)) 8px repeat(2, calc(var(--cs)*1.2));
+  grid-template-rows: 26px repeat(7, max(48px, calc(var(--cs)*1.2))) 8px repeat(
+      2,
+      max(48px, calc(var(--cs)*1.2))
+    );
   gap: 4px;
   padding: 0 20px 20px;
   align-content: start;
@@ -1676,8 +1835,9 @@ input[type="file"].form-input {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 6px 0 0;
+  justify-content: center;
+  gap: clamp(2px, calc(var(--cs)*0.05), 4px);
+  padding: clamp(2px, calc(var(--cs)*0.05), 4px) 0;
   border-radius: 14px;
   border: 1px solid transparent;
   background: none;
@@ -1687,6 +1847,8 @@ input[type="file"].form-input {
     500 11px "JetBrains Mono",
     monospace;
   font-style: normal;
+  font-size: clamp(9px, calc(var(--cs)*0.2), 12px);
+  line-height: 1.1;
   color: var(--mut);
 }
 .c b {
@@ -1696,7 +1858,8 @@ input[type="file"].form-input {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: clamp(10px, calc(var(--cs)*0.27), 18px);
+  line-height: 1;
   font-weight: 900;
   color: #152043;
   background: radial-gradient(
@@ -2302,12 +2465,12 @@ input[type="file"].form-input {
     font-size: 11px;
   }
   .explorer-nav {
-    min-height: 66px;
-    padding-top: 5px;
+    min-height: 60px;
+    padding-block: var(--space-2);
   }
   .explorer-nav button {
     font-size: 10px;
-    min-height: 54px;
+    min-height: 44px;
   }
   .dialog-content {
     width: calc(100vw - 16px);
@@ -2333,7 +2496,7 @@ input[type="file"].form-input {
     font-size: 21px;
   }
   .panel-content {
-    padding: 6px 18px 22px;
+    padding: var(--space-3) 18px var(--space-6);
   }
   .panel-title {
     font-size: 19px;

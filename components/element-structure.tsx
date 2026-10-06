@@ -92,12 +92,13 @@ export function ElementStructure({
         ) : (
           <Button
             variant="unstyled"
-            className="structure-control chip"
+            className="structure-control chip icon-action"
             aria-pressed={paused}
             aria-label={paused ? "Resume structure animation" : "Pause structure animation"}
+            title={paused ? "Resume structure animation" : "Pause structure animation"}
             onClick={() => setPaused((value) => !value)}
           >
-            <Icon name={paused ? "play" : "pause"} /> {paused ? "Resume" : "Pause"}
+            <Icon name={paused ? "play" : "pause"} />
           </Button>
         )}
       </figcaption>

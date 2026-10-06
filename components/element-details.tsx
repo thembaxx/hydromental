@@ -68,7 +68,7 @@ export function ElementDetails({
             shells={science.shells}
             color={color}
           />
-          <div>
+          <div className="detail-atom-copy">
             <h3>Inside the atom</h3>
             <p className="panel-copy">
               Neutral atoms have <span className="n">{element.z}</span> protons and{" "}

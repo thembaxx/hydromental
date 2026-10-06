@@ -560,10 +560,12 @@ export default function ElementsExplorer() {
             </p>
             <Button
               variant="unstyled"
-              className="action-button primary-action"
+              className="action-button primary-action icon-action"
+              aria-label="Open your journal"
+              title="Open your journal"
               onClick={() => setSheet("learning")}
             >
-              Open your journal <Icon name="learn" />
+              <Icon name="learn" />
             </Button>
           </Card>
           <Card variant="unstyled" className="rail-card">
@@ -694,11 +696,13 @@ export default function ElementsExplorer() {
                 </Button>
                 <Button
                   variant="unstyled"
+                  className="icon-action"
+                  aria-label="Rotate"
+                  title="Rotate atom"
                   aria-pressed={rotation}
                   onClick={() => setRotation(true)}
                 >
                   <Icon name="rotate" />
-                  Rotate
                 </Button>
               </div>
               <Button
@@ -928,12 +932,12 @@ export default function ElementsExplorer() {
               </span>
               <Button
                 variant="unstyled"
-                className="tool-button"
+                className="tool-button icon-action"
                 aria-label="Share element"
+                title="Share element"
                 onClick={() => setSheet("share")}
               >
                 <Icon name="share" />
-                <span>Share</span>
               </Button>
             </div>
             {celebrate &&
@@ -959,42 +963,42 @@ export default function ElementsExplorer() {
               variant="unstyled"
               id="gb"
               aria-label="Open periodic table"
+              title="Periodic table"
               onClick={() => setSheet("table")}
             >
               <Icon name="table" />
-              <span>Table</span>
             </Button>
             <Button
               variant="unstyled"
               aria-label="Open discovery journal"
+              title="Discovery journal"
               onClick={() => setSheet("learning")}
             >
               <Icon name="learn" />
-              <span>Journal</span>
             </Button>
             <Button
               variant="unstyled"
               aria-label="Compare elements"
+              title="Compare elements"
               onClick={() => setSheet("compare")}
             >
               <Icon name="compare" />
-              <span>Compare</span>
             </Button>
             <Button
               variant="unstyled"
               aria-label="Open bonding playground"
+              title="Bonding playground"
               onClick={() => setSheet("sandbox")}
             >
               <Icon name="sandbox" />
-              <span>Playground</span>
             </Button>
             <Button
               variant="unstyled"
               aria-label="Exploration help"
+              title="Exploration help"
               onClick={() => setSheet("help")}
             >
               <Icon name="help" />
-              <span>Help</span>
             </Button>
           </nav>
         </div>

@@ -63,18 +63,20 @@ export function ComparisonPanel({
           Replace {second.n}
         </Button>
       </div>
-      <label className="field-label" htmlFor="compare-search">
-        <HugeiconsIcon icon={Search01Icon} size={18} aria-hidden="true" /> Find an element
-      </label>
-      <Input
-        variant="unstyled"
-        className="form-input"
-        id="compare-search"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="Name, symbol, or atomic number"
-        autoComplete="off"
-      />
+      <div className="field-group">
+        <label className="field-label" htmlFor="compare-search">
+          <HugeiconsIcon icon={Search01Icon} size={18} aria-hidden="true" /> Find an element
+        </label>
+        <Input
+          variant="unstyled"
+          className="form-input"
+          id="compare-search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Name, symbol, or atomic number"
+          autoComplete="off"
+        />
+      </div>
       {query.trim() && (
         <div className="search-suggestions" aria-label="Comparison search results">
           {results.length ? (

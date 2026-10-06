@@ -106,13 +106,26 @@ export function DiscoveryCard({
           </p>
         )}
       </Card>
-      <div className="segmented">
-        <Button variant="unstyled" className="action-button" onClick={download}>
-          <HugeiconsIcon icon={Download01Icon} size={18} aria-hidden="true" /> Download card
+      <div className="action-row">
+        <Button
+          variant="unstyled"
+          className="action-button icon-action"
+          aria-label="Download card"
+          title="Download card"
+          onClick={download}
+        >
+          <HugeiconsIcon icon={Download01Icon} size={20} aria-hidden="true" />
         </Button>
-        <Button variant="unstyled" className="action-button" onClick={share} disabled={sharing}>
-          <HugeiconsIcon icon={Share01Icon} size={18} aria-hidden="true" />{" "}
-          {sharing ? "Sharing…" : "Share element"}
+        <Button
+          variant="unstyled"
+          className="action-button icon-action"
+          aria-label="Share element"
+          title={sharing ? "Sharing…" : "Share element"}
+          aria-busy={sharing}
+          onClick={share}
+          disabled={sharing}
+        >
+          <HugeiconsIcon icon={Share01Icon} size={20} aria-hidden="true" />
         </Button>
       </div>
       <p className="panel-copy" role="status">
