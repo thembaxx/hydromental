@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "jsx-a11y"],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": ["docs/**", ".next/**", "assets/**", "public/**"],
+  "rules": {
+    "jsx-a11y/prefer-tag-over-role": "off"
+  }
+}

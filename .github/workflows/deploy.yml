@@ -1,0 +1,75 @@
+name: Deploy to Vercel
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: vercel-production
+  cancel-in-progress: false
+jobs:
+  configuration:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.configuration.outputs.ready }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Check deployment configuration and current main commit
+        id: configuration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Vercel deployment skipped. Set VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID in repository secrets." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          current_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$current_sha" != "$DEPLOY_SHA" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Deployment skipped: a newer main commit exists." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+  deploy:
+    needs: configuration
+    if: needs.configuration.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install tested dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Pull Vercel production configuration
+        run: pnpm dlx vercel@62.2.0 pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Build for the Vercel runtime
+        run: pnpm dlx vercel@62.2.0 build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy the prebuilt output
+        run: pnpm dlx vercel@62.2.0 deploy --prebuilt --prod --token="$VERCEL_TOKEN"
