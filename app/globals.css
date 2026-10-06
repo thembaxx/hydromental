@@ -1173,7 +1173,6 @@ button.tag {
 .panel-content > .comparison-scroll,
 .panel-content > .sandbox-illustration,
 .panel-content > .search-suggestions,
-.panel-content > .element-chips,
 .panel-content > .field-label {
   margin: 0;
 }
@@ -1204,6 +1203,7 @@ button.tag {
 }
 .panel-section > .learning-progress,
 .panel-section > .property-list,
+.panel-section > .element-chips,
 .feature-card > .learning-progress,
 .feature-card > .element-chips {
   margin: 0;
