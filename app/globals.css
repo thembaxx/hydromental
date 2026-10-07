@@ -2163,7 +2163,7 @@ input[type="file"].form-input {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 28%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2279,7 +2279,7 @@ input[type="file"].form-input {
 .c b {
   width: calc(var(--cs)*0.75);
   height: calc(var(--cs)*0.75);
-  border-radius: 50%;
+  border-radius: 28%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3156,5 +3156,65 @@ input[type="file"].form-input {
     top: 112px;
     padding: 6px 10px;
     font-size: 10px;
+  }
+}
+
+/* Native continuous corners enhance existing radii; unsupported browsers keep them. */
+@supports (corner-shape: squircle) {
+  :is(
+    #app,
+    .welcome-canvas,
+    .welcome-step,
+    .welcome-preview,
+    .welcome-image,
+    .skip-link,
+    .menu,
+    .menu button,
+    .rail-card,
+    .family-link,
+    .onboarding-card,
+    .element-identity,
+    .shell-inspector select,
+    .inspection-card,
+    .atom-unavailable,
+    .fact-callout,
+    .action-button,
+    .dialog-content,
+    .dh,
+    .feature-card,
+    .stat,
+    .form-input,
+    .configuration,
+    .fa > div,
+    .comparison-scroll,
+    .discovery-card,
+    .search-input-row,
+    .search-family,
+    .search-result,
+    .search-symbol,
+    .c,
+    .c b,
+    .card,
+    .opt,
+    .reference-action,
+    .reference-hero-symbol,
+    .reference-card,
+    .reference-section,
+    .reference-configuration,
+    .reference-facts > div,
+    .reference-family-nav a,
+    .reference-element-link,
+    [data-slot="card"],
+    [data-slot="button"]:not([data-variant="unstyled"]),
+    [data-slot="input"]:not([type="checkbox"]):not([type="radio"]):not([type="range"])
+  ) {
+    corner-shape: squircle;
+  }
+  /* Square element badges use a full squircle over their rounded-radius fallbacks. */
+  :is(.c b, .search-symbol, .reference-hero-symbol) {
+    border-radius: 50%;
+  }
+  .welcome-interaction {
+    corner-shape: inherit;
   }
 }
