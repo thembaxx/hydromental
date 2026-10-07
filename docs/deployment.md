@@ -23,7 +23,7 @@ When credentials are absent, the deployment workflow records a clear skipped-dep
 
 After the first successful CI run, configure a main branch ruleset requiring pull requests and the "Code checks, production build and browser tests" status. Block force pushes and deletion, require resolved review conversations, and require at least one reviewer where team size allows. Keep the default Actions token read-only and enable Dependabot vulnerability alerts. Restrict the production environment's deployment branches to main. These account-level policies and Vercel credentials require repository/account administration; the committed workflows do not invent or embed them.
 
-The connected integration has not provisioned the Vercel secrets or applied branch-protection/default-token settings. GitHub administration endpoints returned permission errors even though source publication is available. Treat the settings above as setup instructions, not as already enabled controls.
+Vercel production deployment is configured and verified at https://hydromental.vercel.app. Branch-protection/default-token settings have not been applied by the connected integration: GitHub administration endpoints returned permission errors even though source publication is available. Treat the repository-policy recommendations above as setup instructions, not as already enabled controls.
 
 ## Recovery
 

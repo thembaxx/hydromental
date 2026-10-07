@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { searchElements } from "../lib/search";
 
 test("element search ranks identities, spelling variants and typo corrections", () => {

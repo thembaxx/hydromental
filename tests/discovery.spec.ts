@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("element library and reference content are readable without JavaScript", async ({
   browser,
@@ -53,7 +53,8 @@ test("discovery endpoints expose all elements and a complete install manifest", 
     ),
   ).toBe(true);
   const sitemap = await request.get("/sitemap.xml");
-  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(120);
+  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(121);
+  expect(await sitemap.text()).toContain("/welcome");
   const robots = await request.get("/robots.txt");
   expect(await robots.text()).toContain("sitemap.xml");
   const llms = await request.get("/llms.txt");

@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { Icon } from "@/components/ui/icon";
 import type { LearningState } from "@/lib/learning";
 
 type Settings = LearningState["settings"];
@@ -127,6 +129,11 @@ export function SettingsPanel({
           elements. Turn on rotation mode to drag the atom, pinch to zoom, and double-tap to reset.
           Hold the atom to peek at its identity.
         </p>
+        <Button variant="unstyled" className="action-button" asChild>
+          <Link href="/welcome">
+            Replay introduction <Icon name="next" />
+          </Link>
+        </Button>
       </section>
     </div>
   );

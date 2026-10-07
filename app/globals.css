@@ -186,6 +186,320 @@
   --radius-md: var(--radius-control);
   --radius-lg: var(--radius-card);
 }
+.launch-screen {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+.launch-screen > svg {
+  width: 48px;
+  height: 48px;
+  color: var(--accent);
+}
+.launch-screen p {
+  margin: 0;
+}
+.welcome-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: calc(24px + env(safe-area-inset-top)) 32px 16px;
+}
+.welcome-header .text-button {
+  min-height: 44px;
+  margin: 0;
+}
+.welcome-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  padding: 24px 32px 40px;
+  margin: auto;
+}
+.welcome-demo {
+  min-width: 0;
+}
+.welcome-canvas {
+  position: relative;
+  height: clamp(340px, 45vw, 520px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 40px;
+  background: radial-gradient(ellipse at 50% 45%, var(--accent-soft), transparent 68%);
+  touch-action: none;
+  user-select: none;
+}
+.welcome-demo-label {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  left: 20px;
+  font-size: 13px;
+  color: var(--mut);
+  pointer-events: none;
+}
+.welcome-interaction {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  isolation: isolate;
+  border-radius: inherit;
+}
+.welcome-interaction:focus-visible {
+  outline-offset: -5px;
+}
+.welcome-pause {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+}
+.welcome-demo-arrows {
+  position: absolute;
+  z-index: 2;
+  inset: auto 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.welcome-demo-arrows > button {
+  pointer-events: auto;
+}
+.welcome-demo-tools {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.welcome-demo-note {
+  font-size: 11px;
+  color: var(--mut);
+  text-align: center;
+  margin: 12px 0 0;
+}
+.welcome-swipe {
+  position: absolute;
+  z-index: 2;
+  bottom: 30px;
+  left: calc(50% - 40px);
+  width: 80px;
+  height: 26px;
+  pointer-events: none;
+}
+.welcome-swipe > span {
+  position: absolute;
+  inset: 12px 0 auto;
+  height: 2px;
+  background: var(--mut);
+}
+.welcome-swipe > i {
+  position: absolute;
+  left: 28px;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--dw);
+}
+.welcome-copy {
+  min-width: 0;
+}
+.welcome-progress {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.welcome-progress > .n {
+  margin-left: 12px;
+  color: var(--mut);
+  font-size: 12px;
+}
+.welcome-step {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+}
+.welcome-step > span {
+  width: 28px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--line);
+}
+.welcome-step[aria-current="step"] > span {
+  background: var(--accent);
+}
+.welcome-step-content {
+  display: grid;
+  gap: 20px;
+}
+.welcome-step-content > * {
+  margin: 0;
+}
+.welcome-step-content h1 {
+  font-size: clamp(34px, 4.3vw, 56px);
+  line-height: 1.1;
+  letter-spacing: -1.8px;
+  outline: none;
+}
+.welcome-step-content h1:focus-visible {
+  outline: none;
+}
+.welcome-description {
+  color: var(--mut);
+  font-size: 17px;
+  line-height: 1.65;
+}
+.welcome-points {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  font-size: 14px;
+}
+.welcome-points li {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+}
+.welcome-points svg {
+  flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 2px;
+}
+.welcome-preview {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 16px;
+  background: var(--chip);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+}
+.welcome-image {
+  display: block;
+  width: 110px;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+}
+.welcome-preview p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+.welcome-preview .action-button,
+.welcome-preview .panel-copy {
+  margin-top: 12px;
+}
+.welcome-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  padding: 20px 32px calc(20px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--dw) 94%, transparent);
+  backdrop-filter: blur(20px);
+}
+.welcome-navigation-note {
+  font-size: 13px;
+  color: var(--mut);
+}
+:root[data-theme="noir"] .welcome-image {
+  filter: grayscale(1) brightness(0.8);
+}
+@media (max-width: 759px) {
+  .welcome-page {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  .welcome-header {
+    padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+    gap: 8px;
+  }
+  .welcome-header .brand-link strong {
+    font-size: 21px;
+  }
+  .welcome-header .text-button {
+    font-size: 12px;
+  }
+  .welcome-header .text-button svg {
+    display: none;
+  }
+  .welcome-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 0 18px 24px;
+  }
+  .welcome-canvas {
+    height: 230px;
+    border-radius: 28px;
+  }
+  .welcome-demo-tools {
+    margin-top: 10px;
+  }
+  .welcome-demo-note {
+    margin-top: 8px;
+  }
+  .welcome-progress {
+    margin-bottom: 12px;
+  }
+  .welcome-step-content {
+    gap: 16px;
+  }
+  .welcome-step-content h1 {
+    font-size: 34px;
+    letter-spacing: -1px;
+  }
+  .welcome-description {
+    font-size: 15px;
+  }
+  .welcome-preview {
+    gap: 14px;
+    padding: 12px;
+  }
+  .welcome-image {
+    width: 88px;
+  }
+  .welcome-preview p {
+    font-size: 13px;
+  }
+  .welcome-navigation {
+    position: fixed;
+    inset: auto 0 0;
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  }
+  .welcome-navigation-note {
+    display: none;
+  }
+}
 * {
   box-sizing: border-box;
 }

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import { elements } from "../lib/elements";
 import { getScience } from "../lib/science";
 

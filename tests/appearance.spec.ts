@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("Noir persists through reloads and keeps dialogs and reference reading accessible", async ({
   page,

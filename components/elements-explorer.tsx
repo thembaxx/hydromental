@@ -48,6 +48,8 @@ import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
 import { ExplorationDock } from "@/components/exploration-dock";
 import { LearningTip } from "@/components/learning-tip";
+import { Onboarding } from "@/components/onboarding";
+import { beginOnboarding, finishOnboarding, shouldShowOnboarding } from "@/lib/onboarding";
 
 type Direction = "u" | "d" | "l" | "r";
 type Sheet =
@@ -87,6 +89,7 @@ export default function ElementsExplorer() {
   const [current, setCurrent] = useState(7);
   const [learning, setLearning] = useState(initialLearningState);
   const [hydrated, setHydrated] = useState(false);
+  const [welcome, setWelcome] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [sheet, setSheet] = useState<Sheet>(null);
   const [quizMode, setQuizMode] = useState<QuizMode>("standard");
@@ -135,6 +138,9 @@ export default function ElementsExplorer() {
 
   /* oxlint-disable react/set-state-in-effect -- Restore external device storage and URL selection after server hydration. */
   useEffect(() => {
+    const firstVisit = shouldShowOnboarding();
+    if (firstVisit) beginOnboarding();
+    setWelcome(firstVisit);
     const saved = loadLearningState();
     const requested = new URLSearchParams(window.location.search)
       .get("element")
@@ -246,6 +252,7 @@ export default function ElementsExplorer() {
   };
   useEffect(() => {
     const keyboard = (event: KeyboardEvent) => {
+      if (!hydrated || welcome) return;
       if (
         event.target instanceof HTMLElement &&
         event.target.closest("input,textarea,select,[role=combobox],[role=listbox]")
@@ -280,7 +287,7 @@ export default function ElementsExplorer() {
     };
     window.addEventListener("keydown", keyboard);
     return () => window.removeEventListener("keydown", keyboard);
-  }, [navigate, sheet, search, menu]);
+  }, [navigate, sheet, search, menu, hydrated, welcome]);
   const cancelPointer = () => {
     pointer.current = null;
     scene.current.dragging = false;
@@ -448,6 +455,31 @@ export default function ElementsExplorer() {
     notify(`Mission complete · +${next.xp - learning.xp} XP`);
   };
   const close = () => setSheet(null);
+
+  if (!hydrated) {
+    return (
+      <main className="launch-screen">
+        <BrandMark />
+        <h1>Elementals</h1>
+        <p>Explore all 118 elements, their atoms, and their everyday uses.</p>
+        <p className="panel-copy" role="status">
+          Loading your element explorer…
+        </p>
+        <Link href="/elements">Browse the element library</Link>
+      </main>
+    );
+  }
+  if (welcome) {
+    return (
+      <Onboarding
+        onComplete={() => {
+          finishOnboarding();
+          setWelcome(false);
+          setLearning((previous) => ({ ...previous, onboardingDismissed: true }));
+        }}
+      />
+    );
+  }
 
   return (
     <div className="explorer-shell">

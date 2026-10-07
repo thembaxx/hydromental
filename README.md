@@ -6,6 +6,7 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 
 ## What you can do
 
+- First-time visitors get a four-step introduction with an interactive Three.js atom, animated text and real app screenshots. Practice swipe, rotation, zoom and element details, then start exploring. Replay it anytime from Settings or `/welcome`; the tutorial does not award XP or change saved discoveries.
 - Explore with swipe, arrow keys, period/group controls, a searchable periodic table, and typo-tolerant search by name, symbol or atomic number. Filter search by element family.
 - Switch between Explore and Rotate gestures. Pinch or use explicit zoom controls, reset the camera, pause motion, and inspect the nucleus or scientific shells. Hold the scene to reveal proton and electron counts.
 - Explore all 118 visible symbols without discovery placeholders. Tap the central orb for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support.
@@ -60,6 +61,8 @@ The quiz flip uses `motion/react-mini` native animation and `motion/react` reduc
 
 The icon-only dock uses Motion's shared layout and spring transitions for its sliding selection pill and press feedback. It follows live reduced-motion preferences and keeps accessible names and dialog focus restoration. Gesture and model tips show for eight seconds, then fade without shifting the controls; switching modes shows the relevant tip again. Full guidance remains in Help and Settings.
 
+The introduction uses Motion for staggered text entrances and step transitions, with an actual Three.js scene for practice. App screenshots are local assets. Explicit buttons and keyboard navigation complement touch gestures; visitors can pause the atom, skip the guide or replay it without changing their learning record.
+
 ## Learning and data
 
 Progress stays in browser local storage. Versioned learning state migrates the original prototype's discovery/XP/streak keys and retains a compatibility mirror. New discoveries award 10 XP. Correct quiz answers award 5 XP once per element per UTC day; repeating an answer can update mastery without repeatedly awarding XP. Daily rewards can be claimed once, review intervals respond to results, and the activity streak allows one missed day.
@@ -88,7 +91,7 @@ See [the architecture guide](docs/architecture.md) for state, rendering, data an
 
 GitHub Actions runs frozen installs, code checks, learning/data validation, production builds, browser regression tests, CodeQL and dependency review. Dependabot maintains dependencies and immutable action pins. The production deployment workflow targets Vercel after trusted successful main-branch CI and checks that the tested commit is still current.
 
-Vercel secrets have not been provisioned; deployment reports a skip until they are configured. Repository protection and account-level Actions policies also require administration access and have not been applied by the connected integration. See [deployment setup](docs/deployment.md). This project is not configured as a GitHub Pages static export.
+Production deployment is configured and live at [hydromental.vercel.app](https://hydromental.vercel.app). Repository protection and account-level Actions policies require administration access and have not been applied by the connected integration. See [deployment setup](docs/deployment.md). This project is not configured as a GitHub Pages static export.
 
 Configure the real public origin before deployment. [Discovery and offline documentation](docs/discovery-and-offline.md) covers canonical URLs, structured data, readable HTML, `/llms.txt`, install behavior and cache limitations. These make content accessible to crawlers and assistants but do not guarantee indexing or citation.
 

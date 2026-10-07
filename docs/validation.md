@@ -14,6 +14,13 @@ The current verification suite covers:
 
 Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pnpm test:e2e` against the current production build. Confirm the final GitHub Actions result for the published commit. A passing earlier commit does not validate later changes. Platform-specific installation, haptics, GPU performance and native sharing still need checks on the target devices.
 
+### First-visit introduction on October 7, 2026
+
+- Eight mobile/desktop onboarding cases cover fresh visits, unfinished-tour reloads, real swipe/rotation/keyboard controls, nucleus taps, pause, completion, Settings replay, unchanged learning progress and theme, and blocked browser storage.
+- Every step passes WCAG A/AA axe checks at 320px width without horizontal overflow. Explicit controls, dialog focus management and reduced-motion preferences remain available.
+- Forty-eight affected explorer, appearance, accessibility, scene, element-popup, learning-feature, discovery and offline cases passed locally. All 21 learning-rule unit tests and validation of all 118 science records passed.
+- Day, desktop and Noir screenshots were visually reviewed; the tutorial uses real screenshots of the app. The complete CI suite now includes 90 browser/data cases; confirm the published commit's final Actions result.
+
 ### Expanded app verification on October 6, 2026
 
 - Frozen pnpm 12.9.1 installation, oxlint, oxfmt, TypeScript and the production build passed.

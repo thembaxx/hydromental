@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import { elements } from "../lib/elements";
 
 async function search(page: Page, value: string) {
