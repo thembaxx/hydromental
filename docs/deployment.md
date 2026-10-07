@@ -6,7 +6,7 @@ Repository: https://github.com/thembaxx/hydromental
 
 CI runs on pull requests and pushes to main. It uses Node.js 24 and pnpm 12.9.1 as pinned in package.json, installs with a frozen lockfile, checks oxlint/oxfmt/TypeScript, validates learning rules and the scientific snapshot, builds production output, and runs mobile and desktop Playwright tests. Reports and failure traces are retained for 14 days. Superseded CI runs are cancelled. Third-party actions are pinned to immutable commit hashes; Dependabot maintains those pins and npm/pnpm dependencies weekly.
 
-CI calls the reusable Security workflow, which performs CodeQL analysis for JavaScript/TypeScript, with an additional weekly scheduled scan. Production deployment waits for the complete CI workflow, including security analysis. Dependency review rejects new high or critical vulnerabilities in pull requests. Workflows use the minimum token permissions required. PR jobs receive no Vercel credentials and do not use pull_request_target.
+CI calls the reusable Security workflow, which performs CodeQL analysis for JavaScript/TypeScript and audits the full locked dependency graph, with additional weekly scheduled scans. The advisory audit rejects known high or critical runtime and development vulnerabilities; its install disables lifecycle scripts. Production deployment waits for the complete CI workflow, including security analysis. Dependency review rejects new high or critical vulnerabilities in pull requests. Workflows use the minimum token permissions required. PR jobs receive no Vercel credentials and do not use pull_request_target.
 
 ## Vercel project
 
@@ -21,7 +21,7 @@ When credentials are absent, the deployment workflow records a clear skipped-dep
 
 ## Repository settings
 
-After the first successful CI run, configure a main branch ruleset requiring pull requests and the "Code checks, production build and browser tests" status. Block force pushes and deletion, require resolved review conversations, and require at least one reviewer where team size allows. Keep the default Actions token read-only and enable Dependabot vulnerability alerts. Restrict the production environment's deployment branches to main. These account-level policies and Vercel credentials require repository/account administration; the committed workflows do not invent or embed them.
+After the first successful CI run, configure a main branch ruleset requiring pull requests and the "Code checks, production build and browser tests", "Dependency vulnerability audit" and "CodeQL (JavaScript and TypeScript)" statuses. Block force pushes and deletion, require resolved review conversations, and require at least one reviewer where team size allows. Keep the default Actions token read-only and enable Dependabot vulnerability alerts. Restrict the production environment's deployment branches to main. These account-level policies and Vercel credentials require repository/account administration; the committed workflows do not invent or embed them.
 
 Vercel production deployment is configured and verified at https://hydromental.vercel.app. Branch-protection/default-token settings have not been applied by the connected integration: GitHub administration endpoints returned permission errors even though source publication is available. Treat the repository-policy recommendations above as setup instructions, not as already enabled controls.
 

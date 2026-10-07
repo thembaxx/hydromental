@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck",
     "test:e2e": "playwright test",
-    "ui:add": "shadcn add",
+    "security:audit": "pnpm audit --audit-level=high",
     "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/learning.test.mjs",
     "science:check": "node scripts/refresh-science.mjs --check"
   },
@@ -40,7 +40,6 @@
     "@types/three": "0.186.0",
     "oxfmt": "0.72.0",
     "oxlint": "1.87.0",
-    "shadcn": "4.21.1",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2"
   },

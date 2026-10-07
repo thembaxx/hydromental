@@ -46,6 +46,7 @@ Open http://localhost:3000. Production and verification commands:
 pnpm check          # lint, formatting and TypeScript
 pnpm test:unit      # learning-state unit tests
 pnpm science:check  # validate the committed scientific snapshot
+pnpm security:audit # check runtime and development dependency advisories
 pnpm build         # build production routes and assets
 pnpm exec playwright install chromium
 pnpm test:e2e       # starts a production server when none is running
@@ -56,7 +57,7 @@ Run `pnpm build` before browser tests. If a server is already listening on port 
 
 ## Components and motion
 
-Buttons, inputs, badges, cards and dialog behavior use owned shadcn/Radix components where they fit the interaction. Their `unstyled` variants preserve the custom visual system and pointer handlers; standard variants remain available. `components.json` selects the `radix-nova` registry and Hugeicons. Add components with `pnpm ui:add <component>` and preserve the owned variants instead of replacing the theme with an initializer.
+Buttons, inputs, badges, cards and dialog behavior use owned shadcn/Radix components where they fit the interaction. Their `unstyled` variants preserve the custom visual system and pointer handlers; standard variants remain available. `components.json` selects the `radix-nova` registry and Hugeicons. Add reviewed component source under `components/ui` and preserve the owned variants. The optional shadcn generator and `ui:add` script were removed because its transitive `braces` dependency has an unpatched advisory; the application does not require the generator. Reconsider installing it only after its dependency graph is patched and audited.
 
 The quiz flip uses `motion/react-mini` native animation and `motion/react` reduced-motion detection. It retains the prototype's 600ms perspective flip and easing. Dialog entry motion, responsive layout, focus behavior and the enhanced Three.js scene are implemented separately. Electron-shell diagrams and postcard artwork remain custom SVGs.
 
@@ -94,10 +95,12 @@ See [the architecture guide](docs/architecture.md) for state, rendering, data an
 
 ## Delivery and discovery
 
-GitHub Actions runs frozen installs, code checks, learning/data validation, production builds, browser regression tests, CodeQL and dependency review. Dependabot maintains dependencies and immutable action pins. The production deployment workflow targets Vercel after trusted successful main-branch CI and checks that the tested commit is still current.
+GitHub Actions runs frozen installs, code checks, learning/data validation, production builds, browser regression tests, CodeQL, dependency review and a full dependency advisory audit on every CI run and weekly. Dependabot maintains dependencies and immutable action pins. The production deployment workflow targets Vercel after trusted successful main-branch CI and checks that the tested commit is still current.
 
 Production deployment is configured and live at [hydromental.vercel.app](https://hydromental.vercel.app). Repository protection and account-level Actions policies require administration access and have not been applied by the connected integration. See [deployment setup](docs/deployment.md). This project is not configured as a GitHub Pages static export.
 
 Configure the real public origin before deployment. [Discovery and offline documentation](docs/discovery-and-offline.md) covers canonical URLs, structured data, readable HTML, `/llms.txt`, install behavior and cache limitations. These make content accessible to crawlers and assistants but do not guarantee indexing or citation.
 
 The uploaded notes remain in `PROTOTYPE-NOTES.md`. The original prototype has no assigned license. Dependency and font notices are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+See the [security audit](docs/security-audit.md) for findings, browser defenses and remaining account-level work.
