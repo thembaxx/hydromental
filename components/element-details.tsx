@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { categories, group, period, type Element } from "@/lib/elements";
 import { elementSlug, getScience } from "@/lib/science";
 import { Button } from "@/components/ui/button";
@@ -17,8 +18,10 @@ export function ElementDetails({
   element: Element;
   close: () => void;
   onPick: (z: number) => void;
-  onInspectShell: (shell: number) => void;
+  onInspectShell?: (shell: number) => void;
 }) {
+  const [shellSelection, setShellSelection] = useState<{ z: number; shell: number } | null>(null);
+  const selectedShell = shellSelection?.z === element.z ? shellSelection.shell : null;
   const science = getScience(element.z);
   const mass = science.properties.find((property) => property.label === "Atomic mass")!;
   const color = categories[element.c][1];
@@ -83,7 +86,11 @@ export function ElementDetails({
                   key={i}
                   variant="unstyled"
                   className="tag"
-                  onClick={() => onInspectShell(i + 1)}
+                  aria-pressed={selectedShell === i + 1}
+                  onClick={() => {
+                    setShellSelection({ z: element.z, shell: i + 1 });
+                    onInspectShell?.(i + 1);
+                  }}
                   aria-label={`Inspect shell ${i + 1}, ${count} electrons`}
                 >
                   Shell{" "}
@@ -93,6 +100,13 @@ export function ElementDetails({
                 </Button>
               ))}
             </div>
+            {selectedShell !== null && (
+              <p className="panel-copy" role="status">
+                Shell <span className="n">{selectedShell}</span> contains{" "}
+                <span className="n">{science.shells[selectedShell - 1]}</span> electrons in this
+                neutral atom. This is a principal-shell count, not an electron path.
+              </p>
+            )}
           </div>
         </div>
         <div className="fa">

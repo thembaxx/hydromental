@@ -11,10 +11,11 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 - Switch between Explore and Rotate gestures. Pinch or use explicit zoom controls, reset the camera, pause motion, and inspect the nucleus or scientific shells. Hold the scene to reveal proton and electron counts.
 - Explore all 118 visible symbols without discovery placeholders. Tap the central orb for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support.
 - Read original element stories, connections and source-linked physical properties. Compare two elements, try the bonding/material sandbox, and export a discovery postcard as SVG.
+- Play eight games at `/playground`: Molecule Builder, Atom Workshop, Balance It, Periodic Puzzle, Everyday Detective, Mystery Element, Crystal Builder and Property Challenge. Solve 38 authored rounds, use hints, undo/reset, try optional timing, and earn first-completion and daily XP. Model games have free play and saved creations with SVG export.
 - Save favorites, revisit recent discoveries, follow collections and expeditions, and earn daily mission rewards. Standard, review, mystery and everyday-context quizzes build a spaced-review queue.
 - Choose device-following, Day, Midnight, Dusk or Noir appearance. Noir uses true-black backgrounds, softer text and entirely grayscale visuals for low-light reading. Adaptive rendering quality, optional sounds and ambient audio, and supported haptics remain available.
 - Export and import validated progress backups. Install when supported, explore the cached playground offline, and read previously visited reference pages offline.
-- Share directly addressable `/elements/<name>` reference pages. These pages remain readable without JavaScript; the interactive playground requires JavaScript and WebGL.
+- Share directly addressable `/elements/<name>` reference pages. These pages remain readable without JavaScript; the interactive playground requires JavaScript. The 3D scenes use WebGL and offer fully functional game controls when rendering is unavailable.
 
 The playful atom and scientific shell schematic are teaching illustrations. They do not simulate quantum orbitals or electron probability densities. The playful view uses representative orbiting dots; the scientific view and detail diagrams use the sourced neutral-atom shell populations. See [scientific sources and limitations](docs/sources.md).
 
@@ -67,6 +68,8 @@ The introduction uses Motion for staggered text entrances and step transitions, 
 
 Progress stays in browser local storage. Versioned learning state migrates the original prototype's discovery/XP/streak keys and retains a compatibility mirror. New discoveries award 10 XP. Correct quiz answers award 5 XP once per element per UTC day; repeating an answer can update mastery without repeatedly awarding XP. Daily rewards can be claimed once, review intervals respond to results, and the activity streak allows one missed day.
 
+Playground completions award 20 XP once per authored round. A deterministic UTC daily game awards an additional 10 XP once per day, including when revisiting an already completed round. Optional personal bests require unhinted timed solves. Free play awards no game XP. Each of eight games tracks solved rounds; the lab retains the latest 24 creations and checkpoints the current round. All of this is included in existing progress backups.
+
 Progress export/import transfers learning state and settings between devices. This is a portable backup, not an account or cloud-sync service. Clearing browser storage removes local progress; keep an exported backup if it matters to you. Audio begins only after interaction and is optional.
 
 The committed scientific snapshot contains all 118 elements, original editorial content and source links. Refresh it with `node scripts/refresh-science.mjs`, then format and verify the changes. The refresh preserves authored content and validates the result before writing. [Source documentation](docs/sources.md) explains physical-property conditions, theoretical configurations and the explicit Lawrencium correction.
@@ -79,6 +82,8 @@ The committed scientific snapshot contains all 118 elements, original editorial 
 - `components/ui/`: owned shadcn primitives and shared Hugeicons rendering.
 - `lib/learning.ts`: pure progress, migration, mastery, daily missions, achievements and backup rules.
 - `lib/science.ts`, `lib/science-data.json`: scientific records, shell populations, stories, expeditions and material examples.
+- `lib/playground.ts`, `lib/playground-export.ts`: authored game catalogs, answer rules, molecule/crystal models and safe standalone SVG exports.
+- `components/playground-*`: full game hub, game controls and disposable Three.js renderer with keyboard alternatives.
 - `lib/atom-scene.ts`: Three.js models, inspection, camera control, rendering lifecycle and cleanup.
 - `lib/service-worker-source.ts`: offline caching and update protocol.
 - `public/`: local fonts, licenses, brand mark, install icons and share artwork.

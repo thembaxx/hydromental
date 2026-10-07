@@ -256,3 +256,116 @@ test("corrupt settings are normalized without enabling optional audio", () => {
     labels: false,
   });
 });
+
+// Games share the journal's existing local-first persistence and reward ledger.
+const {
+  checkpointGame,
+  dailyGame,
+  deleteCreation,
+  gameRounds,
+  recordGameAttempt,
+  sanitizeGameSession,
+  saveCreation,
+} = await import("../lib/learning.ts");
+const gameSession = (game = "molecule", index = 0) => ({
+  game,
+  index,
+  free: false,
+  daily: "",
+  values: [8, 1, 1],
+  choice: 8,
+  hints: 0,
+  crystal: "salt",
+  units: 0,
+  timed: false,
+  elapsed: 0,
+});
+test("first game completions earn XP once and free play cannot earn rewards", () => {
+  const start = initialLearningState();
+  const session = gameSession();
+  const wrong = recordGameAttempt(start, session, false, now);
+  assert.equal(wrong.xp, start.xp);
+  assert.equal(wrong.playground.stats.molecule.wrong, 1);
+  const correct = recordGameAttempt(wrong, session, true, now);
+  assert.equal(correct.xp, start.xp + 20);
+  assert.deepEqual(correct.playground.completed, ["molecule:water"]);
+  assert.equal(recordGameAttempt(correct, session, true, now).xp, correct.xp);
+  assert.equal(recordGameAttempt(start, { ...session, free: true }, true, now), start);
+  assert.equal(recordGameAttempt(start, { ...session, index: 999 }, true, now), start);
+});
+test("daily game bonuses require the current assigned game and are deduplicated", () => {
+  const today = dailyGame(now);
+  const start = initialLearningState();
+  const session = { ...gameSession(today.game, today.index), daily: today.date };
+  const earned = recordGameAttempt(start, session, true, now);
+  assert.equal(earned.xp, start.xp + 30);
+  assert.equal(recordGameAttempt(earned, session, true, now).xp, earned.xp);
+  assert.deepEqual(earned.playground.dailyClaims, [today.date]);
+  assert.equal(
+    recordGameAttempt(start, { ...session, daily: "2026-10-05" }, true, now).xp,
+    start.xp + 20,
+  );
+  const different = { ...session, index: (session.index + 1) % gameRounds[session.game].length };
+  assert.deepEqual(recordGameAttempt(start, different, true, now).playground.dailyClaims, []);
+  for (const time of [now, now + DAY, -DAY]) {
+    const daily = dailyGame(time);
+    assert.ok(daily.index >= 0 && daily.index < gameRounds[daily.game].length);
+  }
+});
+test("personal bests require an unhinted correct timed solve", () => {
+  const start = initialLearningState();
+  const session = { ...gameSession(), timed: true, elapsed: 45 };
+  let state = recordGameAttempt(start, session, true, now);
+  assert.equal(state.playground.stats.molecule.best, 45);
+  state = recordGameAttempt(state, { ...session, elapsed: 9, hints: 1 }, true, now);
+  assert.equal(state.playground.stats.molecule.best, 45);
+  state = recordGameAttempt(state, { ...session, elapsed: 12 }, false, now);
+  assert.equal(state.playground.stats.molecule.best, 45);
+  state = recordGameAttempt(state, { ...session, elapsed: 33 }, true, now);
+  assert.equal(state.playground.stats.molecule.best, 33);
+});
+test("game checkpoints and creations survive backups and legacy saves default safely", () => {
+  const session = gameSession("atom");
+  let state = checkpointGame(initialLearningState(), session);
+  state = saveCreation(state, { id: "creation-test", title: "My atom", at: now, session });
+  assert.deepEqual(importProgress(exportProgress(state)).playground, state.playground);
+  const legacy = JSON.parse(exportProgress(state));
+  delete legacy.state.playground;
+  assert.equal(importProgress(JSON.stringify(legacy)).playground.creations.length, 0);
+  assert.equal(deleteCreation(state, "creation-test").playground.creations.length, 0);
+});
+test("game imports bound data, reject unknown round keys and deduplicate creations", () => {
+  const state = initialLearningState();
+  state.playground.completed = [
+    "molecule:water",
+    "molecule:water",
+    "atom:made-up",
+    "__proto__:bad",
+  ];
+  state.playground.dailyClaims = ["2026-02-30", "2026-10-06", "2026-10-06"];
+  state.playground.resume = {
+    ...gameSession(),
+    index: 1e9,
+    values: Array(300).fill(Infinity),
+    units: 999,
+  };
+  for (let i = 0; i < 30; i++)
+    state.playground.creations.push({
+      id: `creation-${i}`,
+      title: "\u0000" + "x".repeat(200),
+      at: now,
+      session: gameSession("atom"),
+    });
+  const clean = importProgress(exportProgress(state));
+  assert.deepEqual(clean.playground.completed, ["molecule:water"]);
+  assert.deepEqual(clean.playground.dailyClaims, ["2026-10-06"]);
+  assert.equal(clean.playground.resume.index, 5);
+  assert.equal(clean.playground.resume.units, 3);
+  assert.equal(clean.playground.resume.values.length, 128);
+  assert.ok(clean.playground.resume.values.every((v) => v === -1));
+  assert.equal(clean.playground.creations.length, 24);
+  assert.ok(
+    clean.playground.creations.every((c) => c.title.length === 60 && !c.title.includes("\u0000")),
+  );
+  assert.equal(sanitizeGameSession({ game: "__proto__" }), null);
+});

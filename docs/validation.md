@@ -14,6 +14,15 @@ The current verification suite covers:
 
 Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pnpm test:e2e` against the current production build. Confirm the final GitHub Actions result for the published commit. A passing earlier commit does not validate later changes. Platform-specific installation, haptics, GPU performance and native sharing still need checks on the target devices.
 
+### Eight-game playground on October 7, 2026
+
+- Eight games cover 38 authored rounds. Engine regressions validate every solution, atom conservation, smallest coefficient ratios, molecule angles, crystal-site uniqueness/coordination, finite property values and escaped SVG exports.
+- All 26 learning-rule unit tests and validation of all 118 element records pass. Backups preserve and sanitize game checkpoints, completion keys, daily claims, personal bests and a capped collection of creations.
+- Mobile/desktop workflows cover all eight games, undo/redo, refresh/resume, optional timer pause, atom details and shell inspection, saved model reopening, SVG and progress exports, restore, real touch dragging, camera controls, forced GPU-loss fallback and production offline precaching.
+- The hub and each game pass WCAG A/AA axe checks in Noir. All eight fit 320px without page overflow; the periodic puzzle scrolls within its own region. Material hotspots are tested for separation at 320px. Mobile and desktop screenshots were visually reviewed.
+- The first full local run passed 117 of 118 cases; one existing multi-step desktop tip test exceeded its 30-second allowance on the software-rendering host. Its allowance now matches the 60 seconds used for other multi-step checks. All eight affected mobile/desktop tip, detective, accessibility and new marker-spacing checks passed after the final adjustments.
+- The complete committed browser/data suite now contains 120 cases. The final published commit's GitHub Actions run remains the authority for the complete suite and deployment.
+
 ### First-visit introduction on October 7, 2026
 
 - Eight mobile/desktop onboarding cases cover fresh visits, unfinished-tour reloads, real swipe/rotation/keyboard controls, nucleus taps, pause, completion, Settings replay, unchanged learning progress and theme, and blocked browser storage.

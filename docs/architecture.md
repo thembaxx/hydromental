@@ -20,6 +20,14 @@ The root and body paint the theme background through the full dynamic viewport. 
 
 The playful scene uses representative orbiting electrons. The scientific mode is a shell-population schematic derived from the sourced neutral configuration; it is not a quantum-mechanical simulation. Rendering quality is configurable, reduced motion is respected, and unavailable WebGL has a visible fallback. Sound and ambient feedback use generated Web Audio after interaction rather than downloading media or starting automatically.
 
+## Game playground
+
+`/playground` adds a standalone responsive hub while preserving the original bonding dialog. `lib/playground.ts` owns eight authored catalogs (38 rounds), answer validation, particle compositions, molecule geometry and finite lattice models. Property ordering reads numeric values from the existing sourced snapshot; equations count each element on both sides and require the smallest whole-number ratio. Isotope exploration explicitly distinguishes reference-listed compositions from exploratory ones, without asserting stability.
+
+`components/playground-app.tsx` coordinates sessions, undo/redo, timers, inspection, local creations and settings. Deep links use `?game=<id>`; matching checkpoints resume after refresh. The hub keeps a continue action. Optional timers stop while paused, hidden or behind a modal. Tap and labeled keyboard controls supplement drag, pinch and rotation. `components/playground-scene.tsx` owns and disposes all GPU resources, listeners, observers and frames. It follows live reduced-motion and theme changes, limits pixel density, skips unchanged paused frames and provides game controls even when WebGL is unavailable. Saved models reopen in free play; safe escaped SVG exports use no external resources.
+
+`LearningState.playground` is an optional-on-import extension of the v2 storage record, preserving existing backups. Completions use whitelisted game/round identifiers, daily bonuses require the assigned UTC date/game/round, imports clamp all values, and saved creations are capped at 24. Game XP shares the journal and activity streak. Mastery markers and badges communicate progress without relying on colour.
+
 ## Learning state
 
 `lib/learning.ts` owns pure state transitions and validation. The versioned `elementals.learning.v2` record contains discoveries, XP, quiz streak, favorites, history, mastery, activity dates, daily missions, achievements, onboarding and settings. Loading migrates original prototype storage and saving retains its compatibility keys.
@@ -34,7 +42,7 @@ Actions return new state. Discovery rewards are awarded once, quiz XP is awarded
 
 ## Offline and discovery
 
-The production-only service worker precaches the playground shell, public element JSON and local assets, and caches visited reference HTML. It skips RSC requests, external URLs, API traffic and unsafe/non-GET requests. Unvisited reference pages receive a readable offline fallback. A versioned cache and explicit update/restart control preserve the current learning session until the user elects to update.
+The production-only service worker precaches the explorer and game playground HTML, both routes’ production JS/CSS, public element JSON and local assets, and caches visited reference HTML. It skips RSC requests, external URLs, API traffic and unsafe/non-GET requests. Unvisited reference pages receive a readable offline fallback. A versioned cache and explicit update/restart control preserve the current learning session until the user elects to update.
 
 Metadata, canonical URLs, the XML sitemap, robots instructions, JSON-LD, `/element-data.json` and `/llms.txt` expose the same authored content. The public origin comes from deployment configuration, with a localhost fallback for development. These endpoints improve access to content but do not promise search-engine rankings or assistant citations.
 

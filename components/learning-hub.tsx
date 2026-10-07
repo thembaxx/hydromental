@@ -74,6 +74,17 @@ export function LearningHub({
         </Card>
       </div>
       <section className="panel-section">
+        <h3 className="panel-title">Your science playground</h3>
+        <p className="panel-copy">
+          <span className="n">{state.playground.completed.length}/38</span> game rounds solved ·{" "}
+          <span className="n">{state.playground.creations.length}</span> saved creations. Your game
+          XP, daily bonuses and creations are included in progress backups.
+        </p>
+        <a className="action-button" href="/playground">
+          Open game playground
+        </a>
+      </section>
+      <section className="panel-section">
         <h3 className="panel-title">
           Level {level.level} · {level.title}
         </h3>

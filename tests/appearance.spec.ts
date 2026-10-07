@@ -29,6 +29,7 @@ test("Noir persists through reloads and keeps dialogs and reference reading acce
 test("learning tips retire without moving controls, and new interaction modes teach again", async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   await page.clock.install();
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");

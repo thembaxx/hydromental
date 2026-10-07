@@ -1,5 +1,52 @@
 /** Local-first learning progress. Atomic numbers are 1-based throughout this module. */
 export type Theme = "" | "day" | "midnight" | "dusk" | "noir";
+export const gameIds = [
+  "molecule",
+  "atom",
+  "balance",
+  "periodic",
+  "detective",
+  "mystery",
+  "crystal",
+  "properties",
+] as const;
+export type GameId = (typeof gameIds)[number];
+export const gameRounds: Record<GameId, readonly string[]> = {
+  molecule: ["water", "carbon-dioxide", "ammonia", "methane", "oxygen", "nitrogen"],
+  atom: ["hydrogen", "deuterium", "helium", "carbon", "sodium-ion", "chloride-ion"],
+  balance: ["water", "carbon-dioxide", "ammonia", "methane"],
+  periodic: ["first-row", "metals", "nonmetals", "families"],
+  detective: ["phone", "bicycle", "led"],
+  mystery: ["hydrogen", "oxygen", "iron", "copper", "helium", "silicon", "neon", "gold"],
+  crystal: ["salt", "diamond", "graphite"],
+  properties: ["mass", "melting", "electronegativity", "density"],
+};
+export interface GameSession {
+  game: GameId;
+  index: number;
+  free: boolean;
+  daily: string;
+  values: number[];
+  choice: number;
+  hints: number;
+  crystal: "salt" | "diamond" | "graphite";
+  units: number;
+  timed: boolean;
+  elapsed: number;
+}
+export interface Creation {
+  id: string;
+  title: string;
+  at: number;
+  session: GameSession;
+}
+export interface GameProgress {
+  completed: string[];
+  dailyClaims: string[];
+  stats: Record<GameId, { correct: number; wrong: number; best: number | null }>;
+  resume: GameSession | null;
+  creations: Creation[];
+}
 export type MissionId = "discover" | "quiz" | "review";
 export interface LearningSettings {
   theme: Theme;
@@ -36,6 +83,7 @@ export interface LearningState {
   daily: Record<string, DailyProgress>;
   badges: string[];
   onboardingDismissed: boolean;
+  playground: GameProgress;
 }
 export interface DailyMission {
   id: MissionId;
@@ -98,6 +146,187 @@ export function learningDate(now = Date.now()): string {
 function emptyDaily(): DailyProgress {
   return { discovered: [], correct: [], reviewed: [], claimed: [] };
 }
+export function initialGameProgress(): GameProgress {
+  return {
+    completed: [],
+    dailyClaims: [],
+    resume: null,
+    creations: [],
+    stats: Object.fromEntries(
+      gameIds.map((id) => [id, { correct: 0, wrong: 0, best: null }]),
+    ) as GameProgress["stats"],
+  };
+}
+function validGame(value: unknown): value is GameId {
+  return typeof value === "string" && gameIds.includes(value as GameId);
+}
+function validGameKey(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  const [game, round, extra] = value.split(":");
+  return !extra && validGame(game) && gameRounds[game].includes(round);
+}
+export function sanitizeGameSession(value: unknown): GameSession | null {
+  if (!isRecord(value) || !validGame(value.game)) return null;
+  return {
+    game: value.game,
+    index: Math.min(gameRounds[value.game].length - 1, safeCount(value.index)),
+    free: value.free === true,
+    daily: validDate(value.daily) ? value.daily : "",
+    values: Array.isArray(value.values)
+      ? value.values
+          .slice(0, 128)
+          .map((v) =>
+            typeof v === "number" && Number.isInteger(v) && v >= -1 && v <= 300 ? v : -1,
+          )
+      : [],
+    choice: Math.min(118, safeCount(value.choice)),
+    hints: Math.min(4, safeCount(value.hints)),
+    crystal: value.crystal === "diamond" || value.crystal === "graphite" ? value.crystal : "salt",
+    units: Math.min(3, safeCount(value.units)),
+    timed: value.timed === true,
+    elapsed: Math.min(86_400, safeCount(value.elapsed)),
+  };
+}
+function sanitizeGameProgress(value: unknown): GameProgress {
+  const base = initialGameProgress();
+  if (!isRecord(value)) return base;
+  base.completed = Array.isArray(value.completed)
+    ? [...new Set(value.completed.filter(validGameKey))]
+    : [];
+  base.dailyClaims = Array.isArray(value.dailyClaims)
+    ? [...new Set(value.dailyClaims.filter(validDate))].sort().slice(-400)
+    : [];
+  base.resume = sanitizeGameSession(value.resume);
+  if (isRecord(value.stats)) {
+    for (const id of gameIds) {
+      const item = value.stats[id];
+      if (isRecord(item))
+        base.stats[id] = {
+          correct: safeCount(item.correct),
+          wrong: safeCount(item.wrong),
+          best:
+            typeof item.best === "number" && Number.isFinite(item.best) && item.best >= 0
+              ? Math.min(86_400, item.best)
+              : null,
+        };
+    }
+  }
+  if (Array.isArray(value.creations)) {
+    const ids = new Set<string>();
+    for (const item of value.creations.slice(-24)) {
+      if (
+        !isRecord(item) ||
+        typeof item.id !== "string" ||
+        !/^[a-z0-9-]{8,64}$/.test(item.id) ||
+        ids.has(item.id)
+      )
+        continue;
+      const session = sanitizeGameSession(item.session);
+      if (!session || !["molecule", "atom", "crystal"].includes(session.game)) continue;
+      ids.add(item.id);
+      base.creations.push({
+        id: item.id,
+        title:
+          typeof item.title === "string"
+            ? item.title
+                .split("")
+                .filter((char) => char.charCodeAt(0) >= 32)
+                .join("")
+                .trim()
+                .slice(0, 60) || "My creation"
+            : "My creation",
+        at: safeNumber(item.at, 0, 8_640_000_000_000_000),
+        session,
+      });
+    }
+  }
+  return base;
+}
+export function dailyGame(now = Date.now()): { game: GameId; index: number; date: string } {
+  const day = Math.floor(now / DAY);
+  const game = gameIds[((day % gameIds.length) + gameIds.length) % gameIds.length];
+  return {
+    game,
+    index:
+      ((Math.floor(day / gameIds.length) % gameRounds[game].length) + gameRounds[game].length) %
+      gameRounds[game].length,
+    date: learningDate(now),
+  };
+}
+/** First completion awards 20 XP. The current daily challenge adds 10 once per UTC day. */
+export function recordGameAttempt(
+  state: LearningState,
+  session: GameSession,
+  correct: boolean,
+  now = Date.now(),
+): LearningState {
+  const clean = sanitizeGameSession(session);
+  if (
+    !clean ||
+    clean.free ||
+    !validGame(session.game) ||
+    !Number.isInteger(session.index) ||
+    session.index < 0 ||
+    session.index >= gameRounds[session.game].length
+  )
+    return state;
+  const key = `${clean.game}:${gameRounds[clean.game][clean.index]}`;
+  const progress = state.playground ?? initialGameProgress();
+  const first = correct && !progress.completed.includes(key);
+  const today = dailyGame(now);
+  const daily =
+    correct &&
+    clean.daily === today.date &&
+    clean.game === today.game &&
+    clean.index === today.index &&
+    !progress.dailyClaims.includes(today.date);
+  const previous = progress.stats[clean.game];
+  const seconds = clean.timed && correct && !clean.hints ? clean.elapsed : null;
+  return withBadges({
+    ...withActivity(state, now),
+    xp: Math.min(MAX_XP, state.xp + (first ? 20 : 0) + (daily ? 10 : 0)),
+    playground: {
+      ...progress,
+      completed: first ? [...progress.completed, key] : progress.completed,
+      dailyClaims: daily
+        ? [...progress.dailyClaims, today.date].sort().slice(-400)
+        : progress.dailyClaims,
+      stats: {
+        ...progress.stats,
+        [clean.game]: {
+          correct: previous.correct + (correct ? 1 : 0),
+          wrong: previous.wrong + (correct ? 0 : 1),
+          best:
+            seconds === null
+              ? previous.best
+              : previous.best === null
+                ? seconds
+                : Math.min(previous.best, seconds),
+        },
+      },
+      resume: clean,
+    },
+  });
+}
+export function checkpointGame(state: LearningState, session: GameSession | null): LearningState {
+  return { ...state, playground: { ...state.playground, resume: sanitizeGameSession(session) } };
+}
+export function saveCreation(state: LearningState, creation: Creation): LearningState {
+  const progress = sanitizeGameProgress({
+    ...state.playground,
+    creations: [...state.playground.creations.filter((item) => item.id !== creation.id), creation],
+  });
+  return { ...state, playground: progress };
+}
+export function deleteCreation(state: LearningState, id: string): LearningState {
+  return {
+    ...state,
+    playground: {
+      ...state.playground,
+      creations: state.playground.creations.filter((item) => item.id !== id),
+    },
+  };
+}
 export function initialLearningState(): LearningState {
   return {
     version: 2,
@@ -120,6 +349,7 @@ export function initialLearningState(): LearningState {
     daily: {},
     badges: [],
     onboardingDismissed: false,
+    playground: initialGameProgress(),
   };
 }
 function sanitizeState(value: unknown): LearningState {
@@ -209,6 +439,7 @@ function sanitizeState(value: unknown): LearningState {
         ]
       : [],
     onboardingDismissed: value.onboardingDismissed === true,
+    playground: sanitizeGameProgress(value.playground),
   };
 }
 function browserStorage(): ProgressStorage | undefined {

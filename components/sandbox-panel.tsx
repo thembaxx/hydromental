@@ -22,6 +22,9 @@ export function SandboxPanel({ onPick }: { onPick: (z: number) => void }) {
   });
   return (
     <div className="panel-content">
+      <a className="action-button" href="/playground">
+        Open game playground · eight ways to play
+      </a>
       <p className="panel-copy">
         Explore curated combinations that connect elements to familiar materials. This is a concept
         playground with symbolic shapes; positions, proportions, and bonds are illustrative.

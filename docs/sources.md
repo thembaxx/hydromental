@@ -36,3 +36,17 @@ Sandbox examples illustrate bonding, crystal networks, alloying, atom conservati
 ## Refresh and validation
 
 Run `node scripts/refresh-science.mjs --check` to validate the committed snapshot without network access. Run `node scripts/refresh-science.mjs` to refresh the PubChem properties and configurations while preserving original editorial content and citations, then run the project formatter and checks. The refresh validates atomic-number ordering, orbital capacities, shell electron totals, every editorial field, non-self element connections, property completeness and HTTPS source hosts before writing. A failed refresh leaves the committed snapshot intact.
+
+## Playground models and games
+
+Six molecule targets use familiar simplified bonding models linked to PubChem: water (bent, about 104.5°), carbon dioxide (linear), ammonia (trigonal pyramidal, about 107°), methane (tetrahedral, about 109.5°), oxygen and nitrogen. Bond lengths and atom radii are illustrative; O₂ is not a molecular-orbital or magnetism simulation.
+
+The Atom Workshop uses six particle-count targets and the [NIST isotopic-composition reference](https://physics.nist.gov/PhysRefData/Compositions/index.html). Proton count identifies the element, proton plus neutron count gives mass number, and proton minus electron count gives charge. Free compositions are not predictions of stability or natural occurrence. Representative dots are capped at 18 per particle type while controls retain exact counts.
+
+Four net equations teach atom conservation and smallest whole-number coefficients. They do not model reaction conditions, energetics or rates; ammonia is explicitly reversible. See [OpenStax equation balancing](https://openstax.org/books/chemistry-2e/pages/4-1-writing-and-balancing-chemical-equations).
+
+Salt is an alternating ionic lattice with six nearest unlike neighbours for interior ions, without covalent sticks. Diamond uses the FCC-plus-basis carbon lattice and nearest-neighbour tetrahedral bonds. Graphite uses AB-shifted honeycomb sheets and in-plane bonds, with exaggerated interlayer spacing. Cutaways omit boundary neighbours; additions reveal sections, not chemical reaction steps. See [OpenStax crystalline structures](https://openstax.org/books/chemistry-2e/pages/10-6-lattice-structures-in-crystalline-solids) and the existing carbon reference.
+
+Everyday Detective uses explicitly identified examples: a phone with silicon chips, copper circuitry, lithium-ion battery materials and neodymium-containing speaker magnets; a bicycle with an aluminium alloy frame, steel chain, rubber tyre and brass bell; a white LED with a gallium-nitride blue emitter, aluminium heat sink, copper wiring and yttrium-based phosphor. These are common material examples, not universal product compositions. Elements occur in alloys, polymers and compounds; white-light technologies vary. Each answer links to the app’s original element sources.
+
+Property Challenge uses actual numeric snapshot values for atomic mass (H/C/O/Fe), melting point (Na/Mg/Al/Si), Pauling electronegativity (Na/Si/Cl/F) and density (Al/Fe/Cu/Au). Density, phase, pressure, allotrope and temperature limitations remain explicit; source precision is retained in element references. Periodic Puzzle uses the real group/period coordinates of the first 20 elements and links to IUPAC. Missing puzzle tiles are intentional challenges; the complete reference table still displays every element.
