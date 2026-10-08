@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { PwaManager } from "@/components/pwa-manager";
 import { BrowserChrome } from "@/components/browser-chrome";
 import { jsonLd, siteOrigin } from "@/lib/site";
+import { themeBootstrapScript, themeCriticalCss, themeSurfaces } from "@/lib/theme";
 import "./globals.css";
 
 const origin = siteOrigin();
@@ -12,7 +13,6 @@ export const metadata: Metadata = {
     "Touch, explore, and discover all 118 chemical elements. A playful periodic table with interactive atoms, scientific stories, and learning challenges.",
   applicationName: "Elementals",
   alternates: { canonical: "/" },
-  manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Elementals" },
   icons: { icon: "/icon.svg", apple: "/icons/apple-touch-icon.png" },
   openGraph: {
@@ -42,14 +42,19 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f0f5fc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a1028" },
+    { media: "(prefers-color-scheme: light)", color: themeSurfaces.day.color },
+    { media: "(prefers-color-scheme: dark)", color: themeSurfaces.midnight.color },
   ],
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="color-scheme" content="light dark" />
+        <noscript
+          dangerouslySetInnerHTML={{ __html: '<link rel="manifest" href="/manifest.webmanifest">' }}
+        />
+        <style id="theme-critical" dangerouslySetInnerHTML={{ __html: themeCriticalCss }} />
         <link
           rel="preload"
           href="/fonts/nunito-variable.woff2"
@@ -60,7 +65,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{
-            __html: `try{const saved=JSON.parse(localStorage.getItem('elementals.learning.v2')||'null');const theme=saved?.version===2?saved.settings?.theme:(localStorage.getItem('th')||localStorage.getItem('elt'));if(['day','midnight','dusk','noir'].includes(theme))document.documentElement.dataset.theme=theme}catch{}`,
+            __html: themeBootstrapScript,
           }}
         />
       </head>

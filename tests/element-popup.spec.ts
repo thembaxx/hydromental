@@ -96,20 +96,17 @@ test("browser theme colour follows selected themes and the background covers the
   ]) {
     await page.locator("#mb").click();
     await page.getByRole("button", { name: label, exact: true }).click();
-    await expect
-      .poll(() =>
-        page
-          .locator('meta[name="theme-color"]')
-          .evaluateAll((metas) => metas.map((meta) => meta.getAttribute("content"))),
-      )
-      .toEqual([color, color]);
+    await expect(page.locator("#app-theme-color")).toHaveAttribute("content", color);
+    await expect(page.locator('meta[name="theme-color"]')).toHaveCount(3);
+    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
   }
-  for (const target of ["html", "body"]) {
-    await expect(page.locator(target)).toHaveCSS("background-attachment", "fixed");
-    expect(
-      await page.locator(target).evaluate((node) => getComputedStyle(node).backgroundImage),
-    ).toContain("gradient");
-  }
+  expect(
+    await page.locator("body").evaluate((node) => {
+      const background = getComputedStyle(node, "::before");
+      return { position: background.position, image: background.backgroundImage };
+    }),
+  ).toMatchObject({ position: "fixed", image: expect.stringContaining("gradient") });
+  await expect(page.locator("html")).toHaveCSS("background-color", "rgb(240, 245, 252)");
   await expect(page.locator('meta[name="apple-mobile-web-app-status-bar-style"]')).toHaveAttribute(
     "content",
     "black-translucent",

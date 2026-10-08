@@ -1,5 +1,7 @@
 "use client";
 
+import { AppLoading } from "@/components/app-loading";
+
 import Link from "next/link";
 import {
   useCallback,
@@ -456,19 +458,7 @@ export default function ElementsExplorer() {
   };
   const close = () => setSheet(null);
 
-  if (!hydrated) {
-    return (
-      <main className="launch-screen">
-        <BrandMark />
-        <h1>Elementals</h1>
-        <p>Explore all 118 elements, their atoms, and their everyday uses.</p>
-        <p className="panel-copy" role="status">
-          Loading your element explorer…
-        </p>
-        <Link href="/elements">Browse the element library</Link>
-      </main>
-    );
-  }
+  if (!hydrated) return <AppLoading />;
   if (welcome) {
     return (
       <Onboarding

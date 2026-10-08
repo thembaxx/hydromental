@@ -91,7 +91,7 @@ The committed scientific snapshot contains all 118 elements, original editorial 
 - `tests/`: learning unit tests and production browser/data/accessibility regressions.
 - `docs/original-prototype.html`: archived source reference, excluded from application routes and tooling.
 
-See [the architecture guide](docs/architecture.md) for state, rendering, data and offline boundaries.
+See [the architecture guide](docs/architecture.md) for state, rendering, data and offline boundaries. [Theming and startup](docs/theming.md) covers seamless viewport backgrounds, browser colors, theme-specific install manifests and platform limits.
 
 ## Delivery and discovery
 

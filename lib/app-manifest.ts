@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
-export default function manifest(): MetadataRoute.Manifest {
+import { themeSurfaces, type SurfaceTheme } from "./theme";
+export function appManifest(theme: SurfaceTheme = "day"): MetadataRoute.Manifest {
+  const color = themeSurfaces[theme].color;
   return {
     id: "/",
     name: "Elementals — A playful science playground",
@@ -8,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#f0f5fc",
-    theme_color: "#f0f5fc",
+    background_color: color,
+    theme_color: color,
     lang: "en",
     categories: ["education", "science"],
     icons: [

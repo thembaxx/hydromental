@@ -28,3 +28,5 @@ Use a production build, not `next dev`, because service worker registration is i
 6. Restore connectivity. Installation and source links should work normally. A changed service-worker version must prompt for restart while retaining local learning storage.
 
 Use browser DevTools Application panels to inspect the manifest, service worker, Cache Storage, and icons. Test an actual supported mobile browser for platform-specific installation behavior.
+
+Theme-specific install manifests are precached with the same app identity, and the standalone offline page restores the same background as the explorer. See [theming and startup](theming.md) for first-paint behavior and browser/native splash limitations.
