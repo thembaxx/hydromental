@@ -53,32 +53,10 @@ export function SettingsPanel({
           <option value="low">Lightweight · save resources</option>
           <option value="high">Detailed · sharper rendering</option>
         </select>
-        <label className="field-label" htmlFor="settings-model">
-          Visualization
-        </label>
-        <select
-          className="form-input"
-          id="settings-model"
-          value={settings.model}
-          onChange={(event) => onChange({ model: event.target.value as Settings["model"] })}
-        >
-          <option value="playful">Playful · orbiting electrons</option>
-          <option value="scientific">Scientific · labeled shell schematic</option>
-        </select>
         <p className="panel-copy">
-          Both views are teaching illustrations. Electrons are described by quantum probability
-          distributions rather than fixed planetary paths.
+          The home atom is a playful illustration of representative electrons. Electrons are
+          described by quantum probability distributions rather than fixed planetary paths.
         </p>
-        <label className="settings-toggle" htmlFor="setting-labels">
-          <Input
-            id="setting-labels"
-            variant="unstyled"
-            type="checkbox"
-            checked={settings.labels}
-            onChange={(event) => onChange({ labels: event.target.checked })}
-          />{" "}
-          Show shell labels
-        </label>
         {onResetCamera && (
           <Button variant="unstyled" className="action-button" onClick={onResetCamera}>
             Reset atom view
@@ -125,9 +103,9 @@ export function SettingsPanel({
       <section className="panel-section">
         <h3 className="panel-title">Controls that work for everyone</h3>
         <p className="panel-copy">
-          Use arrow keys or the visible navigation buttons to explore. Swipe to travel between
-          elements. Turn on rotation mode to drag the atom, pinch to zoom, and double-tap to reset.
-          Hold the atom to peek at its identity.
+          Swipe to travel between elements, pinch to zoom, and hold the atom to peek at its
+          identity. Tap the chemical family name to browse that family. Arrow keys also move through
+          the table.
         </p>
         <Button variant="unstyled" className="action-button" asChild>
           <Link href="/welcome">

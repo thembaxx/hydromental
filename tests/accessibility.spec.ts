@@ -148,22 +148,17 @@ test("long names and explorer controls fit narrow, landscape and desktop layouts
     const bounds = await page.evaluate(() => {
       const hint = document.querySelector("#hint")!.getBoundingClientRect();
       const mass = document.querySelector(".element-number")!.getBoundingClientRect();
-      const camera = document.querySelector(".camera-tools")!.getBoundingClientRect();
       const title = document.querySelector("#in h1")!;
       return {
         overflow: document.documentElement.scrollWidth > innerWidth,
         hintBottom: hint.bottom,
-        hintTop: hint.top,
         massTop: mass.top,
-        cameraBottom: camera.bottom,
         titleHeight: title.getBoundingClientRect().height,
         lineHeight: Number.parseFloat(getComputedStyle(title).lineHeight),
       };
     });
     expect(bounds.overflow).toBe(false);
     expect(bounds.massTop).toBeGreaterThan(bounds.hintBottom + 5);
-    expect(bounds.cameraBottom).toBeLessThan(bounds.hintTop);
     expect(bounds.titleHeight).toBeLessThanOrEqual(bounds.lineHeight + 1);
-    await page.getByRole("button", { name: "Reset camera", exact: true }).click();
   }
 });

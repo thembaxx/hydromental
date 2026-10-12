@@ -38,14 +38,14 @@ const steps = [
   {
     title: "Make it move.",
     description:
-      "Swipe across the atom to meet another element. Choose Rotate and drag to turn it. Pinch to zoom, or use the visible controls.",
-    instruction: "Try a swipe here. Arrow keys and the arrow buttons work too.",
+      "Swipe across the atom to meet another element. Pinch to zoom. Tap the chemical family name to see every element in that family.",
+    instruction: "Try a swipe here. Arrow keys work too.",
     image: "explore",
-    alt: "Explorer controls: Rotate mode, previous and next element arrows, zoom, reset and pause.",
+    alt: "The explorer showing an atom you can swipe, pinch, and open by chemical family.",
     points: [
       "Swipe: change the element",
-      "Rotate + drag: turn the atom",
-      "Pinch or zoom buttons: get closer",
+      "Pinch: zoom the atom",
+      "Family name: browse that chemical family",
     ],
   },
   {

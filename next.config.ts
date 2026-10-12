@@ -12,7 +12,7 @@ const contentSecurityPolicy = [
   "media-src 'self' blob:",
   "worker-src 'self'",
   "frame-src 'none'",
-  "frame-ancestors 'none'",
+  development ? "frame-ancestors *" : "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'self'",
@@ -20,13 +20,14 @@ const contentSecurityPolicy = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  allowedDevOrigins: ["127.0.0.1"],
   async headers() {
     return [
       {
         source: "/:path*",
         headers: [
           { key: "Content-Security-Policy", value: contentSecurityPolicy },
-          { key: "X-Frame-Options", value: "DENY" },
+          ...(development ? [] : [{ key: "X-Frame-Options", value: "DENY" }]),
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {

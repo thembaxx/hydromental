@@ -949,6 +949,8 @@ small {
   padding: 7px 12px;
   font-size: 12px;
   font-weight: 800;
+  color: inherit;
+  cursor: pointer;
 }
 .family-badge > span {
   width: 9px;
@@ -1164,7 +1166,7 @@ small {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
   z-index: 2;
 }
@@ -2068,7 +2070,7 @@ input[type="file"].form-input {
   color: var(--mut);
   flex-shrink: 0;
 }
-#si.search-input {
+.search-input-row .search-input {
   width: 100%;
   min-height: 52px;
   border: 0;
@@ -3716,6 +3718,123 @@ input[type="file"].form-input {
 }
 .game-slot > .action-button {
   min-width: 90px;
+}
+.family-sheet {
+  padding: 24px;
+}
+.family-sheet .search-header p {
+  margin: 4px 0 0;
+  color: var(--mut);
+  font-size: 13px;
+}
+.family-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.family-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  background: var(--chip);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+}
+.family-filter[aria-pressed="true"] {
+  background: var(--dw);
+  box-shadow: 0 0 0 2px var(--family-color);
+}
+.family-filter i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--family-color);
+  display: block;
+}
+.family-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  max-height: min(46dvh, 420px);
+  overflow: auto;
+}
+.family-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.family-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: transparent;
+  padding: 8px;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  white-space: normal;
+}
+.family-open[aria-current="true"],
+.family-open:hover {
+  background: var(--accent-soft);
+  border-color: var(--line);
+}
+.family-symbol {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.family-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.family-name small {
+  color: var(--mut);
+  font-weight: 600;
+  font-size: 12px;
+}
+.family-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.family-story {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  background: var(--chip);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: inherit;
+  cursor: pointer;
+}
+.family-empty {
+  color: var(--mut);
+  font-size: 14px;
+  margin: 12px 0 0;
 }
 .game-slot .n {
   font-size: 12px;

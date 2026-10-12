@@ -11,7 +11,7 @@ import {
   type CSSProperties,
   type PointerEvent,
 } from "react";
-import { categories, elements, group, neighbour, period, type Category } from "@/lib/elements";
+import { categories, elements, neighbour, type Category } from "@/lib/elements";
 import { getScience, elementSlug } from "@/lib/science";
 import {
   claimMission,
@@ -35,7 +35,7 @@ import { AtomCanvas, type AtomSceneApi } from "@/components/atom-canvas";
 import { BrandMark } from "@/components/brand-mark";
 import { DialogShell } from "@/components/dialog-shell";
 import { SearchPalette } from "@/components/search-palette";
-import { NavigationScrubber } from "@/components/navigation-scrubber";
+import { FamilySheet } from "@/components/family-sheet";
 import { PeriodicTable } from "@/components/periodic-table";
 import { ElementDetails } from "@/components/element-details";
 import { ElementQuiz, type QuizMode } from "@/components/element-quiz";
@@ -99,9 +99,8 @@ export default function ElementsExplorer() {
   const [menu, setMenu] = useState(false);
   const [hold, setHold] = useState(false);
   const [spread, setSpread] = useState(false);
-  const [rotation, setRotation] = useState(false);
-  const [paused, setPaused] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [familyOpen, setFamilyOpen] = useState(false);
   const [inspection, setInspection] = useState<AtomInspection | null>(null);
   const [toast, setToast] = useState("");
   const [celebrate, setCelebrate] = useState(false);
@@ -178,12 +177,12 @@ export default function ElementsExplorer() {
   useEffect(() => {
     Object.assign(scene.current, {
       quality: learning.settings.quality,
-      model: learning.settings.model,
-      labels: learning.settings.labels,
+      model: "playful" as const,
+      labels: false,
       zoom,
-      rotationMode: rotation,
-      paused,
-      open: sheet !== null,
+      rotationMode: false,
+      paused: false,
+      open: sheet !== null || familyOpen,
     });
     scene.current.onInspect = (hit) => {
       if (hit.kind === "nucleus") {
@@ -192,7 +191,7 @@ export default function ElementsExplorer() {
         setSheet("details");
       } else setInspection(hit);
     };
-  }, [learning.settings, zoom, rotation, paused, sheet]);
+  }, [learning.settings, zoom, sheet, familyOpen]);
   useEffect(() => {
     if (!celebrate) return;
     const timer = setTimeout(() => setCelebrate(false), 1200);
@@ -227,10 +226,10 @@ export default function ElementsExplorer() {
       }
       feedback(isNew ? "discover" : "tap", learning.settings);
       if (learning.settings.ambient) setAmbientAudio(true);
-      scene.current.spin = rotation ? 0 : 14;
+      scene.current.spin = 14;
       scene.current.bounce = -5;
     },
-    [learning, level.level, notify, rotation],
+    [learning, level.level, notify],
   );
   const navigate = useCallback(
     (direction: Direction) => {
@@ -266,7 +265,7 @@ export default function ElementsExplorer() {
         setSearch(false);
         return;
       }
-      if (sheet || search || menu) return;
+      if (sheet || search || menu || familyOpen) return;
       const direction = (
         { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d" } as const
       )[event.key as "ArrowLeft"];
@@ -289,7 +288,7 @@ export default function ElementsExplorer() {
     };
     window.addEventListener("keydown", keyboard);
     return () => window.removeEventListener("keydown", keyboard);
-  }, [navigate, sheet, search, menu, hydrated, welcome]);
+  }, [navigate, sheet, search, menu, familyOpen, hydrated, welcome]);
   const cancelPointer = () => {
     pointer.current = null;
     scene.current.dragging = false;
@@ -365,16 +364,8 @@ export default function ElementsExplorer() {
         scene.current.hold = false;
         setHold(false);
       }
-      if (rotation) {
-        scene.current.rotationY = (scene.current.rotationY ?? 0) + dx * 0.008;
-        scene.current.rotationX = Math.max(
-          -1.2,
-          Math.min(1.2, (scene.current.rotationX ?? 0) + dy * 0.008),
-        );
-      } else {
-        scene.current.spin = dx * 0.6;
-        scene.current.tilt = Math.max(-0.6, Math.min(0.6, scene.current.tilt + dy * 0.005));
-      }
+      scene.current.spin = dx * 0.6;
+      scene.current.tilt = Math.max(-0.6, Math.min(0.6, scene.current.tilt + dy * 0.005));
     }
   };
   const pointerUp = (event: PointerEvent<HTMLDivElement>) => {
@@ -396,7 +387,7 @@ export default function ElementsExplorer() {
         atomApi.current?.inspect(event.clientX, event.clientY);
       return;
     }
-    if (!rotation && Math.max(Math.abs(dx), Math.abs(dy)) > 70)
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > 70)
       navigate(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "r" : "l") : dy < 0 ? "d" : "u");
   };
   const resetCamera = () => {
@@ -404,17 +395,6 @@ export default function ElementsExplorer() {
     setZoom(1);
     setInspection(null);
     notify("Camera reset");
-  };
-  const inspectShell = (shell: number) => {
-    settings({ model: "scientific", labels: true });
-    scene.current.selectedShell = shell;
-    setInspection({
-      kind: "shell",
-      atomicNumber: element.z,
-      shell,
-      electrons: science.shells[shell - 1],
-    });
-    setSheet(null);
   };
   const quizResult = (z: number, correct: boolean) => {
     const next = recordAnswer(learning, z, correct);
@@ -661,6 +641,7 @@ export default function ElementsExplorer() {
             id="app"
             className="atom-stage"
             data-ready={hydrated}
+            data-zoom={zoom.toFixed(2)}
             tabIndex={-1}
             aria-label="Interactive atom explorer"
             onPointerDown={pointerDown}
@@ -669,9 +650,6 @@ export default function ElementsExplorer() {
             onPointerCancel={() => {
               pointers.current.clear();
               cancelPointer();
-            }}
-            onDoubleClick={() => {
-              if (rotation) resetCamera();
             }}
           >
             <AtomCanvas element={element} controls={scene} apiRef={atomApi} />
@@ -688,14 +666,18 @@ export default function ElementsExplorer() {
               {String(element.z).padStart(2, "0")}
             </div>
             <div className="stage-topline">
-              <Badge
+              <Button
                 variant="unstyled"
                 className="family-badge"
                 style={{ "--family-color": categories[element.c][1] } as CSSProperties}
+                aria-label={`Show ${categories[element.c][0]} elements`}
+                aria-haspopup="dialog"
+                aria-expanded={familyOpen}
+                onClick={() => setFamilyOpen(true)}
               >
                 <span />
                 {categories[element.c][0]}
-              </Badge>
+              </Button>
               <Button
                 variant="unstyled"
                 className={`icon-button ${favorite ? "is-favorite" : ""}`}
@@ -711,97 +693,6 @@ export default function ElementsExplorer() {
                 <Icon name="favorite" />
               </Button>
             </div>
-            <div className="stage-modes">
-              <div className="segmented" aria-label="Atom interaction mode">
-                <Button
-                  variant="unstyled"
-                  aria-pressed={!rotation}
-                  onClick={() => setRotation(false)}
-                >
-                  Explore
-                </Button>
-                <Button
-                  variant="unstyled"
-                  className="icon-action"
-                  aria-label="Rotate"
-                  title="Rotate atom"
-                  aria-pressed={rotation}
-                  onClick={() => setRotation(true)}
-                >
-                  <Icon name="rotate" />
-                </Button>
-              </div>
-              <Button
-                variant="unstyled"
-                className="model-button"
-                aria-label={`Switch to ${learning.settings.model === "playful" ? "scientific" : "playful"} model`}
-                onClick={() => {
-                  settings({
-                    model: learning.settings.model === "playful" ? "scientific" : "playful",
-                  });
-                  setInspection(null);
-                  scene.current.selectedShell = null;
-                }}
-              >
-                {learning.settings.model === "playful" ? "Playful model" : "Scientific model"}
-                <Icon name="spark" />
-              </Button>
-            </div>
-            <NavigationScrubber
-              id="pl"
-              label="Period"
-              value={period(element)}
-              vertical
-              onNavigate={navigate}
-            />
-            <NavigationScrubber
-              id="pg"
-              label="Group"
-              value={group(element)}
-              onNavigate={navigate}
-            />
-            <Button
-              variant="unstyled"
-              id="au"
-              className="ar g"
-              aria-label="Up the group"
-              onClick={() => navigate("u")}
-            >
-              <Icon name="up" />
-            </Button>
-            <Button
-              variant="unstyled"
-              id="ad"
-              className="ar g"
-              aria-label="Down the group"
-              onClick={() => navigate("d")}
-            >
-              <Icon name="down" />
-            </Button>
-            {learning.settings.model === "scientific" && (
-              <div className="shell-inspector">
-                <label htmlFor="shell-select">Inspect a shell</label>
-                <select
-                  id="shell-select"
-                  value={inspection?.kind === "shell" ? inspection.shell : 0}
-                  onChange={(event) => {
-                    const n = Number(event.target.value);
-                    if (n) inspectShell(n);
-                    else {
-                      scene.current.selectedShell = null;
-                      setInspection({ kind: "nucleus", atomicNumber: element.z });
-                    }
-                  }}
-                >
-                  <option value={0}>Nucleus · {element.z} protons</option>
-                  {science.shells.map((count, i) => (
-                    <option key={i} value={i + 1}>
-                      Shell {i + 1} · {count} electrons
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
             {!learning.onboardingDismissed && (
               <div className="onboarding-card">
                 <span>Try a swipe. Meet a new element.</span>
@@ -845,61 +736,14 @@ export default function ElementsExplorer() {
                     </Button>
                   </div>
                 )}
-                <div className="camera-tools" aria-label="Camera controls">
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Zoom out"
-                    disabled={zoom <= 0.65}
-                    onClick={() => setZoom((value) => Math.max(0.65, value - 0.15))}
-                  >
-                    <Icon name="zoomOut" />
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Zoom in"
-                    disabled={zoom >= 1.7}
-                    onClick={() => setZoom((value) => Math.min(1.7, value + 0.15))}
-                  >
-                    <Icon name="zoomIn" />
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Reset camera"
-                    onClick={resetCamera}
-                  >
-                    <Icon name="reset" />
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label={paused ? "Resume atom animation" : "Pause atom animation"}
-                    aria-pressed={paused}
-                    onClick={() => setPaused((value) => !value)}
-                  >
-                    <Icon name={paused ? "play" : "pause"} />
-                  </Button>
-                </div>
               </div>
               <div id="pk" className={`g n ${hold ? "on" : ""}`}>
                 {element.z} protons · {element.z} electrons
               </div>
-              <LearningTip id="hint" key={rotation ? "rotate" : "travel"} active={hydrated}>
-                {rotation
-                  ? "Drag to rotate · Pinch to zoom · Double-tap to reset"
-                  : "Swipe to travel · Hold to peek · Tap orb to learn"}
+              <LearningTip id="hint" active={hydrated}>
+                Swipe to travel · Hold to peek · Tap the atom to learn
               </LearningTip>
               <div className="element-footer">
-                <Button
-                  variant="unstyled"
-                  className="icon-button element-nav"
-                  aria-label="Previous element"
-                  onClick={() => navigate("l")}
-                >
-                  <Icon name="previous" />
-                </Button>
                 <Button
                   variant="unstyled"
                   id="in"
@@ -920,18 +764,7 @@ export default function ElementsExplorer() {
                       science.properties.find((property) => property.label === "Standard state")!
                         .value
                     }
-                    <span>
-                      Meet this element <Icon name="next" />
-                    </span>
                   </small>
-                </Button>
-                <Button
-                  variant="unstyled"
-                  className="icon-button element-nav"
-                  aria-label="Next element"
-                  onClick={() => navigate("r")}
-                >
-                  <Icon name="next" />
                 </Button>
               </div>
             </div>
@@ -951,14 +784,8 @@ export default function ElementsExplorer() {
               >
                 <Icon name="spread" />
               </Button>
-              <LearningTip
-                className="model-caption"
-                key={learning.settings.model}
-                active={hydrated}
-              >
-                {learning.settings.model === "playful"
-                  ? "Playful illustration · Representative electrons"
-                  : "Shell-population illustration · Not to scale"}
+              <LearningTip className="model-caption" active={hydrated}>
+                Playful illustration · Representative electrons
               </LearningTip>
               <Button
                 variant="unstyled"
@@ -1052,6 +879,23 @@ export default function ElementsExplorer() {
           .reverse()
           .slice(0, 8)}
       />
+      <FamilySheet
+        key={familyOpen ? element.c : "closed"}
+        open={familyOpen}
+        category={element.c}
+        current={element.z}
+        favorites={learning.favorites}
+        onOpenChange={setFamilyOpen}
+        onPick={(z) => pick(z - 1)}
+        onFavorite={(z) => {
+          setLearning((previous) => toggleFavorite(previous, z));
+          feedback("tap", learning.settings);
+        }}
+        onDetails={(z) => {
+          pick(z - 1);
+          setSheet("details");
+        }}
+      />
       <DialogShell
         open={sheet !== null}
         onOpenChange={(open) => {
@@ -1077,7 +921,6 @@ export default function ElementsExplorer() {
               pick(z - 1);
               close();
             }}
-            onInspectShell={inspectShell}
           />
         )}
         {sheet === "quiz" && (
@@ -1128,7 +971,7 @@ export default function ElementsExplorer() {
                 element={element}
                 discovered={learning.discovered.includes(element.z)}
                 mastery={learning.mastery[String(element.z)]?.correct}
-                playful={learning.settings.model === "playful"}
+                playful
               />
             )}
             {sheet === "help" && (
@@ -1138,24 +981,23 @@ export default function ElementsExplorer() {
                   <Card variant="unstyled" className="feature-card">
                     <h3>Travel</h3>
                     <p>
-                      Swipe across a period or vertically through a group. Arrow buttons and keys do
-                      the same. Drag the Period and Group controls to scrub.
+                      Swipe across the atom to meet another element. Arrow keys travel the same way.
+                      Tap the chemical family name to browse every element in that family.
                     </p>
                   </Card>
                   <Card variant="unstyled" className="feature-card">
                     <h3>Touch</h3>
                     <p>
-                      Hold to peek at particle counts. Tap the orb for facts and everyday uses, or
-                      tap a scientific shell to inspect it. Switch to Rotate before dragging the
-                      model; pinch to zoom or use the camera buttons.
+                      Hold to peek at particle counts. Pinch to zoom. Tap the orb, or the element
+                      name, to open its story.
                     </p>
                   </Card>
                   <Card variant="unstyled" className="feature-card">
                     <h3>Understand</h3>
                     <p>
-                      Scientific model shows shell populations. Select a shell with the menu or tap
-                      its boundary. Both models are illustrations; cloud dots do not calculate
-                      orbital wavefunctions.
+                      The home atom is a playful illustration of representative electrons, not a
+                      calculated orbital. Open the element story for shell populations and sourced
+                      properties.
                     </p>
                   </Card>
                   <Card variant="unstyled" className="feature-card">

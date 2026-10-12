@@ -192,7 +192,7 @@ export function createAtomScene(
     context.shadowColor = monochrome ? "rgba(0,0,0,.45)" : "rgba(5,10,40,.45)";
     context.shadowBlur = 18;
     context.fillStyle = monochrome ? "#ddd" : element.c === "t" ? "#0B1031" : "#fff";
-    [0, 0.25, 0.5, 0.75, 1].forEach((u) => context.fillText(element.s, u * 1024, 262));
+    context.fillText(element.s, 256, 262);
     texture.needsUpdate = true;
   }
   function buildShells() {
@@ -364,7 +364,7 @@ export function createAtomScene(
       const snapping = Math.abs(controls.spin) < 0.8 && !controls.dragging;
       if (snapping)
         controls.spin +=
-          (Math.round(orb.rotation.y / (Math.PI / 2)) * (Math.PI / 2) - orb.rotation.y) * 60 * dt;
+          (Math.round(orb.rotation.y / (Math.PI * 2)) * (Math.PI * 2) - orb.rotation.y) * 60 * dt;
       orb.rotation.y += controls.spin * dt;
       controls.spin *= Math.exp(-(snapping ? 7 : 1.8) * dt);
       [controls.tilt, tiltVelocity] = spring(controls.tilt, tiltVelocity, 0, 60, 6, dt);

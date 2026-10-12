@@ -26,18 +26,8 @@ async function dragAtom(page: Page) {
   await page.mouse.up();
 }
 
-test("rotation drag keeps the element; Explore swipe navigates and hold is not a tap", async ({
-  page,
-}) => {
+test("swipe navigates and a hold peeks without opening details", async ({ page }) => {
   const errors = await openExplorer(page);
-  await page.getByRole("button", { name: "Rotate", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Rotate", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await dragAtom(page);
-  await expect(page.locator("#in")).toContainText("Oxygen");
-  await page.getByRole("button", { name: "Explore", exact: true }).click();
   await dragAtom(page);
   await expect(page.locator("#in")).toContainText("Fluorine");
   const box = (await page.locator("#app").boundingBox())!;
@@ -48,7 +38,6 @@ test("rotation drag keeps the element; Explore swipe navigates and hold is not a
   await page.mouse.up();
   await expect(page.locator("#pk")).not.toHaveClass(/on/);
   await expect(page.locator(".inspection-card")).toHaveCount(0);
-  // Once movement begins, a long press becomes a drag rather than swallowing it.
   await page.mouse.down();
   await expect(page.locator("#pk")).toHaveClass(/on/);
   await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.42, { steps: 3 });
@@ -58,67 +47,50 @@ test("rotation drag keeps the element; Explore swipe navigates and hold is not a
   expect(errors).toEqual([]);
 });
 
-test("scientific shell selection matches real populations and camera reset clears inspection", async ({
-  page,
-}) => {
+test("the chemical family opens a filterable list of its elements", async ({ page }) => {
   const errors = await openExplorer(page);
-  await page.locator("#mb").click();
-  await page.getByRole("button", { name: "Noir", exact: true }).click();
-  await page.getByRole("button", { name: "Switch to scientific model" }).click();
-  await expect(page.locator("#shell-select option")).toHaveText([
-    "Nucleus · 8 protons",
-    "Shell 1 · 2 electrons",
-    "Shell 2 · 6 electrons",
-  ]);
-  await page.locator("#shell-select").selectOption("2");
-  await expect(page.locator(".inspection-card")).toContainText("Shell 2 · 6 electrons");
-  await expect(page.locator(".inspection-card")).toContainText("not a literal path");
-  await page.locator("#shell-select").selectOption("0");
-  await expect(page.locator(".inspection-card")).toContainText("8 protons in the nucleus");
-  await page.getByRole("button", { name: "Reset camera", exact: true }).click();
-  await expect(page.locator(".inspection-card")).toHaveCount(0);
-  await page.locator("#shell-select").selectOption("1");
-  await page.getByRole("button", { name: "Switch to playful model" }).click();
-  await expect(page.locator("#shell-select")).toHaveCount(0);
-  await expect(page.locator(".inspection-card")).toHaveCount(0);
-  await page.getByRole("button", { name: "Switch to scientific model" }).click();
-  await expect(page.locator("#shell-select")).toHaveValue("0");
+  await page.getByRole("button", { name: "Show Nonmetal elements", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Nonmetal" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel("Filter Nonmetal by name").fill("oxy");
+  await dialog.getByRole("button", { name: "Show Oxygen on the stage", exact: true }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.locator("#in")).toContainText("Oxygen");
+  await page.getByRole("button", { name: "Show Nonmetal elements", exact: true }).click();
+  await dialog.getByRole("button", { name: "Halogen", exact: true }).click();
+  const halogens = page.getByRole("dialog", { name: "Halogen" });
+  await expect(halogens).toBeVisible();
+  await halogens.getByRole("button", { name: "Show Fluorine on the stage", exact: true }).click();
+  await expect(page.locator("#in")).toContainText("Fluorine");
   expect(errors).toEqual([]);
 });
 
-test("camera zoom bounds, pause and live reduced motion keep controls usable", async ({ page }) => {
+test("removed stage controls stay gone and reduced motion still swipes", async ({ page }) => {
   const errors = await openExplorer(page);
-  const zoomIn = page.getByRole("button", { name: "Zoom in", exact: true });
-  const zoomOut = page.getByRole("button", { name: "Zoom out", exact: true });
-  for (let step = 0; step < 8 && (await zoomIn.isEnabled()); step++) await zoomIn.click();
-  await expect(zoomIn).toBeDisabled();
-  await expect(zoomOut).toBeEnabled();
-  await page.getByRole("button", { name: "Reset camera", exact: true }).click();
-  await expect(zoomIn).toBeEnabled();
-  await expect(zoomOut).toBeEnabled();
-  for (let step = 0; step < 5 && (await zoomOut.isEnabled()); step++) await zoomOut.click();
-  await expect(zoomOut).toBeDisabled();
-  await page.getByRole("button", { name: "Reset camera", exact: true }).click();
-  await page.getByRole("button", { name: "Pause atom animation", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Resume atom animation", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  for (const name of [
+    "Zoom in",
+    "Zoom out",
+    "Reset camera",
+    "Pause atom animation",
+    "Explore",
+    "Previous element",
+    "Next element",
+    "Up the group",
+    "Down the group",
+    "Rotate",
+  ]) {
+    await expect(page.getByRole("button", { name, exact: true })).toHaveCount(0);
+  }
+  await expect(page.getByRole("slider", { name: "Period" })).toHaveCount(0);
+  await expect(page.getByRole("slider", { name: "Group" })).toHaveCount(0);
+  await expect(page.getByText("Meet this element")).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.getByRole("button", { name: "Switch to scientific model" }).click();
-  await page.locator("#shell-select").selectOption("2");
-  await expect(page.locator(".inspection-card")).toContainText("6 electrons");
-  await page.getByRole("button", { name: "Resume atom animation", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Pause atom animation", exact: true }),
-  ).toHaveAttribute("aria-pressed", "false");
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.getByRole("button", { name: "Explore", exact: true }).click();
   await dragAtom(page);
   await expect(page.locator("#in")).toContainText("Fluorine");
   expect(errors).toEqual([]);
 });
 
-test("pinch changes zoom and a cancelled gesture leaves Explore navigation usable", async ({
+test("pinch changes zoom and a cancelled gesture leaves swipe navigation usable", async ({
   page,
 }) => {
   const errors = await openExplorer(page);
@@ -140,10 +112,11 @@ test("pinch changes zoom and a cancelled gesture leaves Explore navigation usabl
       { x: centerX + 65, y: centerY, id: 2 },
     ],
   });
-  await expect(page.getByRole("button", { name: "Zoom in", exact: true })).toBeDisabled();
+  await expect
+    .poll(async () => Number(await page.locator("#app").getAttribute("data-zoom")))
+    .toBeGreaterThan(1);
   await session.send("Input.dispatchTouchEvent", { type: "touchCancel", touchPoints: [] });
   await session.detach();
-  await page.getByRole("button", { name: "Reset camera", exact: true }).click();
   await dragAtom(page);
   await expect(page.locator("#in")).toContainText("Fluorine");
   await expect(page.locator("#pk")).not.toHaveClass(/on/);

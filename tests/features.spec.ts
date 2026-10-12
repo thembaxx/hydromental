@@ -176,9 +176,7 @@ test("postcards download valid attributed SVG and share a canonical element link
   expect(shared.url).toBe("http://127.0.0.1:3000/elements/oxygen");
 });
 
-test("appearance, quality, audio and model preferences persist without autoplay", async ({
-  page,
-}) => {
+test("appearance, quality and audio preferences persist without autoplay", async ({ page }) => {
   await page.addInitScript(() => {
     const instrumented = window as unknown as { audioStarts: number };
     instrumented.audioStarts = 0;
@@ -198,8 +196,6 @@ test("appearance, quality, audio and model preferences persist without autoplay"
   await dialog.locator("#settings-theme").selectOption("dusk");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dusk");
   await dialog.locator("#settings-quality").selectOption("low");
-  await dialog.locator("#settings-model").selectOption("scientific");
-  await dialog.getByLabel("Show shell labels", { exact: true }).check();
   await dialog.getByLabel("Gentle interaction sounds", { exact: true }).check();
   await dialog.getByLabel("Ambient exploration audio", { exact: true }).check();
   await expect.poll(async () => (await stored(page)).settings.ambient).toBe(true);
@@ -216,8 +212,6 @@ test("appearance, quality, audio and model preferences persist without autoplay"
   await page.getByRole("button", { name: "Theme and more", exact: true }).click();
   await page.getByRole("button", { name: "More settings", exact: true }).click();
   await expect(dialog.locator("#settings-quality")).toHaveValue("low");
-  await expect(dialog.locator("#settings-model")).toHaveValue("scientific");
-  await expect(dialog.getByLabel("Show shell labels", { exact: true })).toBeChecked();
   await expect(dialog.getByLabel("Gentle interaction sounds", { exact: true })).toBeChecked();
   await expect(dialog.getByLabel("Ambient exploration audio", { exact: true })).toBeChecked();
 });
