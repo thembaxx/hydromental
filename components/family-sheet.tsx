@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useReducedMotion } from "motion/react";
 import { DialogShell } from "@/components/dialog-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/icon";
-import { categories, elements, type Category, type Element } from "@/lib/elements";
+import { categories, elements, phases, type Category, type Element } from "@/lib/elements";
 
 const families = Object.keys(categories) as Category[];
 
@@ -30,6 +31,7 @@ export function FamilySheet({
 }) {
   const [family, setFamily] = useState(category);
   const [query, setQuery] = useState("");
+  const reduced = useReducedMotion();
   const name = categories[family][0];
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -43,6 +45,14 @@ export function FamilySheet({
       );
     });
   }, [family, query]);
+  useEffect(() => {
+    if (!open) return;
+    document.querySelector<HTMLElement>(".family-filter[aria-pressed='true']")?.scrollIntoView({
+      inline: "center",
+      block: "nearest",
+      behavior: reduced ? "instant" : "smooth",
+    });
+  }, [family, open, reduced]);
   const show = (element: Element) => {
     onPick(element.z);
     onOpenChange(false);
@@ -52,7 +62,7 @@ export function FamilySheet({
       open={open}
       onOpenChange={onOpenChange}
       title={name}
-      description="Every element in this chemical family. Filter by name, or switch family."
+      description="Every element in this chemical family. Search by name, symbol, or atomic number."
       className="family-dialog search-dialog"
     >
       <section className="family-sheet" aria-label={`${name} elements`}>
@@ -74,7 +84,7 @@ export function FamilySheet({
             <Icon name="close" />
           </Button>
         </div>
-        <div className="search-input-row">
+        <div className="search-input-row family-search">
           <Icon name="search" />
           <Input
             variant="unstyled"
@@ -82,8 +92,8 @@ export function FamilySheet({
             data-autofocus
             autoComplete="off"
             spellCheck={false}
-            placeholder="Filter by name"
-            aria-label={`Filter ${name} by name`}
+            placeholder="Search by name, symbol, or atomic number..."
+            aria-label={`Search ${name} by name, symbol, or atomic number`}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -104,40 +114,42 @@ export function FamilySheet({
           ))}
         </div>
         {matches.length === 0 ? (
-          <p className="family-empty">Nothing in this family matches that name.</p>
+          <p className="family-empty">Nothing in this family matches that search.</p>
         ) : (
-          <ul className="family-results">
-            {matches.map((element) => {
+          <ul className="family-results" key={family + query}>
+            {matches.map((element, index) => {
               const saved = favorites.includes(element.z);
               return (
-                <li key={element.z} className="family-row">
+                <li key={element.z} className="element-card-item">
                   <Button
                     variant="unstyled"
-                    className="family-open"
+                    className="element-card"
                     aria-label={`Show ${element.n} on the stage`}
                     aria-current={element.z === current ? "true" : undefined}
+                    style={
+                      {
+                        "--family-color": categories[element.c][1],
+                        "--i": String(index),
+                      } as CSSProperties
+                    }
                     onClick={() => show(element)}
                   >
-                    <span
-                      className="family-symbol"
-                      style={{
-                        background: categories[element.c][1],
-                        color:
-                          element.c === "t" || element.c === "l" || element.c === "e"
-                            ? "#0B1031"
-                            : "#fff",
-                      }}
-                    >
-                      {element.s}
+                    <span className="element-card-top">
+                      <span className="element-card-z">{element.z}</span>
+                      <span className="element-card-phase" data-phase={element.f}>
+                        {phases[element.f]}
+                      </span>
                     </span>
-                    <span className="family-name">
-                      {element.n}
-                      <small>
-                        {element.z} · {element.m} u
-                      </small>
+                    <span className="element-card-symbol">{element.s}</span>
+                    <span className="element-card-name">{element.n}</span>
+                    <span className="element-card-foot">
+                      <span className="element-card-mass">
+                        {element.m} <i className="unit">u</i>
+                      </span>
+                      <span className="element-card-dot" aria-hidden="true" />
                     </span>
                   </Button>
-                  <div className="family-actions">
+                  <div className="element-card-actions">
                     <Button
                       variant="unstyled"
                       className={`icon-button${saved ? " is-favorite" : ""}`}

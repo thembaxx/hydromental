@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Tick02Icon, Download01Icon, Share01Icon } from "@hugeicons/core-free-icons";
-import { categories, type Element } from "@/lib/elements";
+import { categories, phases, type Element } from "@/lib/elements";
 import { getScience, elementSlug } from "@/lib/science";
 
 const escapeXml = (value: string) =>
@@ -78,12 +78,25 @@ export function DiscoveryCard({
           {discovered && <HugeiconsIcon icon={Tick02Icon} size={16} aria-hidden="true" />}
           {discovered ? "Discovered" : "Ready to explore"}
         </Badge>
-        <span className="discovery-card-number">{element.z}</span>
+        <span className="element-card-top">
+          <span className="discovery-card-number">{element.z}</span>
+          <span className="element-card-phase" data-phase={element.f}>
+            {phases[element.f]}
+          </span>
+        </span>
         <div className="discovery-card-symbol">{element.s}</div>
         <h3 className="panel-title">{element.n}</h3>
-        <p className="panel-copy">
-          {family[0]} · {mass.value}
-          {mass.unit ? ` ${mass.unit}` : ""}
+        <p className="panel-copy element-card-foot">
+          <span>
+            {family[0]} · {mass.value}
+            {mass.unit ? (
+              <>
+                {" "}
+                <i className="unit">{mass.unit}</i>
+              </>
+            ) : null}
+          </span>
+          <span className="element-card-dot" aria-hidden="true" />
         </p>
         {mass.note && <p className="panel-copy">{mass.note}</p>}
         <p className="panel-copy">{science.fact}</p>

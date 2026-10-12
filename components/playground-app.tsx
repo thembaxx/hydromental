@@ -717,7 +717,7 @@ export function PlaygroundApp() {
                 ["day", "Day"],
                 ["midnight", "Midnight"],
                 ["dusk", "Dusk"],
-                ["noir", "Noir · grayscale"],
+                ["noir", "Noir · grey"],
               ].map(([value, label]) => (
                 <option value={value} key={value}>
                   {label}

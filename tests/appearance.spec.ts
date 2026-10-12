@@ -12,7 +12,7 @@ test("Noir persists through reloads and keeps dialogs and reference reading acce
   await page.getByRole("button", { name: "Noir", exact: true }).click();
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "noir");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(44, 45, 49)");
   await page.getByRole("button", { name: "Element details", exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("Oxygen");
   expect(
@@ -20,7 +20,7 @@ test("Noir persists through reloads and keeps dialogs and reference reading acce
   ).toEqual([]);
   await page.goto("/elements/oxygen");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "noir");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(44, 45, 49)");
   expect(
     (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
   ).toEqual([]);

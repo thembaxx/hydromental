@@ -7,7 +7,7 @@ export const serviceWorkerSource = [
   "const ASSETS = `${VERSION}-assets`;",
   "const offlineClients = new Set();",
   'const CORE = ["/", "/elements", "/playground", "/offline.html", "/element-data.json", "/manifest.webmanifest", "/manifests/day/manifest.webmanifest", "/manifests/midnight/manifest.webmanifest", "/manifests/dusk/manifest.webmanifest", "/manifests/noir/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/maskable-512.png"];',
-  'const FONTS = ["/fonts/nunito-variable.woff2", "/fonts/jetbrains-mono-500.ttf", "/fonts/jetbrains-mono-700.ttf"];',
+  'const FONTS = ["/fonts/nunito-variable.woff2", "/fonts/jetbrains-mono-500.ttf", "/fonts/jetbrains-mono-700.ttf", "/fonts/katex-main-regular.woff2", "/fonts/katex-main-bold.woff2", "/fonts/katex-math-italic.woff2"];',
   "",
   'self.addEventListener("install", (event) => {',
   "  event.waitUntil((async () => {",

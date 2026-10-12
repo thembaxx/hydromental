@@ -101,13 +101,19 @@ test("browser tint and install manifest follow live device and explicit appearan
   );
   await page.getByRole("button", { name: "Playground settings" }).click();
   await page.getByLabel("Appearance", { exact: true }).selectOption("noir");
-  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#000");
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute(
+    "content",
+    "#2c2d31",
+  );
   await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
     "href",
     "/manifests/noir/manifest.webmanifest",
   );
   await page.emulateMedia({ colorScheme: "light" });
-  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#000");
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute(
+    "content",
+    "#2c2d31",
+  );
   await page.getByLabel("Appearance", { exact: true }).selectOption("");
   await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
     "href",
@@ -203,14 +209,17 @@ test("uncached offline pages and theme manifests keep the saved Noir background"
   await context.setOffline(true);
   await page.goto("/elements/oganesson");
   await expect(page.getByRole("heading", { name: "Science can wait for a signal." })).toBeVisible();
-  await expect(page.locator("html")).toHaveCSS("background-color", "rgb(0, 0, 0)");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(0, 0, 0)");
-  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#000");
+  await expect(page.locator("html")).toHaveCSS("background-color", "rgb(44, 45, 49)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(44, 45, 49)");
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute(
+    "content",
+    "#2c2d31",
+  );
   expect(
     await page.evaluate(
       async () =>
         (await (await fetch("/manifests/noir/manifest.webmanifest")).json()).background_color,
     ),
-  ).toBe("#000");
+  ).toBe("#2c2d31");
   await context.setOffline(false);
 });

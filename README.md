@@ -13,7 +13,7 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 - Read original element stories, connections and source-linked physical properties. Compare two elements, try the bonding/material sandbox, and export a discovery postcard as SVG.
 - Play eight games at `/playground`: Molecule Builder, Atom Workshop, Balance It, Periodic Puzzle, Everyday Detective, Mystery Element, Crystal Builder and Property Challenge. Solve 38 authored rounds, use hints, undo/reset, try optional timing, and earn first-completion and daily XP. Model games have free play and saved creations with SVG export.
 - Save favorites, revisit recent discoveries, follow collections and expeditions, and earn daily mission rewards. Standard, review, mystery and everyday-context quizzes build a spaced-review queue.
-- Choose device-following, Day, Midnight, Dusk or Noir appearance. Noir uses true-black backgrounds, softer text and entirely grayscale visuals for low-light reading. Adaptive rendering quality, optional sounds and ambient audio, and supported haptics remain available.
+- Choose device-following, Day, Midnight, Dusk or Noir appearance. Noir uses grey backgrounds and text while family colors, state cues and highlights stay in color. Adaptive rendering quality, optional sounds and ambient audio, and supported haptics remain available.
 - Export and import validated progress backups. Install when supported, explore the cached playground offline, and read previously visited reference pages offline.
 - Share directly addressable `/elements/<name>` reference pages. These pages remain readable without JavaScript; the interactive playground requires JavaScript. The 3D scenes use WebGL and offer fully functional game controls when rendering is unavailable.
 

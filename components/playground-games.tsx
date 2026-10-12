@@ -143,9 +143,9 @@ function MoleculeGame({ session, onChange, onInspect, paused, settings, solved }
   return (
     <div className="game-body">
       <p className="game-task">
-        Build <strong>{molecule.name}</strong> <span className="n">{molecule.formula}</span>. Select
-        an ingredient, then tap a ghost atom or a position below. You can also drag an ingredient
-        onto the model.
+        Build <strong>{molecule.name}</strong> <span className="n chem">{molecule.formula}</span>.
+        Select an ingredient, then tap a ghost atom or a position below. You can also drag an
+        ingredient onto the model.
       </p>
       <PlaygroundScene
         {...model}

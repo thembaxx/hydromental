@@ -106,15 +106,9 @@ export function PlaygroundScene({
     function build() {
       dirty = true;
       disposeModel();
-      const noir = document.documentElement.dataset.theme === "noir";
       latest.current.atoms.forEach((atom, i) => {
-        const color = noir
-          ? atom.kind === "electron"
-            ? "#eeeeee"
-            : atom.kind === "neutron"
-              ? "#777777"
-              : "#bbbbbb"
-          : atom.kind === "proton"
+        const color =
+          atom.kind === "proton"
             ? "#cf5866"
             : atom.kind === "neutron"
               ? "#a4afc3"
@@ -157,7 +151,7 @@ export function PlaygroundScene({
         for (let n = 0; n < (bond.order ?? 1); n++) {
           const mesh = new THREE.Mesh(
             new THREE.CylinderGeometry(0.045, 0.045, delta.length(), 10),
-            new THREE.MeshStandardMaterial({ color: noir ? "#aaaaaa" : "#8c9bb6", roughness: 0.6 }),
+            new THREE.MeshStandardMaterial({ color: "#8c9bb6", roughness: 0.6 }),
           );
           mesh.position
             .copy(center)

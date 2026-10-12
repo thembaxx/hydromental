@@ -22,7 +22,13 @@ export const themeSurfaces = {
     background:
       "radial-gradient(ellipse at 10% 50%, #455299, transparent 65%), linear-gradient(135deg, #232b65, #343d81)",
   },
-  noir: { color: "#000", scheme: "dark", ink: "#d6d6d6", accent: "#ccc", background: "none" },
+  noir: {
+    color: "#2c2d31",
+    scheme: "dark",
+    ink: "#d6d6d6",
+    accent: "#abbcff",
+    background: "linear-gradient(160deg, #2c2d31, #3a3b40)",
+  },
 } as const;
 export type SurfaceTheme = keyof typeof themeSurfaces;
 export const surfaceThemes = Object.keys(themeSurfaces) as SurfaceTheme[];

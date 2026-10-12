@@ -140,8 +140,28 @@ export function ComparisonPanel({
             ].map(([label, a, b]) => (
               <tr key={String(label)}>
                 <th scope="row">{label}</th>
-                <td className={/^[-+]?\d/.test(String(a)) ? "n" : undefined}>{a}</td>
-                <td className={/^[-+]?\d/.test(String(b)) ? "n" : undefined}>{b}</td>
+                <td
+                  className={
+                    label === "Electron configuration"
+                      ? "chem"
+                      : /^[-+]?\d/.test(String(a))
+                        ? "n"
+                        : undefined
+                  }
+                >
+                  {a}
+                </td>
+                <td
+                  className={
+                    label === "Electron configuration"
+                      ? "chem"
+                      : /^[-+]?\d/.test(String(b))
+                        ? "n"
+                        : undefined
+                  }
+                >
+                  {b}
+                </td>
               </tr>
             ))}
           </tbody>
