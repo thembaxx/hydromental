@@ -33,7 +33,6 @@ test("tapping the orb opens its popup and restores keyboard focus on close", asy
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await ready(page);
-  await page.getByRole("button", { name: "Pause atom animation", exact: true }).click();
   await page.locator("#app").scrollIntoViewIfNeeded();
   // The nucleus sits above the scene's ground plane, at the visual centre of the orb.
   const box = (await page.locator("#gl").boundingBox())!;

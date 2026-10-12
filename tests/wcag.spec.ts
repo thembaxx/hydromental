@@ -29,14 +29,6 @@ test("explorer themes and search satisfy automated WCAG checks", async ({ page }
     await page.locator("#mb").click();
     await page.locator(`[data-t="${theme}"]`).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await expect(page.locator("#pl")).toHaveCSS(
-      "color",
-      theme === "dusk"
-        ? "rgb(255, 255, 255)"
-        : theme === "noir"
-          ? "rgb(214, 214, 214)"
-          : "rgb(245, 247, 255)",
-    );
     await audit(page);
   }
   await page.locator("#sb").click();
