@@ -66,10 +66,9 @@ Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pn
 - Playwright regression tests cover live WebGL, horizontal swiping, hold/release peeking, keyboard navigation, search, details, theme persistence, electron spreading, all 118 table cells, discovery XP, correct/incorrect quiz answers and closing pending quiz timers.
 - GitHub Actions configuration was checked with actionlint and parsed as YAML. Vercel credentials are intentionally absent from source; live deployment requires account setup described in deployment.md.
 
-## Hugeicons and Motion update
+## Phosphor icons
 
-- Hugeicons React 1.1.10, the MIT-licensed free icon pack 4.3.5 and Motion 14.0.0 are pinned in the pnpm lockfile. A frozen install passed the release-age policy.
-- All interface icons use the shared Hugeicons component with the original 20px box and 2.2px stroke. The electron-shell diagram remains custom SVG. A shadcn accordion dry run confirmed that the configured radix-nova registry substitutes Hugeicons imports and components.
+- Interface icons use `@phosphor-icons/react`. Idle actions use the outline (`regular`) weight. The navigation selection, a saved favorite and completed checks use the solid (`fill`) weight. The electron-shell diagram remains custom SVG.
 - The quiz flip uses Motion's native React animation hook. Browser comparisons at 0, 90, 180, 270, 420 and 600ms matched the original transform matrix and opacity exactly. Duration and easing match the original 600ms cubic-bezier(0.34, 1.5, 0.5, 1). Native interpolation avoids changing the original perspective when transitioning to `none`.
 - All 18 mobile/desktop states retained native tags, classes, geometry and settled computed styles, excluding SVG glyph contents and the quiz card's animation-engine metadata. With glyphs and the animated canvas masked, 14 screenshots matched pixel-for-pixel; details/quiz screenshots had small edge-rasterization differences (maximum 13/255 per channel). The Three.js scene and pointer gesture handlers are unchanged.
 - Lint, formatting, TypeScript, the production build and eight browser tests passed. The added mobile/desktop tests compare the flip against the original browser-native animation and verify that reduced-motion users can see, answer and close the quiz without entry animation.

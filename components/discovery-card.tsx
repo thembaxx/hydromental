@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon, Download01Icon, Share01Icon } from "@hugeicons/core-free-icons";
+import { Icon } from "@/components/ui/icon";
 import { categories, phases, type Element } from "@/lib/elements";
 import { getScience, elementSlug } from "@/lib/science";
 
@@ -75,7 +74,7 @@ export function DiscoveryCard({
         style={{ "--family-color": family[1] } as React.CSSProperties}
       >
         <Badge variant="unstyled" className="tag">
-          {discovered && <HugeiconsIcon icon={Tick02Icon} size={16} aria-hidden="true" />}
+          {discovered && <Icon name="done" size={16} weight="fill" />}
           {discovered ? "Discovered" : "Ready to explore"}
         </Badge>
         <span className="element-card-top">
@@ -127,7 +126,7 @@ export function DiscoveryCard({
           title="Download card"
           onClick={download}
         >
-          <HugeiconsIcon icon={Download01Icon} size={20} aria-hidden="true" />
+          <Icon name="download" />
         </Button>
         <Button
           variant="unstyled"
@@ -138,7 +137,7 @@ export function DiscoveryCard({
           onClick={share}
           disabled={sharing}
         >
-          <HugeiconsIcon icon={Share01Icon} size={20} aria-hidden="true" />
+          <Icon name="share" />
         </Button>
       </div>
       <p className="panel-copy" role="status">

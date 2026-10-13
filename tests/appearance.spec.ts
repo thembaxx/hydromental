@@ -53,7 +53,7 @@ test("learning tips retire without moving controls, and new interaction modes te
   await expect(page.getByRole("dialog")).toContainText("Swipe");
 });
 
-test("the labeled dock reflects the active workspace and restores focus after dismissal", async ({
+test("the icon dock reflects the active workspace and restores focus after dismissal", async ({
   page,
 }) => {
   await page.goto("/");
@@ -89,7 +89,7 @@ test("the labeled dock reflects the active workspace and restores focus after di
         Math.abs((await page.locator(".dock-selection").boundingBox())!.x - button!.x),
       )
       .toBeLessThan(1);
-    await expect(opener).toHaveText(opener === journal ? "Learn" : "Lab");
+    await expect(opener).toHaveText("");
   }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await journal.click();

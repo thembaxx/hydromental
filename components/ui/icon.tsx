@@ -1,61 +1,77 @@
-import { HugeiconsIcon } from "@hugeicons/react";
+"use client";
+
 import {
-  ArrowDown02Icon,
-  ArrowUp02Icon,
-  Cancel01Icon,
-  CubeIcon,
-  GridViewIcon,
-  MoreHorizontalIcon,
-  Search01Icon,
-  Tick02Icon,
-  HeartIcon,
-  Book01Icon,
-  ArrowLeftRightIcon,
-  Settings02Icon,
-  Rotate360Icon,
-  ZoomInIcon,
-  ZoomOutIcon,
-  RefreshIcon,
-  Share01Icon,
-  PlayIcon,
-  PauseIcon,
-  SparklesIcon,
-  ArrowLeft02Icon,
-  ArrowRight02Icon,
-  HelpCircleIcon,
-  FlaskConicalIcon,
-  Award01Icon,
-} from "@hugeicons/core-free-icons";
+  ArrowClockwise,
+  ArrowCounterClockwise,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowsLeftRight,
+  BookOpen,
+  Check,
+  Cube,
+  DotsThree,
+  DownloadSimple,
+  Flask,
+  Gear,
+  GridFour,
+  Heart,
+  MagnifyingGlass,
+  MagnifyingGlassMinus,
+  MagnifyingGlassPlus,
+  Medal,
+  Pause,
+  Play,
+  Question,
+  ShareNetwork,
+  Sparkle,
+  X,
+  type Icon as PhosphorIcon,
+  type IconWeight,
+} from "@phosphor-icons/react";
 
 const icons = {
-  search: Search01Icon,
-  menu: MoreHorizontalIcon,
-  up: ArrowUp02Icon,
-  down: ArrowDown02Icon,
-  spread: CubeIcon,
-  table: GridViewIcon,
-  done: Tick02Icon,
-  close: Cancel01Icon,
-  favorite: HeartIcon,
-  learn: Book01Icon,
-  compare: ArrowLeftRightIcon,
-  settings: Settings02Icon,
-  rotate: Rotate360Icon,
-  zoomIn: ZoomInIcon,
-  zoomOut: ZoomOutIcon,
-  reset: RefreshIcon,
-  share: Share01Icon,
-  play: PlayIcon,
-  pause: PauseIcon,
-  spark: SparklesIcon,
-  previous: ArrowLeft02Icon,
-  next: ArrowRight02Icon,
-  help: HelpCircleIcon,
-  sandbox: FlaskConicalIcon,
-  award: Award01Icon,
-};
+  search: MagnifyingGlass,
+  menu: DotsThree,
+  up: ArrowUp,
+  down: ArrowDown,
+  spread: Cube,
+  table: GridFour,
+  done: Check,
+  close: X,
+  favorite: Heart,
+  learn: BookOpen,
+  compare: ArrowsLeftRight,
+  settings: Gear,
+  rotate: ArrowClockwise,
+  zoomIn: MagnifyingGlassPlus,
+  zoomOut: MagnifyingGlassMinus,
+  reset: ArrowCounterClockwise,
+  share: ShareNetwork,
+  play: Play,
+  pause: Pause,
+  spark: Sparkle,
+  previous: ArrowLeft,
+  next: ArrowRight,
+  help: Question,
+  sandbox: Flask,
+  award: Medal,
+  download: DownloadSimple,
+} satisfies Record<string, PhosphorIcon>;
 
-// Keep the prototype's icon box, stroke weight and accessible button labels.
-export function Icon({ name }: { name: keyof typeof icons }) {
-  return <HugeiconsIcon icon={icons[name]} size={20} strokeWidth={2.2} aria-hidden="true" />;
+export type IconName = keyof typeof icons;
+
+/** Outline by default. Pass `fill` for the solid weight. */
+export function Icon({
+  name,
+  weight = "regular",
+  size = 20,
+}: {
+  name: IconName;
+  weight?: Extract<IconWeight, "regular" | "fill">;
+  size?: number;
+}) {
+  const Glyph = icons[name];
+  return <Glyph size={size} weight={weight} aria-hidden="true" />;
 }

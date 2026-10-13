@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -225,9 +224,7 @@ export function LearningHub({
           {getCollections(state).map((collection) => (
             <Card variant="unstyled" className="feature-card" key={collection.id}>
               <Badge variant="unstyled" className="tag">
-                {collection.complete && (
-                  <HugeiconsIcon icon={Tick02Icon} size={16} aria-hidden="true" />
-                )}
+                {collection.complete && <Icon name="done" size={16} weight="fill" />}
                 {collection.kind === "family" ? "Element family" : "Guided expedition"}
               </Badge>
               <h4>{collection.title}</h4>

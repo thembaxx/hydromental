@@ -23,7 +23,7 @@ The playful atom and scientific shell schematic are teaching illustrations. They
 
 - Next.js 16.3.8, React 19.3.0 and TypeScript 7.0.2
 - Tailwind CSS 4.3.3, owned shadcn/ui primitives and Radix accessible dialogs
-- Hugeicons React 1.1.10 with the free icon pack 4.3.5
+- Phosphor Icons (`@phosphor-icons/react`) with outline (`regular`) and solid (`fill`) weights
 - Motion 14.0.0 and Three.js 0.186.1
 - pnpm 12.9.1, oxlint 1.87.0 and oxfmt 0.72.0
 
@@ -57,11 +57,11 @@ Run `pnpm build` before browser tests. If a server is already listening on port 
 
 ## Components and motion
 
-Buttons, inputs, badges, cards and dialog behavior use owned shadcn/Radix components where they fit the interaction. Their `unstyled` variants preserve the custom visual system and pointer handlers; standard variants remain available. `components.json` selects the `radix-nova` registry and Hugeicons. Add reviewed component source under `components/ui` and preserve the owned variants. The optional shadcn generator and `ui:add` script were removed because its transitive `braces` dependency has an unpatched advisory; the application does not require the generator. Reconsider installing it only after its dependency graph is patched and audited.
+Buttons, inputs, badges, cards and dialog behavior use owned shadcn/Radix components where they fit the interaction. Their `unstyled` variants preserve the custom visual system and pointer handlers; standard variants remain available. `components.json` selects the `radix-nova` registry. Add reviewed component source under `components/ui` and preserve the owned variants. The optional shadcn generator and `ui:add` script were removed because its transitive `braces` dependency has an unpatched advisory; the application does not require the generator. Reconsider installing it only after its dependency graph is patched and audited.
 
 The quiz flip uses `motion/react-mini` native animation and `motion/react` reduced-motion detection. It retains the prototype's 600ms perspective flip and easing. Dialog entry motion, responsive layout, focus behavior and the enhanced Three.js scene are implemented separately. Electron-shell diagrams and postcard artwork remain custom SVGs.
 
-The labeled Explore, Learn, Lab and Play dock uses Motion's shared layout and spring transitions. Its selection follows the active workspace. The game area shares the same destinations and preference controls. Related panels use accessible keyboard tabs that retain in-progress comparisons and bonding models. Browser Back/Forward opens or dismisses panels and games; closing a panel keeps the selected element in the URL. Mobile sheets also support a downward handle gesture. Entry, exit and view motion follow live reduced-motion preferences, with focus restored to the opener. Gesture and model tips show for eight seconds, then fade without shifting the controls; switching modes shows the relevant tip again. Full guidance remains in Help and Settings.
+The centered Explore, Learn, Lab and Play dock uses icon-only Phosphor marks: outline when idle and solid when that workspace is active. Motion's shared layout follows the selection. The game area shares the same destinations and preference controls. Related panels use accessible keyboard tabs that retain in-progress comparisons and bonding models. Browser Back/Forward opens or dismisses panels and games; closing a panel keeps the selected element in the URL. Mobile sheets also support a downward handle gesture. Entry, exit and view motion follow live reduced-motion preferences, with focus restored to the opener. Gesture and model tips show for eight seconds, then fade without shifting the controls; switching modes shows the relevant tip again. Full guidance remains in Help and Settings.
 
 The introduction uses Motion for staggered text entrances and step transitions, with an actual Three.js scene for practice. App screenshots are local assets. Explicit buttons and keyboard navigation complement touch gestures; visitors can pause the atom, skip the guide or replay it without changing their learning record.
 
@@ -80,7 +80,7 @@ The committed scientific snapshot contains all 118 elements, original editorial 
 - `app/`: explorer entry, server-rendered element library/reference pages, metadata, sitemap, robots, manifest, public JSON and service-worker route.
 - `components/elements-explorer.tsx`: interaction orchestration, responsive workspace and learning-state integration.
 - `components/`: search/dialog, learning, comparison, sandbox, settings, postcards, quiz, atom canvas and PWA controls.
-- `components/ui/`: owned shadcn primitives and shared Hugeicons rendering.
+- `components/ui/`: owned shadcn primitives and shared Phosphor icon rendering.
 - `lib/learning.ts`: pure progress, migration, mastery, daily missions, achievements and backup rules.
 - `lib/science.ts`, `lib/science-data.json`: scientific records, shell populations, stories, expeditions and material examples.
 - `lib/playground.ts`, `lib/playground-export.ts`: authored game catalogs, answer rules, molecule/crystal models and safe standalone SVG exports.

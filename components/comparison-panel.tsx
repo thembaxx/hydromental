@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Search01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { elements, categories, group, period, type Element } from "@/lib/elements";
@@ -65,7 +64,7 @@ export function ComparisonPanel({
       </div>
       <div className="field-group">
         <label className="field-label" htmlFor="compare-search">
-          <HugeiconsIcon icon={Search01Icon} size={18} aria-hidden="true" /> Find an element
+          <Icon name="search" size={18} /> Find an element
         </label>
         <Input
           variant="unstyled"

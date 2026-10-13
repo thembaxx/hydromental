@@ -1326,12 +1326,15 @@ small {
   margin: 12px;
 }
 .explorer-nav {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+  z-index: 5;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  width: min(100%, 440px);
-  min-height: 64px;
+  justify-content: center;
+  gap: 2px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  min-height: 0;
   margin: 12px auto 0;
   padding: 6px;
   border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
@@ -1351,18 +1354,15 @@ small {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 44px;
-  width: 100%;
+  width: 62px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   padding: 0;
-  min-height: 50px;
   color: var(--mut);
-  font-size: 11px;
-  font-weight: 800;
   text-decoration: none;
 }
 .explorer-nav button:is(:hover, [data-active="true"]),
@@ -1383,11 +1383,8 @@ small {
   pointer-events: none;
 }
 .dock-icon svg {
-  width: 24px;
-  height: 24px;
-}
-.dock-label {
-  line-height: 1.2;
+  width: 26px;
+  height: 26px;
 }
 :root[data-theme="noir"] .explorer-nav {
   background: #111111e8;
@@ -2874,11 +2871,11 @@ input[type="file"].form-input {
     font-size: 11px;
   }
   .explorer-nav {
-    min-height: 64px;
+    margin-top: 10px;
   }
-  .explorer-nav button {
-    font-size: 10px;
-    min-height: 50px;
+  .explorer-nav button,
+  .explorer-nav .dock-link {
+    width: 56px;
   }
   .dialog-content {
     width: calc(100vw - 16px);
@@ -4625,7 +4622,8 @@ input[type="file"].form-input {
   position: static;
 }
 .playground-navigation {
-  width: min(440px, calc(100% - 24px));
+  width: max-content;
+  max-width: calc(100% - 24px);
   margin: 16px auto 0;
 }
 .playground-navigation .explorer-nav {

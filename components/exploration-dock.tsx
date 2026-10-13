@@ -81,9 +81,8 @@ export function ExplorationDock({
                   transition={transition}
                   aria-hidden="true"
                 >
-                  <Icon name={destination.icon} />
+                  <Icon name={destination.icon} weight={active ? "fill" : "regular"} size={26} />
                 </motion.span>
-                <span className="dock-label">{destination.title}</span>
               </motion.button>
             </Button>
           );
@@ -103,9 +102,8 @@ export function ExplorationDock({
             />
           )}
           <span className="dock-icon" aria-hidden="true">
-            <Icon name="sandbox" />
+            <Icon name="sandbox" weight={open === "games" ? "fill" : "regular"} size={26} />
           </span>
-          <span className="dock-label">Play</span>
         </Link>
       </nav>
     </LayoutGroup>

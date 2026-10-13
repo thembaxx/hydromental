@@ -680,7 +680,7 @@ export default function ElementsExplorer() {
                   feedback("tap", learning.settings);
                 }}
               >
-                <Icon name="favorite" />
+                <Icon name="favorite" weight={favorite ? "fill" : "regular"} />
               </Button>
             </div>
             {!learning.onboardingDismissed && (
