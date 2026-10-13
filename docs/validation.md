@@ -14,6 +14,15 @@ The current verification suite covers:
 
 Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pnpm test:e2e` against the current production build. Confirm the final GitHub Actions result for the published commit. A passing earlier commit does not validate later changes. Platform-specific installation, haptics, GPU performance and native sharing still need checks on the target devices.
 
+### Connected workspaces on October 13, 2026
+
+- Eleven explorer dialogs and the theme menu now share five workspaces. Related tools retain their view state, Library views share filters, and panel/game navigation integrates with browser history.
+- Code checks, all 26 learning unit tests, validation of all 118 science records, and the production build pass. The dependency audit reports no known vulnerabilities.
+- The 154-case mobile/desktop suite covers the updated entry points, including all eight games, offline access, progress transfers, accessible keyboard/focus behavior, and live reduced motion. All 77 mobile cases passed in the complete parallel run.
+- The two-worker software-rendering run hit six desktop timing limits, including a timeout before browser context creation, and a workspace reconnect interrupted its final cases. All six affected cases and all seven final workspace cases passed in a fresh full Chromium session with one worker (13/13). The remaining desktop checks passed in the parallel run. Local browser verification used a 60-second test allowance; existing longer per-test allowances still apply.
+- New workflows verify shared filters across Library views and story navigation, retained Lab state, Journal/practice transitions and answer locks, panel deep links, Back/Forward, 320px WCAG scans, sheet gestures, and suspension/resumption of background WebGL draws.
+- Updated mobile and desktop screenshots are visually reviewed in [UI workspaces](ui-workspaces.md); onboarding previews match the revised interface. Physical-device haptics, installation and GPU performance remain platform checks as described above.
+
 ### Eight-game playground on October 7, 2026
 
 - Eight games cover 38 authored rounds. Engine regressions validate every solution, atom conservation, smallest coefficient ratios, molecule angles, crystal-site uniqueness/coordination, finite property values and escaped SVG exports.
