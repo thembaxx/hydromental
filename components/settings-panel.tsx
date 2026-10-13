@@ -11,13 +11,15 @@ export function SettingsPanel({
   settings,
   onChange,
   onResetCamera,
+  context = "explorer",
 }: {
   settings: Settings;
   onChange: (partial: Partial<Settings>) => void;
   onResetCamera?: () => void;
+  context?: "explorer" | "playground";
 }) {
   return (
-    <div className="panel-content">
+    <div className={context === "playground" ? "preferences-content" : "panel-content"}>
       <section className="panel-section" aria-label="Appearance preferences">
         <p className="panel-copy">
           Preferences stay on this device and travel with your progress export.
@@ -39,7 +41,9 @@ export function SettingsPanel({
         </select>
       </section>
       <section className="panel-section">
-        <h3 className="panel-title">Atom experience</h3>
+        <h3 className="panel-title">
+          {context === "playground" ? "3D experience" : "Atom experience"}
+        </h3>
         <label className="field-label" htmlFor="settings-quality">
           Rendering quality
         </label>
@@ -54,7 +58,7 @@ export function SettingsPanel({
           <option value="high">Detailed · sharper rendering</option>
         </select>
         <p className="panel-copy">
-          The home atom is a playful illustration of representative electrons. Electrons are
+          Animated atoms are a playful illustration of representative electrons. Electrons are
           described by quantum probability distributions rather than fixed planetary paths.
         </p>
         {onResetCamera && (
@@ -75,16 +79,18 @@ export function SettingsPanel({
           />{" "}
           Gentle interaction sounds
         </label>
-        <label className="settings-toggle" htmlFor="setting-ambient">
-          <Input
-            id="setting-ambient"
-            variant="unstyled"
-            type="checkbox"
-            checked={settings.ambient}
-            onChange={(event) => onChange({ ambient: event.target.checked })}
-          />
-          Ambient exploration audio
-        </label>
+        {context === "explorer" && (
+          <label className="settings-toggle" htmlFor="setting-ambient">
+            <Input
+              id="setting-ambient"
+              variant="unstyled"
+              type="checkbox"
+              checked={settings.ambient}
+              onChange={(event) => onChange({ ambient: event.target.checked })}
+            />
+            Ambient exploration audio
+          </label>
+        )}
         <label className="settings-toggle" htmlFor="setting-haptics">
           <Input
             id="setting-haptics"
@@ -103,9 +109,15 @@ export function SettingsPanel({
       <section className="panel-section">
         <h3 className="panel-title">Controls that work for everyone</h3>
         <p className="panel-copy">
-          Swipe to travel between elements, pinch to zoom, and hold the atom to peek at its
-          identity. Tap the chemical family name to browse that family. Arrow keys also move through
-          the table.
+          {context === "playground" ? (
+            "Pause any game to stop its animation and timer. Every game has buttons and keyboard controls alongside its interactive models."
+          ) : (
+            <>
+              Swipe to travel between elements, pinch to zoom, and hold the atom to peek at its
+              identity. Tap the chemical family name to browse that family. Arrow keys also move
+              through the table.
+            </>
+          )}
         </p>
         <Button variant="unstyled" className="action-button" asChild>
           <Link href="/welcome">

@@ -100,7 +100,6 @@ test("returning visitors can replay from Settings without changing their progres
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   const before = await page.evaluate((key) => localStorage.getItem(key), LEARNING_STORAGE_KEY);
   await page.locator("#mb").click();
-  await page.getByRole("button", { name: "More settings", exact: true }).click();
   await page.getByRole("link", { name: "Replay introduction" }).click();
   await expect(page).toHaveURL(/\/welcome$/);
   await expect(
@@ -133,7 +132,6 @@ test("blocked storage still permits skipping and replaying without a redirect lo
   await page.getByRole("button", { name: "Skip introduction" }).click();
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await page.locator("#mb").click();
-  await page.getByRole("button", { name: "More settings", exact: true }).click();
   await page.getByRole("link", { name: "Replay introduction" }).click();
   await expect(
     page.getByRole("heading", { name: "Meet the elements.", exact: true }),

@@ -40,7 +40,7 @@ test("search suggests misspellings, filters families and supports keyboard selec
   ).toHaveCount(0);
   await expect(page.locator(".search-status")).toContainText("No elements found");
   await input.press("Enter");
-  await expect(page.getByRole("dialog", { name: "Find an element" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Element library" })).toBeVisible();
 });
 
 test("dialogs confine keyboard focus, dismiss with Escape and restore the opener", async ({
@@ -49,7 +49,7 @@ test("dialogs confine keyboard focus, dismiss with Escape and restore the opener
   await loadExplorer(page);
   const opener = page.getByRole("button", { name: "Search elements", exact: true });
   await opener.click();
-  const dialog = page.getByRole("dialog", { name: "Find an element" });
+  const dialog = page.getByRole("dialog", { name: "Element library" });
   for (let index = 0; index < 8; index++) {
     await page.keyboard.press(index < 4 ? "Tab" : "Shift+Tab");
     expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
@@ -75,7 +75,7 @@ test("narrow layout and enlarged search text remain usable without horizontal sc
     page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   expect(await hasHorizontalOverflow()).toBe(false);
   await page.getByRole("button", { name: "Search elements", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Find an element" });
+  const dialog = page.getByRole("dialog", { name: "Element library" });
   await dialog.evaluate((element) => {
     const text = [
       ...element.querySelectorAll<HTMLElement>("h2,h3,p,span,small,input,select,button,label"),
@@ -94,7 +94,7 @@ test("narrow layout and enlarged search text remain usable without horizontal sc
     true,
   );
   expect(await hasHorizontalOverflow()).toBe(false);
-  await page.getByRole("button", { name: "Close search", exact: true }).click();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
   await expect(dialog).toHaveCount(0);
 });
 

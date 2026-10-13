@@ -14,11 +14,13 @@ export function ElementDetails({
   close,
   onPick,
   onInspectShell,
+  embedded = false,
 }: {
   element: Element;
   close: () => void;
   onPick: (z: number) => void;
   onInspectShell?: (shell: number) => void;
+  embedded?: boolean;
 }) {
   const [shellSelection, setShellSelection] = useState<{ z: number; shell: number } | null>(null);
   const selectedShell = shellSelection?.z === element.z ? shellSelection.shell : null;
@@ -38,21 +40,23 @@ export function ElementDetails({
   ];
   return (
     <div id="dt" className="sheet open">
-      <div className="dh">
-        <div>
-          <span className="eyebrow">Meet your element</span>
-          <h2 id="dn">{element.n}</h2>
+      {!embedded && (
+        <div className="dh">
+          <div>
+            <span className="eyebrow">Meet your element</span>
+            <h2 id="dn">{element.n}</h2>
+          </div>
+          <Button
+            variant="unstyled"
+            id="dx"
+            className="icon-button"
+            aria-label="Close"
+            onClick={close}
+          >
+            <Icon name="close" />
+          </Button>
         </div>
-        <Button
-          variant="unstyled"
-          id="dx"
-          className="icon-button"
-          aria-label="Close"
-          onClick={close}
-        >
-          <Icon name="close" />
-        </Button>
-      </div>
+      )}
       <div id="dbody" className="panel-content">
         <p className="lead-copy">{science.description}</p>
         <p className="panel-copy">{science.story}</p>

@@ -57,11 +57,13 @@ export function ElementQuiz({
   mode,
   close,
   result,
+  embedded = false,
 }: {
   state: LearningState;
   mode: QuizMode;
   close: () => void;
   result: (z: number, correct: boolean) => void;
+  embedded?: boolean;
 }) {
   const [question, setQuestion] = useState<Question | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -117,10 +119,10 @@ export function ElementQuiz({
           variant="unstyled"
           id="qx"
           className="icon-button"
-          aria-label="Close"
+          aria-label={embedded ? "Back to journal" : "Close"}
           onClick={close}
         >
-          <Icon name="close" />
+          <Icon name={embedded ? "previous" : "close"} />
         </Button>
       </div>
       <p className="panel-copy quiz-intro">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
@@ -80,9 +81,9 @@ export function LearningHub({
           <span className="n">{state.playground.creations.length}</span> saved creations. Your game
           XP, daily bonuses and creations are included in progress backups.
         </p>
-        <a className="action-button" href="/playground">
+        <Link className="action-button" href="/playground">
           Open game playground
-        </a>
+        </Link>
       </section>
       <section className="panel-section">
         <h3 className="panel-title">
