@@ -507,6 +507,12 @@ textarea {
   font: inherit;
   color: inherit;
 }
+/* Text fields and selects stay at least 16px so iOS does not zoom on focus. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
 button,
 a {
   -webkit-tap-highlight-color: transparent;
@@ -1282,7 +1288,7 @@ small {
   background: var(--dw);
   border-radius: 12px;
   padding: 9px;
-  font-size: 12px;
+  font-size: 16px;
 }
 .atom-stage:has(.shell-inspector) .onboarding-card {
   display: none;
@@ -1760,10 +1766,10 @@ button.tag {
   background: var(--dw);
   min-height: 46px;
   padding: 10px 12px;
-  font-size: 15px;
+  font-size: 16px;
 }
 input[type="file"].form-input {
-  font-size: 13px;
+  font-size: 16px;
 }
 .settings-toggle {
   display: flex;
@@ -2089,7 +2095,7 @@ input[type="file"].form-input {
   border-radius: 12px;
   background: var(--dw);
   padding: 5px 10px;
-  font-size: 13px;
+  font-size: 16px;
 }
 .search-shortcuts {
   display: flex;
@@ -2956,7 +2962,7 @@ input[type="file"].form-input {
     max-height: calc(100dvh - 310px);
   }
   .search-family {
-    font-size: 12px;
+    font-size: 16px;
   }
   .table-dialog {
     width: calc(100vw - 12px);
@@ -3700,7 +3706,6 @@ input[type="file"].form-input {
 .game-slot > .action-button {
   min-width: 90px;
 }
-
 @media (max-width: 520px) {
   .family-results {
     gap: 10px;
