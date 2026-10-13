@@ -11,11 +11,13 @@ export function AtomCanvas({
   controls,
   apiRef,
   onUnavailable,
+  suspended = false,
 }: {
   element: Element;
   controls: RefObject<SceneControls>;
   apiRef?: RefObject<AtomSceneApi | null>;
   onUnavailable?: () => void;
+  suspended?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const scene = useRef<AtomSceneApi | null>(null);
@@ -52,6 +54,9 @@ export function AtomCanvas({
   useEffect(() => {
     scene.current?.setElement(element);
   }, [element]);
+  useEffect(() => {
+    scene.current?.setSuspended(suspended);
+  }, [suspended, controls, apiRef]);
   return (
     <>
       <canvas

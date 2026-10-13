@@ -34,9 +34,11 @@ import type { AtomInspection, SceneControls } from "@/lib/atom-scene";
 import { AtomCanvas, type AtomSceneApi } from "@/components/atom-canvas";
 import { BrandMark } from "@/components/brand-mark";
 import { DialogShell } from "@/components/dialog-shell";
-import { SearchPalette } from "@/components/search-palette";
-import { FamilySheet } from "@/components/family-sheet";
-import { PeriodicTable } from "@/components/periodic-table";
+import { ElementLibrary, type LibraryView } from "@/components/element-library";
+import { PanelWorkspace } from "@/components/panel-workspace";
+import { ExplorationHelp } from "@/components/exploration-help";
+import { usePanelNavigation } from "@/lib/use-panel-navigation";
+import { navigationState } from "@/lib/navigation-state";
 import { ElementDetails } from "@/components/element-details";
 import { ElementQuiz, type QuizMode } from "@/components/element-quiz";
 import { LearningHub } from "@/components/learning-hub";
@@ -54,38 +56,34 @@ import { Onboarding } from "@/components/onboarding";
 import { beginOnboarding, finishOnboarding, shouldShowOnboarding } from "@/lib/onboarding";
 
 type Direction = "u" | "d" | "l" | "r";
-type Sheet =
-  | "table"
-  | "details"
-  | "quiz"
-  | "learning"
-  | "compare"
-  | "sandbox"
-  | "settings"
-  | "share"
-  | "help"
-  | null;
-const titles: Record<Exclude<Sheet, null>, string> = {
-  table: "Periodic table",
-  details: "Element details",
-  quiz: "Quiz",
-  learning: "Your discovery journal",
-  compare: "Compare elements",
-  sandbox: "Bonding playground",
-  settings: "Make it yours",
-  share: "Your elemental postcard",
-  help: "How to explore",
-};
-function PanelHeading({ title, close }: { title: string; close: () => void }) {
-  return (
-    <div className="dh">
-      <h2>{title}</h2>
-      <Button variant="unstyled" className="icon-button" aria-label="Close" onClick={close}>
-        <Icon name="close" />
-      </Button>
-    </div>
-  );
+const panels = [
+  "table",
+  "search",
+  "family",
+  "details",
+  "share",
+  "learning",
+  "quiz",
+  "compare",
+  "sandbox",
+  "settings",
+  "help",
+] as const;
+type Sheet = (typeof panels)[number];
+function workspace(panel: Sheet) {
+  if (["table", "search", "family"].includes(panel)) return "library";
+  if (["details", "share"].includes(panel)) return "element";
+  if (["learning", "quiz"].includes(panel)) return "learning";
+  if (["compare", "sandbox"].includes(panel)) return "lab";
+  return "settings";
 }
+const titles = {
+  library: "Element library",
+  element: "Element details",
+  learning: "Your discovery journal",
+  lab: "Experiment lab",
+  settings: "Make it yours",
+};
 
 export default function ElementsExplorer() {
   const [current, setCurrent] = useState(7);
@@ -93,14 +91,22 @@ export default function ElementsExplorer() {
   const [hydrated, setHydrated] = useState(false);
   const [welcome, setWelcome] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
-  const [sheet, setSheet] = useState<Sheet>(null);
+  const [sheet, setSheet, close] = usePanelNavigation(panels, workspace);
+  const [libraryQuery, setLibraryQuery] = useState("");
+  const [libraryCategory, setLibraryCategory] = useState<Category | "all">("all");
+  const panel = sheet ? workspace(sheet) : null;
+  const previousPanel = useRef<string | null>(null);
+  const search = sheet === "search";
+  const familyOpen = sheet === "family";
+  const openLibrary = (view: LibraryView, category: Category | "all" = "all") => {
+    setLibraryQuery("");
+    setLibraryCategory(category);
+    setSheet(view);
+  };
   const [quizMode, setQuizMode] = useState<QuizMode>("standard");
-  const [search, setSearch] = useState(false);
-  const [menu, setMenu] = useState(false);
   const [hold, setHold] = useState(false);
   const [spread, setSpread] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const [familyOpen, setFamilyOpen] = useState(false);
   const [inspection, setInspection] = useState<AtomInspection | null>(null);
   const [toast, setToast] = useState("");
   const [celebrate, setCelebrate] = useState(false);
@@ -182,7 +188,7 @@ export default function ElementsExplorer() {
       zoom,
       rotationMode: false,
       paused: false,
-      open: sheet !== null || familyOpen,
+      open: sheet !== null,
     });
     scene.current.onInspect = (hit) => {
       if (hit.kind === "nucleus") {
@@ -191,7 +197,35 @@ export default function ElementsExplorer() {
         setSheet("details");
       } else setInspection(hit);
     };
-  }, [learning.settings, zoom, sheet, familyOpen]);
+  }, [learning.settings, zoom, sheet, setSheet]);
+  useEffect(() => {
+    const restoreElement = () => {
+      const requested = new URLSearchParams(window.location.search).get("element")?.toLowerCase();
+      const selected = elements.find(
+        (item) =>
+          item.s.toLowerCase() === requested ||
+          item.n.toLowerCase() === requested ||
+          String(item.z) === requested,
+      );
+      if (selected) {
+        setCurrent(selected.z - 1);
+        setInspection(null);
+        scene.current.selectedShell = null;
+      }
+    };
+    window.addEventListener("popstate", restoreElement);
+    return () => window.removeEventListener("popstate", restoreElement);
+  }, []);
+  useEffect(() => {
+    const previous = previousPanel.current;
+    previousPanel.current = panel;
+    if (panel && previous && panel !== previous) {
+      const frame = requestAnimationFrame(() =>
+        document.querySelector<HTMLElement>(".workspace-header h2")?.focus(),
+      );
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [panel]);
   useEffect(() => {
     if (!celebrate) return;
     const timer = setTimeout(() => setCelebrate(false), 1200);
@@ -219,7 +253,7 @@ export default function ElementsExplorer() {
       scene.current.selectedShell = null;
       const url = new URL(window.location.href);
       url.searchParams.set("element", selected.s);
-      window.history.replaceState(null, "", url);
+      window.history.replaceState(navigationState(), "", url);
       if (isNew) {
         notify(`Discovered ${selected.n} · +10 XP`);
         if (getLevel(next.xp).level > level.level) setCelebrate(true);
@@ -248,24 +282,21 @@ export default function ElementsExplorer() {
   const openQuiz = (mode: QuizMode) => {
     setQuizMode(mode);
     setSheet("quiz");
-    setSearch(false);
-    setMenu(false);
   };
   useEffect(() => {
     const keyboard = (event: KeyboardEvent) => {
       if (!hydrated || welcome) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (
         event.target instanceof HTMLElement &&
         event.target.closest("input,textarea,select,[role=combobox],[role=listbox]")
       )
         return;
       if (event.key === "Escape") {
-        setSheet(null);
-        setMenu(false);
-        setSearch(false);
+        close();
         return;
       }
-      if (sheet || search || menu || familyOpen) return;
+      if (sheet) return;
       const direction = (
         { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d" } as const
       )[event.key as "ArrowLeft"];
@@ -275,11 +306,15 @@ export default function ElementsExplorer() {
       }
       if (event.key === "g") {
         event.preventDefault();
+        setLibraryQuery("");
+        setLibraryCategory("all");
         setSheet("table");
       }
       if (event.key === "/") {
         event.preventDefault();
-        setSearch(true);
+        setLibraryQuery("");
+        setLibraryCategory("all");
+        setSheet("search");
       }
       if (event.key === "?") {
         event.preventDefault();
@@ -288,7 +323,7 @@ export default function ElementsExplorer() {
     };
     window.addEventListener("keydown", keyboard);
     return () => window.removeEventListener("keydown", keyboard);
-  }, [navigate, sheet, search, menu, familyOpen, hydrated, welcome]);
+  }, [navigate, sheet, setSheet, close, hydrated, welcome]);
   const cancelPointer = () => {
     pointer.current = null;
     scene.current.dragging = false;
@@ -436,7 +471,6 @@ export default function ElementsExplorer() {
     feedback("discover", learning.settings);
     notify(`Mission complete · +${next.xp - learning.xp} XP`);
   };
-  const close = () => setSheet(null);
 
   if (!hydrated) return <AppLoading />;
   if (welcome) {
@@ -464,19 +498,17 @@ export default function ElementsExplorer() {
           </span>
         </Link>
         <div className="header-actions">
-          <Link href="/elements" className="library-link">
+          <Button variant="unstyled" className="library-link" onClick={() => openLibrary("family")}>
             Element library
-          </Link>
+          </Button>
           <Button
             variant="unstyled"
             id="sb"
             className="icon-button"
             aria-label="Search elements"
+            aria-haspopup="dialog"
             aria-expanded={search}
-            onClick={() => {
-              setMenu(false);
-              setSearch(true);
-            }}
+            onClick={() => openLibrary("search")}
           >
             <Icon name="search" />
           </Button>
@@ -484,61 +516,14 @@ export default function ElementsExplorer() {
             variant="unstyled"
             id="mb"
             className="icon-button"
-            aria-label="Theme and more"
-            aria-expanded={menu}
-            onClick={() => setMenu((value) => !value)}
-          >
-            <Icon name="menu" />
-          </Button>
-          <Button
-            variant="unstyled"
-            className="icon-button settings-trigger"
             aria-label="Settings"
-            onClick={() => {
-              setMenu(false);
-              setSheet("settings");
-            }}
+            aria-haspopup="dialog"
+            aria-expanded={panel === "settings"}
+            onClick={() => setSheet("settings")}
           >
             <Icon name="settings" />
           </Button>
         </div>
-        {menu && (
-          <div id="mn" className="menu g on" role="group" aria-label="Theme">
-            {(
-              [
-                ["", "Auto"],
-                ["midnight", "Midnight"],
-                ["noir", "Noir"],
-                ["dusk", "Dusk"],
-                ["day", "Day"],
-              ] as const
-            ).map(([value, label]) => (
-              <Button
-                variant="unstyled"
-                key={value}
-                data-t={value}
-                className={learning.settings.theme === value ? "on" : ""}
-                aria-pressed={learning.settings.theme === value}
-                onClick={() => {
-                  settings({ theme: value });
-                  setMenu(false);
-                }}
-              >
-                {label}
-              </Button>
-            ))}
-            <Button
-              variant="unstyled"
-              aria-label="More settings"
-              onClick={() => {
-                setMenu(false);
-                setSheet("settings");
-              }}
-            >
-              <Icon name="settings" />
-            </Button>
-          </div>
-        )}
       </header>
       <main className="explorer-layout">
         <aside className="journey-rail" aria-label="Learning journey">
@@ -619,7 +604,7 @@ export default function ElementsExplorer() {
                     variant="unstyled"
                     key={key}
                     className="family-link"
-                    onClick={() => pick(elements.find((e) => e.c === key)!.z - 1)}
+                    onClick={() => openLibrary("family", key)}
                   >
                     <span style={{ background: color }} />
                     {label}
@@ -652,7 +637,12 @@ export default function ElementsExplorer() {
               cancelPointer();
             }}
           >
-            <AtomCanvas element={element} controls={scene} apiRef={atomApi} />
+            <AtomCanvas
+              element={element}
+              controls={scene}
+              apiRef={atomApi}
+              suspended={sheet !== null}
+            />
             <div
               id="tn"
               className="ab"
@@ -673,7 +663,7 @@ export default function ElementsExplorer() {
                 aria-label={`Show ${categories[element.c][0]} elements`}
                 aria-haspopup="dialog"
                 aria-expanded={familyOpen}
-                onClick={() => setFamilyOpen(true)}
+                onClick={() => openLibrary("family", element.c)}
               >
                 <span />
                 {categories[element.c][0]}
@@ -816,9 +806,10 @@ export default function ElementsExplorer() {
               ))}
           </div>
           <ExplorationDock
-            open={sheet}
+            open={panel}
             onOpen={(destination) => {
-              setSheet(destination);
+              if (destination === "table") openLibrary("table");
+              else setSheet(destination);
               feedback("tap", learning.settings);
             }}
           />
@@ -866,182 +857,202 @@ export default function ElementsExplorer() {
       <div id="ts" className={`toast ${toast ? "on" : ""}`} role="status" aria-live="polite">
         {toast}
       </div>
-      <SearchPalette
-        open={search}
-        onClose={() => setSearch(false)}
-        onPick={(z) => {
-          pick(z - 1);
-          setSearch(false);
-        }}
-        favorites={learning.favorites}
-        recent={learning.history
-          .map((item) => item.z)
-          .reverse()
-          .slice(0, 8)}
-      />
-      <FamilySheet
-        key={familyOpen ? element.c : "closed"}
-        open={familyOpen}
-        category={element.c}
-        current={element.z}
-        favorites={learning.favorites}
-        onOpenChange={setFamilyOpen}
-        onPick={(z) => pick(z - 1)}
-        onFavorite={(z) => {
-          setLearning((previous) => toggleFavorite(previous, z));
-          feedback("tap", learning.settings);
-        }}
-        onDetails={(z) => {
-          pick(z - 1);
-          setSheet("details");
-        }}
-      />
       <DialogShell
+        bottomSheet
         open={sheet !== null}
         onOpenChange={(open) => {
           if (!open) close();
         }}
-        title={sheet ? titles[sheet] : "Explore"}
-        className={sheet === "table" ? "table-dialog" : undefined}
+        title={panel ? titles[panel] : "Explore"}
+        className={`workspace-dialog${panel === "library" ? " library-dialog" : ""}`}
       >
-        {sheet === "table" && (
-          <PeriodicTable
-            current={current}
+        {panel === "library" && (
+          <ElementLibrary
+            view={sheet as LibraryView}
+            onView={setSheet}
+            query={libraryQuery}
+            onQuery={setLibraryQuery}
+            category={libraryCategory}
+            onCategory={setLibraryCategory}
+            current={element.z}
             found={found}
-            pick={pick}
-            close={close}
-            quiz={() => openQuiz("standard")}
-          />
-        )}
-        {sheet === "details" && (
-          <ElementDetails
-            element={element}
-            close={close}
-            onPick={(z) => {
-              pick(z - 1);
-              close();
+            favorites={learning.favorites}
+            recent={learning.history
+              .map((item) => item.z)
+              .reverse()
+              .slice(0, 8)}
+            onPick={(z) => pick(z - 1)}
+            onFavorite={(z) => {
+              setLearning((previous) => toggleFavorite(previous, z));
+              feedback("tap", learning.settings);
             }}
+            onDetails={(z) => {
+              pick(z - 1);
+              setSheet("details");
+            }}
+            onQuiz={() => openQuiz("standard")}
+            close={close}
           />
         )}
-        {sheet === "quiz" && (
-          <ElementQuiz state={learning} mode={quizMode} close={close} result={quizResult} />
+        {panel === "element" && (
+          <PanelWorkspace
+            title={element.n}
+            subtitle={`${element.s} · ${categories[element.c][0]}`}
+            value={sheet === "share" ? "share" : "details"}
+            onChange={setSheet}
+            close={close}
+            tabs={[
+              {
+                value: "details",
+                label: "Story & science",
+                content: (
+                  <ElementDetails
+                    embedded
+                    element={element}
+                    close={close}
+                    onPick={(z) => pick(z - 1)}
+                  />
+                ),
+              },
+              {
+                value: "share",
+                label: "Postcard",
+                content: (
+                  <DiscoveryCard
+                    element={element}
+                    discovered={learning.discovered.includes(element.z)}
+                    mastery={learning.mastery[String(element.z)]?.correct}
+                    playful
+                  />
+                ),
+              },
+            ]}
+          />
         )}
-        {sheet && !["table", "details", "quiz"].includes(sheet) && (
-          <>
-            <PanelHeading title={titles[sheet]} close={close} />
-            {sheet === "learning" && (
-              <LearningHub
-                state={learning}
-                onPick={(z) => {
-                  pick(z - 1);
-                  close();
-                }}
-                onQuiz={openQuiz}
-                onClaim={claim}
-                onExport={exportSave}
-                onImport={importSave}
-              />
-            )}{" "}
-            {sheet === "compare" && (
-              <ComparisonPanel
-                current={element}
-                onPick={(z) => {
-                  pick(z - 1);
-                  close();
-                }}
-              />
-            )}
-            {sheet === "sandbox" && (
-              <SandboxPanel
-                onPick={(z) => {
-                  pick(z - 1);
-                  close();
-                }}
-              />
-            )}
-            {sheet === "settings" && (
-              <SettingsPanel
-                settings={learning.settings}
-                onChange={settings}
-                onResetCamera={resetCamera}
-              />
-            )}
-            {sheet === "share" && (
-              <DiscoveryCard
-                element={element}
-                discovered={learning.discovered.includes(element.z)}
-                mastery={learning.mastery[String(element.z)]?.correct}
-                playful
-              />
-            )}
-            {sheet === "help" && (
-              <div className="panel-content">
-                <p className="lead-copy">Your curiosity is the only entry requirement.</p>
-                <div className="feature-grid">
-                  <Card variant="unstyled" className="feature-card">
-                    <h3>Travel</h3>
-                    <p>
-                      Swipe across the atom to meet another element. Arrow keys travel the same way.
-                      Tap the chemical family name to browse every element in that family.
-                    </p>
-                  </Card>
-                  <Card variant="unstyled" className="feature-card">
-                    <h3>Touch</h3>
-                    <p>
-                      Hold to peek at particle counts. Pinch to zoom. Tap the orb, or the element
-                      name, to open its story.
-                    </p>
-                  </Card>
-                  <Card variant="unstyled" className="feature-card">
-                    <h3>Understand</h3>
-                    <p>
-                      The home atom is a playful illustration of representative electrons, not a
-                      calculated orbital. Open the element story for shell populations and sourced
-                      properties.
-                    </p>
-                  </Card>
-                  <Card variant="unstyled" className="feature-card">
-                    <h3>Make it yours</h3>
-                    <p>
-                      Favorite elements, choose a theme, and adjust rendering quality in Settings.
-                      Audio is optional and starts only after you enable it.
-                    </p>
-                  </Card>
-                </div>
-                <h3>Keyboard shortcuts</h3>
-                <dl className="keyboard-help">
-                  <div>
-                    <dt>Arrow keys</dt>
-                    <dd>Travel through the table</dd>
-                  </div>
-                  <div>
-                    <dt>G</dt>
-                    <dd>Open the periodic table</dd>
-                  </div>
-                  <div>
-                    <dt>/</dt>
-                    <dd>Search</dd>
-                  </div>
-                  <div>
-                    <dt>?</dt>
-                    <dd>Show this guide</dd>
-                  </div>
-                  <div>
-                    <dt>Escape</dt>
-                    <dd>Close the current panel</dd>
-                  </div>
-                </dl>
-                <p className="panel-copy">
-                  Progress stays on your device. Export it from your journal to move to another
-                  device or keep a backup. Daily missions are optional, reset at midnight UTC, and
-                  never remove earned XP or collections.
-                </p>
-                <Link href="/elements" className="action-button">
-                  Browse all 118 sourced element pages <Icon name="next" />
-                </Link>
-              </div>
-            )}
-          </>
+        {panel === "learning" && (
+          <PanelWorkspace
+            title="Your discovery journal"
+            subtitle="A little curiosity, every day"
+            value={sheet === "quiz" ? "quiz" : "learning"}
+            onChange={setSheet}
+            close={close}
+            tabs={[
+              {
+                value: "learning",
+                label: "Journal",
+                content: (
+                  <LearningHub
+                    state={learning}
+                    onPick={(z) => {
+                      pick(z - 1);
+                      close();
+                    }}
+                    onQuiz={openQuiz}
+                    onClaim={claim}
+                    onExport={exportSave}
+                    onImport={importSave}
+                  />
+                ),
+              },
+              {
+                value: "quiz",
+                label: "Practice",
+                content:
+                  sheet === "quiz" ? (
+                    <>
+                      <div className="practice-modes" role="group" aria-label="Practice mode">
+                        {(
+                          [
+                            ["standard", "Quick quiz"],
+                            ["review", "Spaced review"],
+                            ["mystery", "Mystery"],
+                            ["where", "Everyday clues"],
+                          ] as const
+                        ).map(([mode, label]) => (
+                          <Button
+                            variant="unstyled"
+                            className="chip"
+                            key={mode}
+                            aria-pressed={quizMode === mode}
+                            disabled={mode === "review" && due.length === 0}
+                            onClick={() => setQuizMode(mode)}
+                          >
+                            {label}
+                          </Button>
+                        ))}
+                      </div>
+                      <ElementQuiz
+                        key={quizMode}
+                        embedded
+                        state={learning}
+                        mode={quizMode}
+                        close={() => setSheet("learning")}
+                        result={quizResult}
+                      />
+                    </>
+                  ) : null,
+              },
+            ]}
+          />
+        )}
+        {panel === "lab" && (
+          <PanelWorkspace
+            title="Experiment lab"
+            subtitle="Find patterns. Make connections."
+            value={sheet === "sandbox" ? "sandbox" : "compare"}
+            onChange={setSheet}
+            close={close}
+            tabs={[
+              {
+                value: "compare",
+                label: "Compare",
+                content: (
+                  <ComparisonPanel
+                    current={element}
+                    onPick={(z) => {
+                      pick(z - 1);
+                      close();
+                    }}
+                  />
+                ),
+              },
+              {
+                value: "sandbox",
+                label: "Bonding",
+                content: (
+                  <SandboxPanel
+                    onPick={(z) => {
+                      pick(z - 1);
+                      close();
+                    }}
+                  />
+                ),
+              },
+            ]}
+          />
+        )}
+        {panel === "settings" && (
+          <PanelWorkspace
+            title="Make it yours"
+            subtitle="Your preferences, your pace"
+            value={sheet === "help" ? "help" : "settings"}
+            onChange={setSheet}
+            close={close}
+            tabs={[
+              {
+                value: "settings",
+                label: "Preferences",
+                content: (
+                  <SettingsPanel
+                    settings={learning.settings}
+                    onChange={settings}
+                    onResetCamera={resetCamera}
+                  />
+                ),
+              },
+              { value: "help", label: "How to explore", content: <ExplorationHelp /> },
+            ]}
+          />
         )}
       </DialogShell>
     </div>

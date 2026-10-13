@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ExplorationDock } from "@/components/exploration-dock";
+import { SettingsPanel } from "@/components/settings-panel";
+import { navigationState } from "@/lib/navigation-state";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,7 +33,6 @@ import {
   type Creation,
   type GameId,
   type GameSession,
-  type Theme,
 } from "@/lib/learning";
 import { checkGame, games, newGameSession, normalizeSession, sessionModel } from "@/lib/playground";
 import { creationSvg, downloadText } from "@/lib/playground-export";
@@ -39,6 +43,7 @@ const totalRounds = Object.values(gameRounds).reduce((n, rounds) => n + rounds.l
 const formatTime = (seconds: number) =>
   `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 export function PlaygroundApp() {
+  const router = useRouter();
   const [learning, setLearning] = useState(initialLearningState);
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<GameSession | null>(null);
@@ -71,9 +76,31 @@ export function PlaygroundApp() {
     setDaily(dailyGame());
     setReady(true);
     loaded.current = true;
+    const pop = () => {
+      const game = new URLSearchParams(location.search).get("game");
+      const saved = loadLearningState();
+      setSession(
+        gameIds.includes(game as GameId)
+          ? saved.playground.resume?.game === game
+            ? normalizeSession(saved.playground.resume)
+            : newGameSession(game as GameId)
+          : null,
+      );
+      setLearning(saved);
+      setPast([]);
+      setFuture([]);
+      setSolved(false);
+      setPaused(false);
+      resultRef.current = false;
+      setResult("");
+      setNotice("");
+      requestAnimationFrame(() => heading.current?.focus());
+    };
+    window.addEventListener("popstate", pop);
     const interval = setInterval(() => setDaily(dailyGame()), 30_000);
     return () => {
       clearInterval(interval);
+      window.removeEventListener("popstate", pop);
       cleanupFeedback();
     };
   }, []);
@@ -99,7 +126,10 @@ export function PlaygroundApp() {
   }, [session?.timed, paused, solved, inspect, settings, saveOpen]);
   /* oxlint-enable react/set-state-in-effect */
   const launch = (next: GameSession) => {
-    window.history.replaceState(window.history.state, "", `/playground?game=${next.game}`);
+    const url = new URL(window.location.href);
+    url.searchParams.set("game", next.game);
+    if (session) window.history.replaceState(navigationState(), "", url);
+    else window.history.pushState(navigationState({ elementalsGame: true }), "", url);
     resultRef.current = false;
     setSession(normalizeSession(next));
     setSolved(false);
@@ -189,12 +219,12 @@ export function PlaygroundApp() {
         Skip to playground
       </a>
       <header className="playground-header">
-        <a href="/" className="game-brand" aria-label="Elementals home">
+        <Link href="/" className="game-brand" aria-label="Elementals home">
           <Icon name="sandbox" />
           <span>
             Elementals <b>playground</b>
           </span>
-        </a>
+        </Link>
         <div className="game-toolbar">
           <span className="game-xp n">{learning.xp} XP</span>
           <Button
@@ -208,6 +238,14 @@ export function PlaygroundApp() {
           </Button>
         </div>
       </header>
+      <div className="playground-navigation">
+        <ExplorationDock
+          open="games"
+          onOpen={(destination) =>
+            router.push(destination === "table" ? "/" : `/?panel=${destination}`)
+          }
+        />
+      </div>
       <main id="playground-main" className="playground-main">
         {session && currentGame ? (
           <>
@@ -217,8 +255,11 @@ export function PlaygroundApp() {
                 className="icon-button"
                 aria-label="Back to game hub"
                 onClick={() => {
-                  window.history.replaceState(window.history.state, "", "/playground");
-                  setSession(null);
+                  if (window.history.state?.elementalsGame) window.history.back();
+                  else {
+                    window.history.replaceState(navigationState(), "", "/playground");
+                    setSession(null);
+                  }
                   setResult("");
                   setNotice("");
                 }}
@@ -699,79 +740,14 @@ export function PlaygroundApp() {
               <Icon name="close" />
             </Button>
           </div>
-          <label className="field-group">
-            <span className="field-label">Appearance</span>
-            <select
-              className="form-input"
-              aria-label="Appearance"
-              value={learning.settings.theme}
-              onChange={(e) =>
-                setLearning((state) => ({
-                  ...state,
-                  settings: { ...state.settings, theme: e.target.value as Theme },
-                }))
-              }
-            >
-              {[
-                ["", "System"],
-                ["day", "Day"],
-                ["midnight", "Midnight"],
-                ["dusk", "Dusk"],
-                ["noir", "Noir · grey"],
-              ].map(([value, label]) => (
-                <option value={value} key={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="game-toggle">
-            <input
-              type="checkbox"
-              checked={learning.settings.sound}
-              onChange={(e) =>
-                setLearning((state) => ({
-                  ...state,
-                  settings: { ...state.settings, sound: e.target.checked },
-                }))
-              }
-            />{" "}
-            Sound effects
-          </label>
-          <label className="game-toggle">
-            <input
-              type="checkbox"
-              checked={learning.settings.haptics}
-              onChange={(e) =>
-                setLearning((state) => ({
-                  ...state,
-                  settings: { ...state.settings, haptics: e.target.checked },
-                }))
-              }
-            />{" "}
-            Haptic feedback where supported
-          </label>
-          <label className="field-group">
-            <span className="field-label">3D quality</span>
-            <select
-              className="form-input"
-              aria-label="3D quality"
-              value={learning.settings.quality}
-              onChange={(e) =>
-                setLearning((state) => ({
-                  ...state,
-                  settings: {
-                    ...state.settings,
-                    quality: e.target.value as "auto" | "low" | "high",
-                  },
-                }))
-              }
-            >
-              <option value="auto">Automatic</option>
-              <option value="low">Low · save power</option>
-              <option value="high">High</option>
-            </select>
-          </label>
+          <SettingsPanel
+            context="playground"
+            settings={learning.settings}
+            onChange={(change) => {
+              setLearning((state) => ({ ...state, settings: { ...state.settings, ...change } }));
+              if (change.sound) feedback("tap", { ...learning.settings, sound: true });
+            }}
+          />
           <p className="panel-copy">
             Motion follows your device’s reduced-motion setting. Pause any game to stop its
             animation and timer.
@@ -803,6 +779,9 @@ export function PlaygroundApp() {
                 try {
                   const restored = importProgress(await file.text());
                   setLearning(restored);
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete("game");
+                  window.history.replaceState(navigationState(), "", url);
                   setSession(null);
                   setSettings(false);
                   setNotice("Progress restored, including your playground and saved creations.");
@@ -817,9 +796,6 @@ export function PlaygroundApp() {
           <p role="status" className="panel-copy">
             {notice}
           </p>
-          <a className="action-button" href="/welcome">
-            Replay the onboarding
-          </a>
         </div>
       </DialogShell>
     </div>

@@ -10,12 +10,18 @@ export function PeriodicTable({
   pick,
   close,
   quiz,
+  embedded = false,
+  matches,
+  active = true,
 }: {
   current: number;
   found: Set<number>;
   pick: (index: number) => void;
   close: () => void;
   quiz: () => void;
+  embedded?: boolean;
+  matches?: Set<number>;
+  active?: boolean;
 }) {
   const table = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, [number, number]>());
@@ -29,12 +35,6 @@ export function PeriodicTable({
   };
   useEffect(() => {
     const root = table.current!;
-    const selected = root.querySelector<HTMLButtonElement>(".sel");
-    if (selected)
-      root.scrollTo({
-        left: selected.offsetLeft - root.clientWidth / 2 + 28,
-        top: selected.offsetTop - 40,
-      });
     const wheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
@@ -44,16 +44,30 @@ export function PeriodicTable({
     root.addEventListener("wheel", wheel, { passive: false });
     return () => root.removeEventListener("wheel", wheel);
   }, []);
+  useEffect(() => {
+    if (!active) return;
+    const root = table.current!;
+    const selected =
+      root.querySelector<HTMLButtonElement>(".sel:not(:disabled)") ??
+      root.querySelector<HTMLButtonElement>(".c:not(:disabled)");
+    if (selected)
+      root.scrollTo({
+        left: selected.offsetLeft - root.clientWidth / 2 + 28,
+        top: selected.offsetTop - 40,
+      });
+  }, [active, current, matches]);
   const end = (e: PointerEvent) => pointers.current.delete(e.pointerId);
   return (
     <div id="dw" className="open">
-      <div className="dh">
-        <span className="w-10" />
-        <b>Periodic Table</b>
-        <Button variant="unstyled" id="ck" className="btn" aria-label="Done" onClick={close}>
-          <Icon name="done" />
-        </Button>
-      </div>
+      {!embedded && (
+        <div className="dh">
+          <span className="w-10" />
+          <b>Periodic Table</b>
+          <Button variant="unstyled" id="ck" className="btn" aria-label="Done" onClick={close}>
+            <Icon name="done" />
+          </Button>
+        </div>
+      )}
       <div className="chips">
         <Badge variant="unstyled" className="chip n" id="c1">
           {found.size} / {elements.length}
@@ -95,10 +109,19 @@ export function PeriodicTable({
             key={element.z}
             className={`c ${i === current ? "sel" : ""}`}
             data-discovered={found.has(i)}
+            data-match={matches ? matches.has(element.z) : true}
+            disabled={matches ? !matches.has(element.z) : false}
             data-i={i}
             aria-label={element.n}
             aria-pressed={i === current}
-            tabIndex={i === focused ? 0 : -1}
+            tabIndex={
+              i ===
+              (matches?.has(elements[focused].z) === false
+                ? elements.findIndex((e) => matches.has(e.z))
+                : focused)
+                ? 0
+                : -1
+            }
             onFocus={() => setFocused(i)}
             style={
               {
@@ -112,15 +135,23 @@ export function PeriodicTable({
               const direction = (
                 { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d" } as const
               )[event.key as "ArrowLeft"];
-              const next =
+              let next =
                 event.key === "Home"
-                  ? 0
+                  ? elements.findIndex((item) => !matches || matches.has(item.z))
                   : event.key === "End"
-                    ? elements.length - 1
+                    ? elements.findLastIndex((item) => !matches || matches.has(item.z))
                     : direction
                       ? neighbour(i, direction)
                       : null;
-              if (next === null) return;
+              while (
+                next !== null &&
+                next >= 0 &&
+                matches &&
+                !matches.has(elements[next].z) &&
+                direction
+              )
+                next = neighbour(next, direction);
+              if (next === null || next < 0) return;
               event.preventDefault();
               event.stopPropagation();
               setFocused(next);

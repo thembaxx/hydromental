@@ -27,7 +27,9 @@ test("explorer themes and search satisfy automated WCAG checks", async ({ page }
   await audit(page);
   for (const theme of ["dusk", "midnight", "noir"]) {
     await page.locator("#mb").click();
-    await page.locator(`[data-t="${theme}"]`).click();
+    await page.locator("#settings-theme").selectOption(theme);
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await audit(page);
   }
@@ -43,16 +45,16 @@ test("learning, comparison, playground and table dialogs satisfy automated WCAG 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
-  for (const name of [
-    "Open discovery journal",
-    "Compare elements",
-    "Open bonding playground",
-    "Share element",
-  ]) {
+  for (const name of ["Open discovery journal", "Open experiment lab", "Share element"]) {
     await page.getByRole("button", { name, exact: true }).click();
     await audit(page);
     await page.keyboard.press("Escape");
   }
+  await page.getByRole("button", { name: "Open experiment lab", exact: true }).click();
+  await page.getByRole("tab", { name: "Bonding", exact: true }).click();
+  await audit(page);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.locator("#gb").click();
   await audit(page);
   await page.locator("#qb").click();

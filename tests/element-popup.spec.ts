@@ -38,7 +38,7 @@ test("tapping the orb opens its popup and restores keyboard focus on close", asy
   const box = (await page.locator("#gl").boundingBox())!;
   await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.4);
   await expect(page.getByRole("dialog", { name: "Element details", exact: true })).toBeVisible();
-  await expect(page.locator("#dn")).toHaveText("Oxygen");
+  await expect(page.locator(".workspace-header h2")).toHaveText("Oxygen");
   await expect(page.locator("#dt .lead-copy")).toHaveText(getScience(8).description);
   await expect(page.locator("#dt")).toContainText(getScience(8).everyday);
   await page.keyboard.press("Escape");
@@ -94,7 +94,9 @@ test("browser theme colour follows selected themes and the background covers the
     ["Day", "#f0f5fc"],
   ]) {
     await page.locator("#mb").click();
-    await page.getByRole("button", { name: label, exact: true }).click();
+    await page.locator("#settings-theme").selectOption(label.toLowerCase());
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.locator("#app-theme-color")).toHaveAttribute("content", color);
     await expect(page.locator('meta[name="theme-color"]')).toHaveCount(3);
     await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);

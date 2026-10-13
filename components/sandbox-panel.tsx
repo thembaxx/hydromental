@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +23,9 @@ export function SandboxPanel({ onPick }: { onPick: (z: number) => void }) {
   });
   return (
     <div className="panel-content">
-      <a className="action-button" href="/playground">
+      <Link className="action-button" href="/playground">
         Open game playground · eight ways to play
-      </a>
+      </Link>
       <p className="panel-copy">
         Explore curated combinations that connect elements to familiar materials. This is a concept
         playground with symbolic shapes; positions, proportions, and bonds are illustrative.

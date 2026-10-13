@@ -141,6 +141,7 @@ export function createAtomScene(
   let shift = 2.5;
   let disposed = false;
   let contextLost = false;
+  let suspended = false;
   let frame = 0;
   let last = 0;
   let elapsed = 0;
@@ -336,7 +337,7 @@ export function createAtomScene(
   }
   function loop(ms: number) {
     frame = 0;
-    if (disposed || contextLost || document.hidden) return;
+    if (disposed || contextLost || suspended || document.hidden) return;
     const rawDt = (ms - last) / 1000 || 0.016;
     const dt = Math.min(rawDt, 0.05);
     last = ms;
@@ -421,7 +422,7 @@ export function createAtomScene(
     frame = requestAnimationFrame(loop);
   }
   function resume() {
-    if (disposed || contextLost || document.hidden || frame) return;
+    if (disposed || contextLost || suspended || document.hidden || frame) return;
     last = 0;
     frame = requestAnimationFrame(loop);
   }
@@ -467,6 +468,13 @@ export function createAtomScene(
   resume();
   const raycaster = new THREE.Raycaster();
   return {
+    setSuspended(value: boolean) {
+      suspended = value;
+      if (value) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      } else resume();
+    },
     setElement(next: Element) {
       if (next.z === element.z) return;
       element = next;

@@ -5,6 +5,7 @@ async function search(page: Page, value: string) {
   await page.locator("#sb").click();
   await page.locator("#si").fill(value);
   await page.locator("#si").press("Enter");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 }
 
 async function answerQuiz(page: Page, correct = true) {
@@ -44,7 +45,7 @@ test("reduced motion keeps the quiz visible, interactive and free of entry anima
   expect(await page.locator("#qc").evaluate((card) => card.getAnimations().length)).toBe(0);
   await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");
-  await page.locator("#qx").click();
+  await page.getByRole("dialog").getByRole("button", { name: "Close", exact: true }).click();
   await expect(page.locator("#qz")).toHaveCount(0);
 });
 
@@ -119,6 +120,8 @@ test("quiz flip preserves the prototype's perspective, easing and opacity", asyn
 test("3D scene, search, gestures, navigation, details, themes and persistence", async ({
   page,
 }, info) => {
+  // This workflow combines software WebGL, several sheets, gestures and a storage reload.
+  test.setTimeout(60_000);
   const errors: string[] = [];
   const external: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -155,9 +158,11 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
   await expect(page.locator("#pk")).not.toHaveClass(/on/);
   await page.locator("#in").click();
   await expect(page.locator("#dbody")).toContainText("58.693");
-  await page.locator("#dx").click();
+  await page.getByRole("dialog").getByRole("button", { name: "Close", exact: true }).click();
   await page.locator("#mb").click();
-  await page.locator('[data-t="dusk"]').click();
+  await page.locator("#settings-theme").selectOption("dusk");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dusk");
   await page.locator("#ab").click();
   await expect(page.locator("#ab")).toHaveAttribute("aria-pressed", "true");
@@ -182,6 +187,7 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
 }) => {
   // This flow loads several panels and waits for real quiz timers on software WebGL in CI.
   test.setTimeout(60_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await page.locator("#gb").click();
@@ -194,7 +200,7 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   const firstCorrectZ = await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");
   await expect(page.locator("#pr")).toContainText("135 XP");
-  await page.locator("#qx").click();
+  await page.getByRole("dialog").getByRole("button", { name: "Close", exact: true }).click();
   await page.waitForTimeout(1200);
   await expect(page.locator("#qz")).toHaveCount(0);
   await page.locator("#gb").click();
@@ -208,7 +214,9 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   const secondCorrectZ = await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");
   await page.keyboard.press("Escape");
-  await page.reload();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator("#app")).toHaveAttribute("data-ready", "true", { timeout: 15_000 });
   await expect(page.locator("#pr")).toContainText(
     `${secondCorrectZ === firstCorrectZ ? 135 : 140} XP`,
   );

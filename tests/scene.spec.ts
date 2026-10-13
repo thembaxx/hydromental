@@ -50,15 +50,15 @@ test("swipe navigates and a hold peeks without opening details", async ({ page }
 test("the chemical family opens a filterable list of its elements", async ({ page }) => {
   const errors = await openExplorer(page);
   await page.getByRole("button", { name: "Show Nonmetal elements", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Nonmetal" });
+  const dialog = page.getByRole("dialog", { name: "Element library" });
   await expect(dialog).toBeVisible();
-  await dialog.getByLabel("Search Nonmetal by name, symbol, or atomic number").fill("oxy");
+  await dialog.getByLabel("Search elements", { exact: true }).fill("oxy");
   await dialog.getByRole("button", { name: "Show Oxygen on the stage", exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect(page.locator("#in")).toContainText("Oxygen");
   await page.getByRole("button", { name: "Show Nonmetal elements", exact: true }).click();
   await dialog.getByRole("button", { name: "Halogen", exact: true }).click();
-  const halogens = page.getByRole("dialog", { name: "Halogen" });
+  const halogens = dialog;
   await expect(halogens).toBeVisible();
   await halogens.getByRole("button", { name: "Show Fluorine on the stage", exact: true }).click();
   await expect(page.locator("#in")).toContainText("Fluorine");

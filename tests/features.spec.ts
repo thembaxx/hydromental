@@ -97,8 +97,8 @@ test("comparison search updates sourced properties and playground controls chang
   page,
 }) => {
   await ready(page);
-  await page.getByRole("button", { name: "Compare elements", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Compare elements" });
+  await page.getByRole("button", { name: "Open experiment lab", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Experiment lab" });
   await expect(dialog.getByRole("table")).toHaveAccessibleName("Properties of Oxygen and Sulfur");
   await dialog.locator("#compare-search").fill("sodum");
   await dialog.getByRole("button", { name: "Na · Sodium · 11", exact: true }).click();
@@ -118,9 +118,8 @@ test("comparison search updates sourced properties and playground controls chang
   await expect(
     dialog.getByRole("link", { name: "Sodium: story, data, and sources" }),
   ).toHaveAttribute("href", "/elements/sodium");
-  await closePanel(page);
-  await page.getByRole("button", { name: "Open bonding playground" }).click();
-  const sandbox = page.getByRole("dialog", { name: "Bonding playground" });
+  await dialog.getByRole("tab", { name: "Bonding", exact: true }).click();
+  const sandbox = dialog.getByRole("tabpanel", { name: "Bonding", exact: true });
   await expect(sandbox.getByRole("img")).toHaveAccessibleName(/separated element symbols/);
   await sandbox.getByRole("button", { name: "Connect symbols", exact: true }).click();
   await expect(sandbox.getByRole("img")).toHaveAccessibleName(/connected element symbols/);
@@ -153,7 +152,7 @@ test("postcards download valid attributed SVG and share a canonical element link
   });
   await ready(page);
   await page.getByRole("button", { name: "Share element", exact: true }).click();
-  const dialog = page.getByRole("dialog", { name: "Your elemental postcard" });
+  const dialog = page.getByRole("dialog", { name: "Element details" });
   const downloadPromise = page.waitForEvent("download");
   await dialog.getByRole("button", { name: "Download card", exact: true }).click();
   const download = await downloadPromise;
@@ -190,8 +189,7 @@ test("appearance, quality and audio preferences persist without autoplay", async
   expect(
     await page.evaluate(() => (window as unknown as { audioStarts: number }).audioStarts),
   ).toBe(0);
-  await page.getByRole("button", { name: "Theme and more", exact: true }).click();
-  await page.getByRole("button", { name: "More settings", exact: true }).click();
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Make it yours" });
   await dialog.locator("#settings-theme").selectOption("dusk");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dusk");
@@ -209,8 +207,7 @@ test("appearance, quality and audio preferences persist without autoplay", async
   expect(
     await page.evaluate(() => (window as unknown as { audioStarts: number }).audioStarts),
   ).toBe(0);
-  await page.getByRole("button", { name: "Theme and more", exact: true }).click();
-  await page.getByRole("button", { name: "More settings", exact: true }).click();
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
   await expect(dialog.locator("#settings-quality")).toHaveValue("low");
   await expect(dialog.getByLabel("Gentle interaction sounds", { exact: true })).toBeChecked();
   await expect(dialog.getByLabel("Ambient exploration audio", { exact: true })).toBeChecked();

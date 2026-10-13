@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import Link from "next/link";
+import { useId } from "react";
 import { LayoutGroup, motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -9,20 +10,26 @@ import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 const destinations = [
   {
     value: "table",
+    workspace: "library",
     icon: "table",
-    label: "Open periodic table",
-    title: "Periodic table",
+    label: "Open element library",
+    title: "Explore",
     id: "gb",
   },
-  { value: "learning", icon: "learn", label: "Open discovery journal", title: "Discovery journal" },
-  { value: "compare", icon: "compare", label: "Compare elements", title: "Compare elements" },
   {
-    value: "sandbox",
-    icon: "sandbox",
-    label: "Open bonding playground",
-    title: "Bonding playground",
+    value: "learning",
+    workspace: "learning",
+    icon: "learn",
+    label: "Open discovery journal",
+    title: "Learn",
   },
-  { value: "help", icon: "help", label: "Exploration help", title: "Exploration help" },
+  {
+    value: "compare",
+    workspace: "lab",
+    icon: "compare",
+    label: "Open experiment lab",
+    title: "Lab",
+  },
 ] as const;
 
 export type DockDestination = (typeof destinations)[number]["value"];
@@ -34,7 +41,6 @@ export function ExplorationDock({
   open: string | null;
   onOpen: (destination: DockDestination) => void;
 }) {
-  const [selected, setSelected] = useState<DockDestination | null>(null);
   const reducedMotion = useReducedMotionPreference();
   const group = useId();
   const transition = reducedMotion
@@ -44,7 +50,7 @@ export function ExplorationDock({
     <LayoutGroup id={group}>
       <nav className="explorer-nav" aria-label="Explore and learn">
         {destinations.map((destination) => {
-          const active = selected === destination.value;
+          const active = (open ?? "library") === destination.workspace;
           return (
             <Button variant="unstyled" asChild key={destination.value}>
               <motion.button
@@ -52,12 +58,11 @@ export function ExplorationDock({
                 aria-label={destination.label}
                 title={destination.title}
                 aria-haspopup="dialog"
-                aria-expanded={open === destination.value}
+                aria-expanded={open === destination.workspace}
                 data-active={active}
                 whileTap={reducedMotion ? undefined : { scale: 0.92 }}
                 transition={transition}
                 onClick={() => {
-                  setSelected(destination.value);
                   onOpen(destination.value);
                 }}
               >
@@ -78,10 +83,30 @@ export function ExplorationDock({
                 >
                   <Icon name={destination.icon} />
                 </motion.span>
+                <span className="dock-label">{destination.title}</span>
               </motion.button>
             </Button>
           );
         })}
+        <Link
+          href="/playground"
+          className="dock-link"
+          aria-label="Open game playground"
+          aria-current={open === "games" ? "page" : undefined}
+        >
+          {open === "games" && (
+            <motion.span
+              className="dock-selection"
+              layoutId="dock-selection"
+              transition={transition}
+              aria-hidden="true"
+            />
+          )}
+          <span className="dock-icon" aria-hidden="true">
+            <Icon name="sandbox" />
+          </span>
+          <span className="dock-label">Play</span>
+        </Link>
       </nav>
     </LayoutGroup>
   );
