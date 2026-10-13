@@ -286,6 +286,7 @@ test("touch dragging places atoms, camera buttons work and GPU loss preserves th
 test("playground settings restore creations from a backup and export all progress", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   let state = initialLearningState();
   state.settings.theme = "noir";
   state = saveCreation(state, {
@@ -295,6 +296,7 @@ test("playground settings restore creations from a backup and export all progres
     session: { ...newGameSession("atom", 2, true), values: [2, 2, 2] },
   });
   await page.goto("/playground");
+  await expect(page.locator(".playground-page")).toHaveAttribute("data-ready", "true");
   await page.getByRole("button", { name: "Playground settings" }).click();
   await page.getByLabel("Restore a progress backup").setInputFiles({
     name: "progress.json",

@@ -770,25 +770,34 @@ export function PlaygroundApp() {
               type="file"
               accept="application/json,.json"
               onChange={async (e) => {
-                const file = e.target.files?.[0];
+                const input = e.target;
+                const file = input.files?.[0];
                 if (!file) return;
                 if (file.size > 1_000_000) {
                   setNotice("Choose a backup smaller than 1 MB.");
+                  input.value = "";
                   return;
                 }
                 try {
                   const restored = importProgress(await file.text());
+                  input.value = "";
                   setLearning(restored);
-                  const url = new URL(window.location.href);
-                  url.searchParams.delete("game");
-                  window.history.replaceState(navigationState(), "", url);
                   setSession(null);
                   setSettings(false);
                   setNotice("Progress restored, including your playground and saved creations.");
                 } catch (error) {
+                  input.value = "";
                   setNotice(
                     error instanceof Error ? error.message : "Unable to restore this backup.",
                   );
+                  return;
+                }
+                try {
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete("game");
+                  window.history.replaceState(navigationState(), "", url);
+                } catch {
+                  // A history failure must not discard the restored progress.
                 }
               }}
             />
