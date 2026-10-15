@@ -1381,3 +1381,43 @@
     --aura-text: var(--aura-ink);
   }
 }
+
+/* Scientific intervals and reference evidence stay readable at narrow widths. */
+.element-card-mass {
+  overflow-wrap: anywhere;
+}
+.isotope-reference details {
+  margin-top: 1rem;
+}
+.isotope-reference {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.isotope-reference > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.reference-facts dd {
+  overflow-wrap: anywhere;
+}
+.isotope-reference summary {
+  cursor: pointer;
+  padding-block: 0.75rem;
+  font-weight: 700;
+}
+.isotope-reference .comparison-table {
+  min-width: 42rem;
+}
+.isotope-reference th small {
+  display: block;
+  font-weight: 400;
+}
+.isotope-reference .comparison-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.property-list dd a,
+.reference-properties dd a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}

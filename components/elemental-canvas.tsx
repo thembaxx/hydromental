@@ -18,7 +18,10 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { Element } from "@/lib/elements";
 import type { SceneControls } from "@/lib/atom-scene";
-import type { Aura, ElementalSceneApi } from "@/lib/elemental";
+import { prepareElementalModel } from "@/lib/elemental-model";
+import { elementalAssets } from "@/lib/elemental";
+import { trackProductEvent } from "@/lib/measurement";
+import type { ElementalAsset, Aura, ElementalSceneApi } from "@/lib/elemental";
 import {
   createElementalUniforms,
   elementalVertexShader,
@@ -29,35 +32,61 @@ import {
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 
 class SceneBoundary extends Component<
-  { children: ReactNode; fallback: ReactNode },
+  { children: ReactNode; fallback: ReactNode; kind?: "asset" | "renderer" },
   { failed: boolean }
 > {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
   }
+  componentDidCatch() {
+    trackProductEvent("webgl_error", { kind: this.props.kind ?? "renderer" });
+  }
   render() {
     return this.state.failed ? this.props.fallback : this.props.children;
   }
 }
-function ModelGeometry({
-  path,
-  children,
+function ModelAsset({
+  asset,
+  uniforms,
+  controls,
+  reduced,
 }: {
-  path: string;
-  children: (geometry: THREE.BufferGeometry) => ReactNode;
+  asset: ElementalAsset;
+  uniforms: ReturnType<typeof createElementalUniforms>;
+  controls: RefObject<SceneControls>;
+  reduced: boolean;
 }) {
-  const { scene } = useLoader(GLTFLoader, path);
-  const geometry = useMemo(() => {
-    let result: THREE.BufferGeometry | undefined;
-    scene.traverse((node) => {
-      if (!result && node instanceof THREE.Mesh) result = node.geometry;
-    });
-    if (!result) throw new Error("The elemental GLB must contain a mesh");
-    return result.clone();
-  }, [scene]);
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  return children(geometry);
+  const { scene, animations } = useLoader(GLTFLoader, asset.path);
+  const model = useMemo(() => {
+    const material =
+      asset.material === "procedural"
+        ? new THREE.ShaderMaterial({
+            uniforms,
+            vertexShader: coreVertexShader,
+            fragmentShader: coreFragmentShader,
+          })
+        : undefined;
+    const prepared = prepareElementalModel(scene, material);
+    material?.dispose();
+    return prepared;
+  }, [scene, asset.material, uniforms]);
+  const mixer = useMemo(() => new THREE.AnimationMixer(model.scene), [model]);
+  useEffect(() => {
+    const clip = asset.animation
+      ? animations.find((item) => item.name === asset.animation)
+      : animations[0];
+    if (clip) mixer.clipAction(clip).play();
+    return () => {
+      mixer.stopAllAction();
+      mixer.uncacheRoot(model.scene);
+    };
+  }, [asset.animation, animations, mixer, model]);
+  useEffect(() => () => model.dispose(), [model]);
+  useFrame((_, delta) => {
+    if (!reduced && !controls.current.paused) mixer.update(Math.min(delta, 0.05));
+  });
+  return <primitive object={model.root} dispose={null} />;
 }
 function ElementalScene({
   aura,
@@ -75,7 +104,7 @@ function ElementalScene({
   const { viewport, size, gl, camera } = useThree();
   const backdrop = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, -3));
   const world = useRef<THREE.Group>(null);
-  const core = useRef<THREE.Mesh>(null);
+  const core = useRef<THREE.Group>(null);
   const auraMaterial = useRef<THREE.ShaderMaterial>(null);
   const electrons = useRef<THREE.Group>(null);
   const uniforms = useMemo(() => createElementalUniforms(), []);
@@ -84,7 +113,7 @@ function ElementalScene({
   const target = useMemo(() => new THREE.Vector2(), []);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const timer = useRef(0);
-  const slow = useRef(0);
+  const sample = useRef({ elapsed: 0, frames: 0, reported: false });
   useEffect(() => {
     const canvas = gl.domElement;
     canvas.id = "gl";
@@ -103,7 +132,7 @@ function ElementalScene({
           ),
           camera,
         );
-        if (!raycaster.intersectObject(core.current).length) return null;
+        if (!raycaster.intersectObject(core.current, true).length) return null;
         const hit = { kind: "nucleus" as const, atomicNumber: element.z };
         controls.current.onInspect?.(hit);
         return hit;
@@ -123,8 +152,8 @@ function ElementalScene({
     if (!reduced && !state.paused) timer.current += dt;
     uniforms.uTime.value = timer.current;
     uniforms.uAspect.value = size.width / size.height;
-    uniforms.uColorA.value.lerp(colorA, 1 - Math.exp(-4 * dt));
-    uniforms.uColorB.value.lerp(colorB, 1 - Math.exp(-4 * dt));
+    uniforms.uColorA.value.lerp(colorA, reduced ? 1 : 1 - Math.exp(-4 * dt));
+    uniforms.uColorB.value.lerp(colorB, reduced ? 1 : 1 - Math.exp(-4 * dt));
     const touch = state.touch;
     target.set(touch?.x ?? 0.5, touch?.y ?? 0.5);
     uniforms.uTouch.value.lerp(target, 1 - Math.exp(-18 * dt));
@@ -134,10 +163,15 @@ function ElementalScene({
     const syncUniforms = (material: THREE.Material | THREE.Material[] | null | undefined) => {
       if (!(material instanceof THREE.ShaderMaterial)) return;
       for (const name of Object.keys(uniforms) as (keyof typeof uniforms)[]) {
-        material.uniforms[name].value = uniforms[name].value;
+        if (material.uniforms[name]) material.uniforms[name].value = uniforms[name].value;
       }
     };
-    syncUniforms(core.current?.material);
+    core.current?.traverse((node) => {
+      if (node instanceof THREE.Mesh) {
+        if (Array.isArray(node.material)) node.material.forEach(syncUniforms);
+        else syncUniforms(node.material);
+      }
+    });
     syncUniforms(auraMaterial.current);
     if (world.current) {
       const scale = (size.width < 600 ? 0.88 : 1) * (state.zoom ?? 1);
@@ -160,9 +194,25 @@ function ElementalScene({
         child.position.set(Math.cos(angle) * 2.05, Math.sin(angle) * 0.6, Math.sin(angle) * 1.4);
       });
     }
-    if (state.quality === "auto" && delta > 0.045 && ++slow.current > 90) {
-      gl.setPixelRatio(1);
-      slow.current = -100000;
+    if (!reduced && delta > 0 && delta < 0.25) {
+      sample.current.elapsed += delta;
+      sample.current.frames += 1;
+      if (sample.current.elapsed >= 5) {
+        const fps = sample.current.frames / sample.current.elapsed;
+        if (!sample.current.reported) {
+          trackProductEvent("render_sample", {
+            fps: fps < 30 ? "under_30" : fps < 50 ? "30_to_49" : "50_plus",
+            quality: state.quality ?? "auto",
+          });
+          sample.current.reported = true;
+        }
+        if (state.quality === "auto" && fps < 30 && gl.getPixelRatio() > 1) {
+          gl.setPixelRatio(Math.max(1, gl.getPixelRatio() - 0.25));
+          trackProductEvent("quality_adjusted", { quality: "low" });
+        }
+        sample.current.elapsed = 0;
+        sample.current.frames = 0;
+      }
     }
   });
   const material = (
@@ -186,31 +236,34 @@ function ElementalScene({
         />
       </mesh>
       <group ref={world}>
-        <Suspense
-          fallback={
-            <mesh ref={core}>
-              <sphereGeometry args={[1.25, 48, 32]} />
-              {material}
-            </mesh>
-          }
-        >
-          <SceneBoundary
+        <group ref={core}>
+          <Suspense
             fallback={
-              <mesh ref={core}>
+              <mesh>
                 <sphereGeometry args={[1.25, 48, 32]} />
                 {material}
               </mesh>
             }
           >
-            <ModelGeometry path={`/models/${aura.id}.glb`}>
-              {(geometry) => (
-                <mesh ref={core} geometry={geometry}>
+            <SceneBoundary
+              key={aura.id}
+              kind="asset"
+              fallback={
+                <mesh>
+                  <sphereGeometry args={[1.25, 48, 32]} />
                   {material}
                 </mesh>
-              )}
-            </ModelGeometry>
-          </SceneBoundary>
-        </Suspense>
+              }
+            >
+              <ModelAsset
+                asset={elementalAssets[aura.id]}
+                uniforms={uniforms}
+                controls={controls}
+                reduced={reduced}
+              />
+            </SceneBoundary>
+          </Suspense>
+        </group>
         {[0, 1, 2].map((i) => (
           <mesh key={i} rotation={[Math.PI / 2 + i * 0.38, i * 0.42, i * 0.65]}>
             <torusGeometry args={[1.9 + i * 0.16, 0.006, 6, 160]} />
@@ -236,8 +289,12 @@ function ContextLifecycle({ onLost }: { onLost: (lost: boolean) => void }) {
     const lost = (event: Event) => {
       event.preventDefault();
       onLost(true);
+      trackProductEvent("webgl_error", { kind: "context_lost" });
     };
-    const restored = () => onLost(false);
+    const restored = () => {
+      onLost(false);
+      trackProductEvent("webgl_error", { kind: "context_restored" });
+    };
     canvas.addEventListener("webglcontextlost", lost);
     canvas.addEventListener("webglcontextrestored", restored);
     return () => {
@@ -247,18 +304,21 @@ function ContextLifecycle({ onLost }: { onLost: (lost: boolean) => void }) {
   }, [gl, onLost]);
   return null;
 }
-function RenderActivity({ suspended }: { suspended: boolean }) {
+function RenderActivity({ suspended, reduced }: { suspended: boolean; reduced: boolean }) {
   const set = useThree((state) => state.set);
   const invalidate = useThree((state) => state.invalidate);
+  const gl = useThree((state) => state.gl);
   useEffect(() => {
     const sync = () => {
-      set({ frameloop: suspended || document.hidden ? "never" : "always" });
+      const active = !suspended && !document.hidden;
+      set({ frameloop: active ? (reduced ? "demand" : "always") : "never" });
+      gl.domElement.dataset.renderState = active ? (reduced ? "on-demand" : "active") : "paused";
       if (!suspended && !document.hidden) invalidate();
     };
     sync();
     document.addEventListener("visibilitychange", sync);
     return () => document.removeEventListener("visibilitychange", sync);
-  }, [suspended, set, invalidate]);
+  }, [suspended, reduced, set, invalidate, gl]);
   return null;
 }
 export default function ElementalCanvas({
@@ -278,6 +338,16 @@ export default function ElementalCanvas({
 }) {
   const reduced = useReducedMotionPreference();
   const [lost, setLost] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const container = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!container.current || !("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      rootMargin: "80px",
+    });
+    observer.observe(container.current);
+    return () => observer.disconnect();
+  }, []);
   const fallback = (
     <div className="elemental-fallback" role="status">
       <img src={`/auras/${aura.id}.png`} alt="" width="400" height="320" />
@@ -285,7 +355,7 @@ export default function ElementalCanvas({
     </div>
   );
   return (
-    <div className="elemental-canvas" data-aura={aura.id}>
+    <div ref={container} className="elemental-canvas" data-aura={aura.id}>
       <SceneBoundary fallback={fallback}>
         {lost && fallback}
         <Canvas
@@ -294,7 +364,7 @@ export default function ElementalCanvas({
           gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
         >
           <ContextLifecycle onLost={setLost} />
-          <RenderActivity suspended={suspended || lost} />
+          <RenderActivity suspended={suspended || lost || !visible} reduced={reduced} />
           <ElementalScene
             aura={aura}
             element={element}

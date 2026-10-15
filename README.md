@@ -21,7 +21,7 @@ The playful atom and scientific shell schematic are teaching illustrations. They
 
 ## Stack
 
-- Next.js 16.3.8, React 19.3.0 and TypeScript 7.0.2
+- Next.js 16.4.0, React 19.3.0 and TypeScript 7.0.2
 - Tailwind CSS 4.3.3, owned shadcn/ui primitives and Radix accessible dialogs
 - Phosphor Icons (`@phosphor-icons/react`) with outline (`regular`) and solid (`fill`) weights
 - Motion 14.0.0 and Three.js 0.186.1
@@ -44,12 +44,16 @@ Open http://localhost:3000. Production and verification commands:
 
 ```sh
 pnpm check          # lint, formatting and TypeScript
-pnpm test:unit      # learning-state unit tests
+pnpm test:unit      # learning, ingestion, privacy, model and release-tool tests
 pnpm science:check  # validate the committed scientific snapshot
 pnpm security:audit # check runtime and development dependency advisories
 pnpm build         # build production routes and assets
+pnpm performance:check # production initial JavaScript budget
+pnpm assets:check   # embedded mobile GLB budgets
 pnpm exec playwright install chromium
 pnpm test:e2e       # starts a production server when none is running
+pnpm exec playwright install --with-deps webkit
+pnpm test:devices   # Android Chromium and iOS WebKit touch profiles
 pnpm start         # serve an existing production build
 ```
 
@@ -108,3 +112,9 @@ See the [security audit](docs/security-audit.md) for findings, browser defenses 
 ## Elemental redesign
 
 The immersive mobile-first explorer uses React Three Fiber, Blender-generated GLB models, complete interactive GLSL shaders, GSAP drag/snapping and local procedural audio. It stays in this Next.js/TypeScript/Tailwind application. See [the source manifest, asset workflow and touch verification](docs/elemental-redesign.md), and [CI/release setup](docs/deployment.md).
+
+## Trusted reference data and mobile measurement
+
+Every view derives masses and phases from one scientific snapshot. CIAAW atomic-weight intervals remain dimensionless; NIST/NUBASE data add 324 selected isotopes with natural fractions, half-lives and decay. Eleven property fields include oxidation states, discovery dates, radius and affinity. Sources, editions, uncertainty and missing reference conditions are explicit. See [trusted science](docs/trusted-science.md).
+
+Optional [measurement](docs/measurement.md) is off until visitors opt in, honors privacy signals and excludes personal learning content. The existing hosting plan determines custom-event eligibility. See [mobile readiness](docs/mobile-readiness.md) for renderer/asset budgets, complete Blender scene support, emulated touch tests and the physical-device checks still required.

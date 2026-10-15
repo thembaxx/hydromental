@@ -420,7 +420,7 @@ function PeriodicGame({ session, onChange, solved }: Props) {
               <div
                 key={element.z}
                 className="game-tile"
-                style={{ gridColumn: element.g, gridRow: element.p }}
+                style={{ gridColumn: element.gridColumn, gridRow: element.gridRow }}
               >
                 <span className="n">{element.z}</span>
                 <strong>{element.s}</strong>
@@ -430,7 +430,7 @@ function PeriodicGame({ session, onChange, solved }: Props) {
                 key={element.z}
                 variant="unstyled"
                 className="game-tile game-tile-hole"
-                style={{ gridColumn: element.g, gridRow: element.p }}
+                style={{ gridColumn: element.gridColumn, gridRow: element.gridRow }}
                 aria-label={`Period ${element.p}, group ${element.g}`}
                 disabled={!session.choice || solved}
                 onClick={() =>
@@ -883,7 +883,9 @@ function PropertyGame({ session, onChange, solved, onInspect }: Props) {
               <span>{elements[z - 1].n}</span>
             </Button>
             <span className="n game-property-value">
-              {solved ? `${propertyValue(session.index, z)} ${round.unit}` : ""}
+              {solved
+                ? `${getScience(z).properties.find((property) => property.label === round.name)!.value} ${getScience(z).properties.find((property) => property.label === round.name)!.unit ?? ""}`
+                : ""}
             </span>
             <Button
               variant="unstyled"

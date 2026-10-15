@@ -211,6 +211,8 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   await expect(page.locator("#qa .no")).toHaveCount(1);
   await expect(page.locator("#qa .ok")).toHaveCount(1);
   await expect(page.locator("#pr")).toContainText("135 XP");
+  await expect(page.locator(".quiz-explanation")).toBeVisible();
+  await page.getByRole("button", { name: "Next question", exact: true }).click();
   await expect(page.locator("#qa button").first()).toBeEnabled();
   const secondCorrectZ = await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");

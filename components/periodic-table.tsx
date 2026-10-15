@@ -125,8 +125,8 @@ export function PeriodicTable({
             onFocus={() => setFocused(i)}
             style={
               {
-                gridColumn: element.g,
-                gridRow: element.p + 1,
+                gridColumn: element.gridColumn,
+                gridRow: element.gridRow + 1,
                 "--c": categories[element.c][1],
                 "--d": `${(i % 18) * 12}ms`,
               } as CSSProperties

@@ -200,3 +200,19 @@ test("the background atom stops rendering during a panel and resumes after dismi
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(draws).toBeGreaterThan(stopped);
 });
+
+test("answer explanations remain until the reader chooses the next question", async ({ page }) => {
+  await ready(page);
+  await page.getByRole("button", { name: "Open discovery journal", exact: true }).click();
+  const journal = page.getByRole("dialog", { name: "Your discovery journal" });
+  await journal.getByRole("tab", { name: "Practice", exact: true }).click();
+  await page.locator("#qa .opt").first().click();
+  const explanation = page.locator(".quiz-explanation");
+  await expect(explanation).toBeVisible();
+  const text = await explanation.textContent();
+  await page.waitForTimeout(2800);
+  await expect(explanation).toHaveText(text!);
+  await page.getByRole("button", { name: "Next question", exact: true }).click();
+  await expect(page.locator("#qa .opt").first()).toBeEnabled();
+  await expect(page.locator("#qa .opt").first()).toBeFocused();
+});

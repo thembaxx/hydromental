@@ -1,0 +1,56 @@
+name: Review scientific data updates
+on:
+  schedule:
+    - cron: "25 8 * * 2"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: science-refresh
+  cancel-in-progress: false
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Fetch authoritative sources and validate the proposed snapshot
+        run: pnpm science:refresh && pnpm exec oxfmt --write lib/science-data.json && pnpm science:check
+      - name: Propose changes for scientific review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Retrieval dates alone do not justify a new PR.
+          if node scripts/science-diff.mjs --quiet; then exit 0; fi
+          git switch -c science/source-refresh
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/science-data.json
+          git commit -m "fix: refresh attributed scientific reference values"
+          gh auth setup-git
+          if git ls-remote --exit-code origin refs/heads/science/source-refresh >/dev/null 2>&1; then
+            git fetch origin refs/heads/science/source-refresh:refs/remotes/origin/science/source-refresh
+          fi
+          git push --force-with-lease origin science/source-refresh
+          node scripts/science-diff.mjs --base origin/main > /tmp/science-review.md
+          if gh pr view science/source-refresh >/dev/null 2>&1; then
+            gh pr edit science/source-refresh --body-file /tmp/science-review.md
+          else
+            gh pr create --base main --head science/source-refresh --title "fix: review scientific source updates" --body-file /tmp/science-review.md
+          fi
+          # GITHUB_TOKEN-created PRs do not trigger pull_request workflows.
+          # workflow_dispatch is an explicit supported exception; no release job runs.
+          gh workflow run ci.yml --ref science/source-refresh

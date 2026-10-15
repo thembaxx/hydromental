@@ -55,8 +55,14 @@ import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
 import { ExplorationDock } from "@/components/exploration-dock";
 import { LearningTip } from "@/components/learning-tip";
-import { Onboarding } from "@/components/onboarding";
+// The introduction owns a separate Three.js scene. Keep it out of returning
+// visitors' initial bundle, alongside the already deferred elemental renderer.
+const Onboarding = dynamic(
+  () => import("@/components/onboarding").then((module) => module.Onboarding),
+  { ssr: false },
+);
 import { beginOnboarding, finishOnboarding, shouldShowOnboarding } from "@/lib/onboarding";
+import { trackProductEvent } from "@/lib/measurement";
 
 type Direction = "u" | "d" | "l" | "r";
 const panels = [
@@ -260,6 +266,7 @@ export default function ElementsExplorer() {
       url.searchParams.set("element", selected.s);
       window.history.replaceState(navigationState(), "", url);
       if (isNew) {
+        trackProductEvent("element_discovered", { element: selected.z });
         notify(`Discovered ${selected.n} · +10 XP`);
         if (getLevel(next.xp).level > level.level) setCelebrate(true);
       }
@@ -707,9 +714,8 @@ export default function ElementsExplorer() {
                   onClick={() => setSheet("details")}
                 >
                   <span className="element-number n">
-                    {element.s} ·{" "}
-                    {science.properties.find((property) => property.label === "Atomic mass")?.value}{" "}
-                    u
+                    {element.s} · {element.m}
+                    {element.massUnit ? ` ${element.massUnit}` : ""}
                   </span>
                   <h1>{element.n}</h1>
                   <small>
