@@ -224,6 +224,12 @@ function ElementalScene({
   );
   return (
     <>
+      {elementalAssets[aura.id].material === "authored" && (
+        <>
+          <hemisphereLight args={["#e6f3ed", "#26352e", 1.5]} />
+          <directionalLight position={[3, 4, 5]} intensity={2} />
+        </>
+      )}
       <mesh position={[0, 0, -3]} scale={[backdrop.width, backdrop.height, 1]}>
         <planeGeometry />
         <shaderMaterial
