@@ -8,11 +8,11 @@ export const themeSurfaces = {
     background: "linear-gradient(135deg, #f0f5fc, #f9f7f1)",
   },
   midnight: {
-    color: "#0a1028",
+    color: "#0c1210",
     scheme: "dark",
-    ink: "#f5f7ff",
-    accent: "#abbcff",
-    background: "linear-gradient(135deg, #0a1028, #111a36)",
+    ink: "#edf1e9",
+    accent: "#c3dfb3",
+    background: "linear-gradient(135deg, #0c1210, #111a16)",
   },
   dusk: {
     color: "#232b65",
@@ -60,7 +60,7 @@ export const themeCriticalCss = [
 /** Fixed trusted program; device storage supplies only a whitelisted theme name. */
 export const themeBootstrapScript = `(()=>{
 const root=document.documentElement;const surfaces=${JSON.stringify(themeSurfaces)};
-let preference='';try{const saved=JSON.parse(localStorage.getItem('elementals.learning.v2')||'null');if(saved?.version===2)preference=saved.settings?.theme;else preference=localStorage.getItem('th')||localStorage.getItem('elt')||''}catch{try{preference=localStorage.getItem('th')||localStorage.getItem('elt')||''}catch{}}
+let preference='midnight';try{const saved=JSON.parse(localStorage.getItem('elementals.learning.v2')||'null');if(saved?.version===2)preference=saved.settings?.theme;else preference=localStorage.getItem('th')||localStorage.getItem('elt')||'midnight'}catch{try{preference=localStorage.getItem('th')||localStorage.getItem('elt')||''}catch{preference=''}}
 if(typeof preference==='string'&&Object.hasOwn(surfaces,preference))root.dataset.theme=preference;else delete root.dataset.theme;
 const sync=()=>{const theme=root.dataset.theme;const key=Object.hasOwn(surfaces,theme||'')?theme:matchMedia('(prefers-color-scheme: dark)').matches?'midnight':'day';const surface=surfaces[key];let meta=document.getElementById('app-theme-color');if(!meta){meta=document.createElement('meta');meta.id='app-theme-color';meta.name='theme-color';meta.content=surface.color;document.head.insertBefore(meta,document.head.querySelector('meta[name="theme-color"]'))}else meta.content=surface.color;let link=document.getElementById('app-manifest');if(!link){link=document.createElement('link');link.id='app-manifest';link.rel='manifest';document.head.appendChild(link)}link.setAttribute('href','/manifests/'+key+'/manifest.webmanifest')};
 sync();document.addEventListener('DOMContentLoaded',sync,{once:true});

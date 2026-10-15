@@ -338,7 +338,7 @@ export function initialLearningState(): LearningState {
     mastery: {},
     activityDates: [],
     settings: {
-      theme: "",
+      theme: "midnight",
       sound: false,
       ambient: false,
       haptics: true,

@@ -124,7 +124,19 @@ test("production offline shell, visited references, and element data remain avai
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await expect(page.getByRole("status").filter({ hasText: "Offline" })).toBeVisible();
-  await expect(page.locator("canvas").first()).toBeVisible();
+  await expect(page.locator("#gl")).toBeVisible();
+  for (const name of ["Hydro", "Ember", "Solar", "Breeze"]) {
+    await page.getByRole("button", { name: `${name} aura`, exact: true }).click();
+    await expect(page.locator(".elemental-canvas")).toHaveAttribute(
+      "data-aura",
+      name.toLowerCase(),
+    );
+    const size = await page.evaluate(async (id) => {
+      const model = await fetch(`/models/${id}.glb`);
+      return model.ok ? (await model.arrayBuffer()).byteLength : 0;
+    }, name.toLowerCase());
+    expect(size).toBeGreaterThan(1000);
+  }
   const count = await page.evaluate(
     async () => (await (await fetch("/element-data.json")).json()).elements.length,
   );

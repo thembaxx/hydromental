@@ -1,0 +1,16 @@
+diff --git a/lib/parse.js b/lib/parse.js
+index 3a6988e629f52aee6609dc5ec290a5e9ff47cecb..b5ddd674ab97fbe3074f72e26206e268cf1d5a71 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -74,6 +74,11 @@ const parse = (input, options = {}) => {
+   push({ type: 'bos' });
+ 
+   while (index < length) {
++    // Bound AST depth before recursive compile/stringify/expand can exhaust the stack.
++    // Covers both curly braces and parentheses, including imbalanced patterns.
++    if (stack.length > 128) {
++      throw new SyntaxError('Maximum brace nesting depth exceeded');
++    }
+     block = stack[stack.length - 1];
+     value = advance();
+ 

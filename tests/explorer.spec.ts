@@ -134,6 +134,7 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("#in")).toContainText("Oxygen");
+  await expect(page.locator("#gl")).toBeVisible();
   await page.waitForFunction(
     () => !!(document.querySelector("#gl") as HTMLCanvasElement).getContext("webgl2"),
   );

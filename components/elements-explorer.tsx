@@ -3,6 +3,10 @@
 import { AppLoading } from "@/components/app-loading";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { ElementalCarousel } from "@/components/elemental-carousel";
+import { auras, type ElementalSceneApi } from "@/lib/elemental";
+const ElementalCanvas = dynamic(() => import("@/components/elemental-canvas"), { ssr: false });
 import {
   useCallback,
   useEffect,
@@ -29,9 +33,8 @@ import {
   type LearningSettings,
   type MissionId,
 } from "@/lib/learning";
-import { feedback, cleanupFeedback, setAmbientAudio } from "@/lib/feedback";
+import { feedback, cleanupFeedback, setAmbientAudio, setAmbientPreset } from "@/lib/feedback";
 import type { AtomInspection, SceneControls } from "@/lib/atom-scene";
-import { AtomCanvas, type AtomSceneApi } from "@/components/atom-canvas";
 import { BrandMark } from "@/components/brand-mark";
 import { DialogShell } from "@/components/dialog-shell";
 import { ElementLibrary, type LibraryView } from "@/components/element-library";
@@ -87,6 +90,8 @@ const titles = {
 
 export default function ElementsExplorer() {
   const [current, setCurrent] = useState(7);
+  const [auraIndex, setAuraIndex] = useState(0);
+  const aura = auras[auraIndex];
   const [learning, setLearning] = useState(initialLearningState);
   const [hydrated, setHydrated] = useState(false);
   const [welcome, setWelcome] = useState(false);
@@ -122,7 +127,7 @@ export default function ElementsExplorer() {
   } | null>(null);
   const pointers = useRef(new Map<number, [number, number]>());
   const pinch = useRef({ distance: 1, zoom: 1 });
-  const atomApi = useRef<AtomSceneApi | null>(null);
+  const atomApi = useRef<ElementalSceneApi | null>(null);
   const scene = useRef<SceneControls>({
     spin: 0,
     tilt: 0,
@@ -355,6 +360,13 @@ export default function ElementsExplorer() {
       movement: 0,
       time: performance.now(),
     };
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const touchBounds = document.getElementById("gl")?.getBoundingClientRect() ?? bounds;
+    scene.current.touch = {
+      x: (event.clientX - touchBounds.left) / touchBounds.width,
+      y: 1 - (event.clientY - touchBounds.top) / touchBounds.height,
+      strength: 1,
+    };
     scene.current.dragging = true;
     holdTimer.current = setTimeout(() => {
       if (pointer.current && pointer.current.movement < 8 && !sheet) {
@@ -366,6 +378,12 @@ export default function ElementsExplorer() {
   };
   const pointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
+    const touchBounds = document.getElementById("gl")?.getBoundingClientRect() ?? bounds;
+    scene.current.touch = {
+      x: (event.clientX - touchBounds.left) / touchBounds.width,
+      y: 1 - (event.clientY - touchBounds.top) / touchBounds.height,
+      strength: 1,
+    };
     scene.current.x = (event.clientX - bounds.left) / bounds.width - 0.5;
     scene.current.y = (event.clientY - bounds.top) / bounds.height - 0.5;
     if (pointers.current.has(event.pointerId))
@@ -486,7 +504,10 @@ export default function ElementsExplorer() {
   }
 
   return (
-    <div className="explorer-shell">
+    <div
+      className="explorer-shell hydro-experience"
+      style={{ "--aura-color": aura.color, "--aura-ink": aura.ink } as CSSProperties}
+    >
       <a href="#app" className="skip-link">
         Skip to atom explorer
       </a>
@@ -494,9 +515,20 @@ export default function ElementsExplorer() {
         <Link href="/" className="brand-link" aria-label="Elementals home">
           <BrandMark />
           <span>
-            <strong>Elementals</strong>
+            <strong>
+              elementals<span className="brand-period">.</span>
+            </strong>
           </span>
         </Link>
+        <nav className="desktop-navigation" aria-label="Main navigation">
+          <button className="active" onClick={() => close()}>
+            Discover
+          </button>
+          <button onClick={() => openLibrary("table")}>The elements</button>
+          <Link href="/playground">
+            Playground <Icon name="next" size={14} />
+          </Link>
+        </nav>
         <div className="header-actions">
           <Button variant="unstyled" className="library-link" onClick={() => openLibrary("family")}>
             Element library
@@ -525,96 +557,22 @@ export default function ElementsExplorer() {
           </Button>
         </div>
       </header>
-      <main className="explorer-layout">
-        <aside className="journey-rail" aria-label="Learning journey">
-          <Card variant="unstyled" className="rail-card journey-card">
-            <div className="eyebrow">
-              <Icon name="award" />
-              Your curiosity, collected
-            </div>
-            <h2>{level.title}</h2>
-            <p className="level-copy">
-              Level {level.level}
-              <span className="n">{learning.xp} XP</span>
-            </p>
-            <progress
-              className="learning-progress"
-              value={level.progress}
-              max={1}
-              aria-label="Progress to next explorer level"
-            />
-            <p className="panel-copy">
-              {learning.discovered.length} of 118 elements discovered. Every encounter is a place to
-              begin.
-            </p>
-            <Button
-              variant="unstyled"
-              className="action-button primary-action icon-action"
-              aria-label="Open your journal"
-              title="Open your journal"
-              onClick={() => setSheet("learning")}
-            >
-              <Icon name="learn" />
-            </Button>
-          </Card>
-          <Card variant="unstyled" className="rail-card">
-            <div className="section-heading">
-              <h3>Today's little missions</h3>
-              <Badge variant="unstyled" className="tag">
-                Optional
-              </Badge>
-            </div>
-            {missions.map((mission) => (
-              <div className="mission-mini" key={mission.id}>
-                <div>
-                  <b>{mission.title}</b>
-                  <small>
-                    {mission.progress} / {mission.target} · {mission.reward} XP
-                  </small>
-                </div>
-                {mission.complete && !mission.claimed ? (
-                  <Button variant="unstyled" className="tag" onClick={() => claim(mission.id)}>
-                    Claim
-                  </Button>
-                ) : (
-                  <span
-                    role="img"
-                    aria-label={mission.claimed ? "Reward collected" : "In progress"}
-                  >
-                    {mission.claimed ? <Icon name="done" /> : <span className="mission-dot" />}
-                  </span>
-                )}
-              </div>
-            ))}
-            <Button
-              variant="unstyled"
-              className="text-button"
-              onClick={() => openQuiz(due.length ? "review" : "standard")}
-            >
-              {due.length ? `Review ${due.length} due elements` : "Try a quick quiz"}
-              <Icon name="next" />
-            </Button>
-          </Card>
-          <Card variant="unstyled" className="rail-card family-card">
-            <h3>Follow a family</h3>
-            <div className="family-list">
-              {(Object.entries(categories) as [Category, readonly [string, string]][]).map(
-                ([key, [label, color]]) => (
-                  <Button
-                    variant="unstyled"
-                    key={key}
-                    className="family-link"
-                    onClick={() => openLibrary("family", key)}
-                  >
-                    <span style={{ background: color }} />
-                    {label}
-                    <Icon name="next" />
-                  </Button>
-                ),
-              )}
-            </div>
-          </Card>
-        </aside>
+      <main className="explorer-layout overflow-x-hidden w-full max-w-full">
+        <div className="experience-intro">
+          <div>
+            <p>A little curiosity goes a long way</p>
+            <h2 className="max-w-6xl">
+              Meet the building blocks
+              <br />
+              of <em>everything.</em>
+            </h2>
+          </div>
+          <p className="intro-note">
+            An interactive playground for the endlessly curious.
+            <br />
+            Touch. Explore. See the world a little differently.
+          </p>
+        </div>
         <div className="atom-column">
           <div id="pr" className="n">
             {found.size} / {elements.length} · {learning.xp} XP
@@ -637,7 +595,9 @@ export default function ElementsExplorer() {
               cancelPointer();
             }}
           >
-            <AtomCanvas
+            <ElementalCanvas
+              aura={aura}
+              quality={learning.settings.quality}
               element={element}
               controls={scene}
               apiRef={atomApi}
@@ -652,8 +612,11 @@ export default function ElementsExplorer() {
                 } as CSSProperties
               }
             />
-            <div id="gh" className="n" aria-hidden="true">
-              {String(element.z).padStart(2, "0")}
+            <div id="gh" aria-hidden="true">
+              {element.s}
+            </div>
+            <div className="scene-orbit-label" aria-hidden="true">
+              <span /> {aura.name.toUpperCase()} ATMOSPHERE
             </div>
             <div className="stage-topline">
               <Button
@@ -734,6 +697,7 @@ export default function ElementsExplorer() {
                 Swipe to travel · Hold to peek · Tap the atom to learn
               </LearningTip>
               <div className="element-footer">
+                <p className="element-kicker">A closer look at the extraordinary</p>
                 <Button
                   variant="unstyled"
                   id="in"
@@ -756,6 +720,25 @@ export default function ElementsExplorer() {
                     }
                   </small>
                 </Button>
+                <p className="element-story">{science.story}</p>
+                <div className="element-actions">
+                  <Button
+                    variant="unstyled"
+                    className="explore-element"
+                    onClick={() => setSheet("details")}
+                  >
+                    Explore {element.n.toLowerCase()} <Icon name="learn" size={17} />
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    className="element-next"
+                    aria-label="Next element"
+                    onClick={() => navigate("r")}
+                  >
+                    <Icon name="next" size={18} />
+                  </Button>
+                </div>
+                <p className="element-art-note">An artistic atom. A real story.</p>
               </div>
             </div>
             <div className="stage-bottom-tools">
@@ -805,6 +788,15 @@ export default function ElementsExplorer() {
                 />
               ))}
           </div>
+          <ElementalCarousel
+            active={auraIndex}
+            onChange={(index) => {
+              setAuraIndex(index);
+              setAmbientPreset(auras[index].id);
+              if (learning.settings.ambient) setAmbientAudio(true);
+              feedback("tap", learning.settings);
+            }}
+          />
           <ExplorationDock
             open={panel}
             onOpen={(destination) => {
@@ -814,8 +806,87 @@ export default function ElementsExplorer() {
             }}
           />
         </div>
+        <div className="discovery-intro">
+          <p className="discovery-thought">
+            {"The world is made of tiny things. Your next big discovery starts with one."
+              .split(" ")
+              .map((word, i) => (
+                <span key={i}>{word} </span>
+              ))}
+          </p>
+        </div>
+        <aside className="journey-rail" aria-label="Learning journey">
+          <Card variant="unstyled" className="rail-card journey-card discovery-card-motion">
+            <div className="eyebrow">
+              <Icon name="award" />
+              Your curiosity, collected
+            </div>
+            <h2>{level.title}</h2>
+            <p className="level-copy">
+              Level {level.level}
+              <span className="n">{learning.xp} XP</span>
+            </p>
+            <progress
+              className="learning-progress"
+              value={level.progress}
+              max={1}
+              aria-label="Progress to next explorer level"
+            />
+            <p className="panel-copy">
+              {learning.discovered.length} of 118 elements discovered. Every encounter is a place to
+              begin.
+            </p>
+            <Button
+              variant="unstyled"
+              className="action-button primary-action icon-action"
+              aria-label="Open your journal"
+              title="Open your journal"
+              onClick={() => setSheet("learning")}
+            >
+              <Icon name="learn" />
+            </Button>
+          </Card>
+          <Card variant="unstyled" className="rail-card">
+            <div className="section-heading">
+              <h3>Today's little missions</h3>
+              <Badge variant="unstyled" className="tag">
+                Optional
+              </Badge>
+            </div>
+            {missions.map((mission) => (
+              <div className="mission-mini" key={mission.id}>
+                <div>
+                  <b>{mission.title}</b>
+                  <small>
+                    {mission.progress} / {mission.target} · {mission.reward} XP
+                  </small>
+                </div>
+                {mission.complete && !mission.claimed ? (
+                  <Button variant="unstyled" className="tag" onClick={() => claim(mission.id)}>
+                    Claim
+                  </Button>
+                ) : (
+                  <span
+                    role="img"
+                    aria-label={mission.claimed ? "Reward collected" : "In progress"}
+                  >
+                    {mission.claimed ? <Icon name="done" /> : <span className="mission-dot" />}
+                  </span>
+                )}
+              </div>
+            ))}
+            <Button
+              variant="unstyled"
+              className="text-button"
+              onClick={() => openQuiz(due.length ? "review" : "standard")}
+            >
+              {due.length ? `Review ${due.length} due elements` : "Try a quick quiz"}
+              <Icon name="next" />
+            </Button>
+          </Card>
+        </aside>
         <aside className="story-rail" aria-label={`${element.n} story`}>
-          <Card variant="unstyled" className="rail-card story-card">
+          <Card variant="unstyled" className="rail-card story-card discovery-card-motion">
             <span className="eyebrow">From atom to everyday life</span>
             <span
               className="story-symbol n"
@@ -853,6 +924,37 @@ export default function ElementsExplorer() {
             </Button>
           </Card>
         </aside>
+        <div className="element-marquee" aria-hidden="true">
+          <div>
+            {[...elements.slice(0, 18), ...elements.slice(0, 18)].map((item, i) => (
+              <span key={i}>
+                {item.s}
+                <small>{item.n}</small>
+              </span>
+            ))}
+          </div>
+        </div>
+        <footer className="experience-footer">
+          <div>
+            <p>Stay curious.</p>
+            <h2>
+              There’s a whole world
+              <br />
+              in the little things.
+            </h2>
+          </div>
+          <Button
+            variant="unstyled"
+            className="explore-element"
+            onClick={() => openLibrary("table")}
+          >
+            Explore all 118 elements <Icon name="next" />
+          </Button>
+          <small>Elementals · Made for the joy of discovery.</small>
+          <Link href="/elements">
+            Science & sources <Icon name="next" size={14} />
+          </Link>
+        </footer>
       </main>
       <div id="ts" className={`toast ${toast ? "on" : ""}`} role="status" aria-live="polite">
         {toast}

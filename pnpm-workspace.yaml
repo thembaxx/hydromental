@@ -1,3 +1,12 @@
 packages:
   - .
 minimumReleaseAge: 1440
+patchedDependencies:
+  braces@3.0.3: patches/braces@3.0.3.patch
+
+# GHSA-vfj7-8cjw-p6xm is mitigated by patches/braces@3.0.3.patch.
+# tests/release-security.test.mjs verifies the guard through Semantic Release's dependency graph.
+# Remove this narrowly scoped exception once an upstream fixed release exists.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
