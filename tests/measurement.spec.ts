@@ -86,7 +86,7 @@ test("a consented discovery reaches the analytics boundary with public allowlist
   await page.route("**/_vercel/speed-insights/script.js", (route) =>
     route.fulfill({ contentType: "application/javascript", body: "window.si = () => {};" }),
   );
-  await page.goto("/");
+  await page.goto("/?note=private");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await page.getByRole("button", { name: "Search elements", exact: true }).click();
   await page.getByRole("combobox", { name: "Search elements" }).fill("Gold");

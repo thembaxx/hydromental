@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import {
   measurementAllowed,
-  measurementUrl,
+  filterMeasurementEvent,
   setMeasurementConsent,
   subscribeMeasurement,
   trackProductEvent,
@@ -52,21 +52,8 @@ export function Measurement() {
   if (!allowed) return null;
   return (
     <>
-      <Analytics
-        mode="production"
-        beforeSend={(event) =>
-          measurementAllowed() && navigator.onLine
-            ? { ...event, url: measurementUrl(event.url) }
-            : null
-        }
-      />
-      <SpeedInsights
-        beforeSend={(event) =>
-          measurementAllowed() && navigator.onLine
-            ? { ...event, url: measurementUrl(event.url) }
-            : null
-        }
-      />
+      <Analytics mode="production" beforeSend={filterMeasurementEvent} />
+      <SpeedInsights beforeSend={filterMeasurementEvent} />
     </>
   );
 }

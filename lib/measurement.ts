@@ -131,14 +131,27 @@ export function measurementUrl(raw: string): string {
     : "/other";
   return `${url.origin}${path}`;
 }
+export function filterMeasurementEvent<T extends { url: string }>(event: T): T | null {
+  if (!measurementAllowed() || !navigator.onLine) return null;
+  try {
+    return { ...event, url: measurementUrl(event.url) };
+  } catch {
+    return null;
+  }
+}
 export function trackProductEvent<K extends keyof EventFields>(name: K, data: EventFields[K]) {
   if (process.env.NEXT_PUBLIC_PRODUCT_EVENTS_ENABLED !== "true") return;
   if (!measurementAllowed() || !navigator.onLine) return;
   const safe = sanitizeMeasurement(name, data);
   if (!safe) return;
   void import("@vercel/analytics")
-    .then(({ track }) => {
-      if (measurementAllowed() && navigator.onLine) track(name, safe);
+    .then(({ track, inject }) => {
+      if (measurementAllowed() && navigator.onLine) {
+        // Early renderer errors can precede the React Analytics mount. Register
+        // the URL/consent filter before queueing even that very first event.
+        inject({ mode: "production", beforeSend: filterMeasurementEvent });
+        track(name, safe);
+      }
     })
     .catch(() => {
       /* Optional metrics never interrupt learning or queue offline activity. */
