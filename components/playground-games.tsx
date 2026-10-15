@@ -307,13 +307,21 @@ function AtomGame({ session, onChange, onInspect, paused, settings }: Props) {
       </div>
       <p className="panel-copy">
         {knownIsotopes[p]?.includes(p + n)
-          ? "This mass number is in the NIST isotopic-composition reference. Charge is set independently by your electron count."
+          ? "This mass number is in the cited NIST/NUBASE isotope selection. That does not establish stability or natural abundance. Charge is set independently by your electron count."
           : "This is an exploratory particle composition, not a claim that the isotope or ion is stable or naturally occurring."}{" "}
         Particle dots are capped at 18 of each type; the controls show exact counts. A positive ion
         has fewer electrons than protons.
       </p>
       <a className="game-source" href={isotopeSource} target="_blank" rel="noreferrer">
-        NIST isotope reference
+        NIST isotope masses and compositions
+      </a>
+      <a
+        className="game-source"
+        href="https://www-nds.iaea.org/amdc/ame2020/nubase_4.mas20.txt"
+        target="_blank"
+        rel="noreferrer"
+      >
+        NUBASE nuclear properties
       </a>
     </div>
   );

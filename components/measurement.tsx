@@ -57,12 +57,15 @@ export function Measurement() {
     </>
   );
 }
-export function MeasurementPreferences() {
+export function MeasurementPreferences({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const allowed = useSyncExternalStore(subscribeMeasurement, measurementAllowed, serverSnapshot);
   const [notice, setNotice] = useState("");
   return (
     <section className="panel-section" aria-labelledby="measurement-title">
-      <h3 id="measurement-title">Help improve Elementals</h3>
+      <Heading id="measurement-title" className="panel-title">
+        Help improve Elementals
+      </Heading>
       <label className="settings-toggle" htmlFor="setting-measurement">
         <Input
           id="setting-measurement"

@@ -1400,6 +1400,16 @@
 .reference-facts dd {
   overflow-wrap: anywhere;
 }
+.privacy-page {
+  max-width: 52rem;
+}
+.privacy-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.25rem;
+}
 .isotope-reference summary {
   cursor: pointer;
   padding-block: 0.75rem;

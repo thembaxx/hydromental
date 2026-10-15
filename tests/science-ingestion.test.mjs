@@ -14,6 +14,16 @@ test("upstream format changes and incomplete sources fail closed", () => {
   assert.throws(() => parseNist("<pre>Atomic Number = 1</pre>"), /Incomplete NIST/);
   assert.throws(() => parseNubase("# Nubase2024 citation:"), /Unexpected NUBASE/);
 });
+test("scientific HTML parsing decodes entities and reads text without executing markup", () => {
+  const rows = Array.from(
+    { length: 118 },
+    (_, index) =>
+      `<tr><td>${index + 1}</td><td>H</td><td><script>throw new Error('not executable')</script>Example</td><td>${index === 0 ? "<b>[1.00784,&nbsp;1.00811]</b>" : "1.0"}</td><td></td></tr>`,
+  ).join("");
+  const records = parseCiaaw(`Standard Atomic Weights 2024<table id="mytable">${rows}</table>`);
+  assert.deepEqual(records[0].interval, [1.00784, 1.00811]);
+  assert.equal(records.length, 118);
+});
 test("the master snapshot validates and rejects missing provenance or fabricated precision", () => {
   assert.equal(validateScienceSnapshot(snapshot), true);
   for (const corrupt of [

@@ -7,17 +7,17 @@ export const metadata: Metadata = {
 };
 export default function PrivacyPage() {
   return (
-    <main className="reference-page">
+    <main className="reference-page privacy-page">
       <header className="reference-header">
         <a href="/">Elementals</a>
         <a href="/elements">Element library</a>
       </header>
-      <h1>Privacy and measurement</h1>
+      <h1 className="privacy-title">Privacy and measurement</h1>
       <p>
         Your discoveries, journal, settings and saved creations stay in your browser. Progress
         exports are files you control. There is no account or cross-device sync.
       </p>
-      <MeasurementPreferences />
+      <MeasurementPreferences headingLevel={2} />
       <section className="reference-section">
         <h2>What optional measurement includes</h2>
         <p>

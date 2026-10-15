@@ -216,22 +216,13 @@ export const atomTargets = [
   },
 ];
 export const isotopeSource = "https://physics.nist.gov/PhysRefData/Compositions/index.html";
-export const knownIsotopes: Record<number, number[]> = {
-  1: [1, 2],
-  2: [3, 4],
-  3: [6, 7],
-  6: [12, 13],
-  7: [14, 15],
-  8: [16, 17, 18],
-  11: [23],
-  12: [24, 25, 26],
-  13: [27],
-  14: [28, 29, 30],
-  17: [35, 37],
-  26: [54, 56, 57, 58],
-  29: [63, 65],
-  79: [197],
-};
+export const knownIsotopes: Record<number, number[]> = Object.fromEntries(
+  elements.map((element) => [
+    element.z,
+    getScience(element.z).isotopes.map((isotope) => isotope.massNumber),
+  ]),
+);
+
 type Species = { label: string; atoms: Array<[number, number]> };
 export const equations: Array<{
   name: string;
