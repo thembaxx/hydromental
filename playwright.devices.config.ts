@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./device-tests",
+  outputDir: "device-results",
   reporter: [["list"], ["html", { outputFolder: "device-report", open: "never" }]],
   retries: process.env.CI ? 1 : 0,
   timeout: 40_000,

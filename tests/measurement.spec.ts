@@ -61,3 +61,42 @@ test("browser privacy signals override a previously saved opt-in", async ({ page
   await expect(page.getByRole("checkbox")).not.toBeChecked();
   expect(requests).toEqual([]);
 });
+
+test("a consented discovery reaches the analytics boundary with public allowlisted fields", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.setItem("elementals.measurement.v1", "granted"));
+  await page.route("**/_vercel/insights/script.js", (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      body: `
+    window.measured = [];
+    const queue = window.vaq || [];
+    window.va = (kind, data) => {
+      if (kind === 'beforeSend') window.allowMeasurement = data;
+      if (kind === 'event') {
+        const event = window.allowMeasurement?.({ type: 'event', url: location.href });
+        if (event) window.measured.push({ ...data, url: event.url });
+      }
+    };
+    queue.forEach(args => window.va(...args));
+  `,
+    }),
+  );
+  await page.route("**/_vercel/speed-insights/script.js", (route) =>
+    route.fulfill({ contentType: "application/javascript", body: "window.si = () => {};" }),
+  );
+  await page.goto("/");
+  await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
+  await page.getByRole("button", { name: "Search elements", exact: true }).click();
+  await page.getByRole("combobox", { name: "Search elements" }).fill("Gold");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#in h1")).toHaveText("Gold");
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { measured: unknown[] }).measured))
+    .toContainEqual({
+      name: "element_discovered",
+      data: { element: 79 },
+      url: "http://127.0.0.1:3000/",
+    });
+});

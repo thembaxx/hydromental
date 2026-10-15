@@ -17,6 +17,9 @@ jobs:
     timeout-minutes: 30
     env:
       NEXT_TELEMETRY_DISABLED: 1
+      # Exercise eligible-plan event paths with local stubbed SDK endpoints.
+      # Production detects actual plan eligibility before its separate build.
+      NEXT_PUBLIC_PRODUCT_EVENTS_ENABLED: true
       CI: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,6 +53,7 @@ jobs:
             playwright-report/
             test-results/
             device-report/
+            device-results/
           retention-days: 14
           if-no-files-found: ignore
   security:
