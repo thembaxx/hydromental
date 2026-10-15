@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("elementals.onboarding.v1", "done"));
@@ -29,6 +30,17 @@ test("privacy choice is usable by touch and defaults to no measurement", async (
   await expect(choice).not.toBeChecked();
   await expect(page.getByRole("heading", { name: "Privacy and measurement" })).toBeVisible();
   expect(requests).toEqual([]);
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations).toEqual([]);
+  await page.setViewportSize({ width: 320, height: 780 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
+  });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+    true,
+  );
 });
 test("mobile explorer retains details and navigation with WebGL or its readable fallback", async ({
   page,
