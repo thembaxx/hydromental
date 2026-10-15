@@ -65,3 +65,9 @@ These screenshots show the running production build, with the introductory tip d
 ![Desktop elemental experience](redesign/desktop.png)
 
 ![Mobile elemental experience](redesign/mobile.png)
+
+## Verification record
+
+Local production verification on 2026-10-15 passed lint, formatting, TypeScript, 32 Node unit tests, all 118 scientific records, and the production build. All 166 distinct mobile/desktop Playwright cases passed across a broad run and focused reruns after fixes. The final focused runs passed 28 and 13 cases respectively. GPU tests inspect live WebGL uniform writes rather than component state. Detailed bloom and lightweight quality were also exercised at device scale factor 2: DPR was capped around 1.5 and 1 respectively, with no browser errors.
+
+The first broad run exposed duplicate absolute/relative cache keys and a timing-sensitive instantaneous ripple assertion. Cache installation now normalizes URLs before deduplication, and the GPU test records the observed ripple peak while separately checking live decay. Both have regression coverage. One release-tool dependency advisory has a tested local patch and a documented narrow audit exception; the audit does not claim an advisory-free graph. GitHub CI and actual Vercel promotion still run after source publication/merge; no production release was performed by these local checks.
