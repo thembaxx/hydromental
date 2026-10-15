@@ -76,7 +76,7 @@ test("device themes work without JavaScript and with unavailable storage", async
       });
     await page.goto("/elements/oxygen");
     await expect(page.getByRole("heading", { name: "Oxygen", exact: true })).toBeVisible();
-    await expect(page.locator("html")).toHaveCSS("background-color", "rgb(10, 16, 40)");
+    await expect(page.locator("html")).toHaveCSS("background-color", "rgb(12, 18, 16)");
     await expect(page.locator("html")).toHaveCSS("color-scheme", "dark");
     await page.emulateMedia({ colorScheme: "light" });
     await expect(page.locator("html")).toHaveCSS("background-color", "rgb(240, 245, 252)");
@@ -89,6 +89,12 @@ test("browser tint and install manifest follow live device and explicit appearan
   page,
 }) => {
   await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
+  const state = initialLearningState();
+  state.settings.theme = "";
+  await page.addInitScript(({ key, state }) => localStorage.setItem(key, JSON.stringify(state)), {
+    key: LEARNING_STORAGE_KEY,
+    state,
+  });
   await page.goto("/playground");
   await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
     "href",

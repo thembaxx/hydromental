@@ -9,6 +9,7 @@ export type AtomInspection = {
   electrons?: number;
 };
 export interface SceneControls {
+  touch?: { x: number; y: number; strength: number };
   spin: number;
   tilt: number;
   bounce: number;

@@ -1,0 +1,1383 @@
+@font-face {
+  font-family: Geist;
+  src: url("/fonts/geist-400.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Geist;
+  src: url("/fonts/geist-700.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+.hydro-experience {
+  --exp-bg: #0c1210;
+  --exp-panel: #111a16;
+  --exp-border: #ffffff16;
+  --exp-ink: #edf1e9;
+  --exp-muted: #9ca9a0;
+  --exp-accent: #c3dfb3;
+  --exp-button-ink: #17221b;
+  max-width: none;
+  background: var(--exp-bg);
+  color: var(--exp-ink);
+  font-family: Geist, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+:root[data-theme="day"] .hydro-experience {
+  --exp-bg: #f1f3eb;
+  --exp-panel: #e8ede3;
+  --exp-border: #1a352a22;
+  --exp-ink: #1b3027;
+  --exp-muted: #52665a;
+  --exp-accent: #305f42;
+  --exp-button-ink: #fff;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .hydro-experience {
+    --exp-bg: #f1f3eb;
+    --exp-panel: #e8ede3;
+    --exp-border: #1a352a22;
+    --exp-ink: #1b3027;
+    --exp-muted: #52665a;
+    --exp-accent: #305f42;
+    --exp-button-ink: #fff;
+  }
+}
+.hydro-experience button,
+.hydro-experience a {
+  -webkit-tap-highlight-color: transparent;
+}
+.hydro-experience button:focus-visible,
+.hydro-experience a:focus-visible {
+  outline: 2px solid var(--aura-color);
+  outline-offset: 5px;
+}
+.hydro-experience .site-header {
+  max-width: 1440px;
+  margin: auto;
+  padding: 28px 56px;
+  border-bottom: 1px solid var(--exp-border);
+  gap: 32px;
+}
+.hydro-experience .brand-link {
+  gap: 10px;
+  color: var(--exp-ink);
+}
+.hydro-experience .brand-link svg {
+  color: var(--exp-accent);
+  width: 31px;
+  height: 31px;
+}
+.hydro-experience .brand-link strong {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -1.4px;
+}
+.hydro-experience .brand-period {
+  color: var(--exp-accent);
+}
+.desktop-navigation {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  margin-left: 56px;
+}
+.desktop-navigation button,
+.desktop-navigation a {
+  font-size: 12px;
+  color: var(--exp-muted);
+  background: none;
+  border: 0;
+  text-decoration: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  cursor: pointer;
+}
+.desktop-navigation button.active {
+  color: var(--exp-ink);
+  position: relative;
+}
+.desktop-navigation button.active:after {
+  content: "";
+  position: absolute;
+  bottom: -29px;
+  height: 2px;
+  width: 100%;
+  background: var(--exp-accent);
+}
+.hydro-experience .library-link {
+  display: none;
+}
+.hydro-experience .icon-button,
+.hydro-experience .tool-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--exp-border);
+  background: transparent;
+  color: var(--exp-ink);
+  border-radius: 50%;
+}
+.hydro-experience .icon-button:hover,
+.hydro-experience .tool-button:hover {
+  background: var(--exp-border);
+}
+.hydro-experience .header-actions {
+  gap: 10px;
+}
+.hydro-experience .explorer-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 56px;
+}
+.experience-intro {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 48px 0 32px;
+}
+.experience-intro > div > p {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--exp-accent);
+}
+.experience-intro h2 {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 48px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -1.9px;
+}
+.experience-intro h2 em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  color: var(--exp-accent);
+}
+.experience-intro .intro-note {
+  font-size: 11px;
+  line-height: 1.9;
+  color: var(--exp-muted);
+  margin: 0 0 3px;
+  max-width: 300px;
+}
+.hydro-experience .atom-column {
+  grid-column: 1/-1;
+  height: auto;
+  max-height: none;
+  display: flex;
+  position: relative;
+}
+.hydro-experience #pr {
+  font-family: Geist, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  height: 34px;
+  padding: 0 1px;
+  color: var(--exp-muted);
+  order: 2;
+  border-bottom: 1px solid var(--exp-border);
+  margin: 0 0 28px;
+}
+.hydro-experience .save-indicator {
+  font:
+    9px Geist,
+    sans-serif;
+}
+.hydro-experience #app {
+  min-height: 530px;
+  flex: none;
+  border-radius: 20px;
+  border: 1px solid var(--exp-border);
+  background: var(--exp-panel);
+  isolation: isolate;
+  overflow: hidden;
+}
+.hydro-experience #tn {
+  z-index: -1;
+  opacity: 0.45;
+  background: radial-gradient(
+    ellipse at 66% 46%,
+    color-mix(in srgb, var(--aura-color) 8%, transparent),
+    transparent 65%
+  );
+}
+.hydro-experience #gh {
+  z-index: 0;
+  top: 28px;
+  right: 2%;
+  left: auto;
+  font:
+    700 clamp(220px, 27vw, 380px)/1 Geist,
+    sans-serif;
+  color: var(--aura-text, var(--aura-color));
+  opacity: 0.025;
+  letter-spacing: -24px;
+}
+.elemental-canvas {
+  position: absolute !important;
+  top: -3%;
+  bottom: -3%;
+  right: 0;
+  width: 68%;
+  z-index: 1;
+}
+.elemental-canvas > div {
+  width: 100%;
+  height: 100%;
+}
+.elemental-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  background: var(--exp-panel);
+}
+.elemental-fallback img {
+  max-width: 85%;
+  object-fit: contain;
+  height: auto;
+}
+.elemental-fallback span {
+  font:
+    11px/1.6 Geist,
+    sans-serif;
+  color: var(--exp-muted);
+  max-width: 230px;
+  text-align: center;
+}
+.hydro-experience .stage-topline {
+  top: 28px;
+  left: 36px;
+  right: 28px;
+  align-items: start;
+}
+.hydro-experience .family-badge {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  min-height: 40px;
+  font:
+    10px Geist,
+    sans-serif;
+  letter-spacing: 0.2px;
+  gap: 7px;
+  color: var(--exp-muted);
+}
+.hydro-experience .family-badge > span {
+  width: 6px;
+  height: 6px;
+  box-shadow: none;
+  background: var(--aura-color);
+}
+.hydro-experience .stage-lower {
+  left: 36px;
+  right: auto;
+  top: 108px;
+  bottom: auto;
+  width: 340px;
+  z-index: 3;
+  text-align: left;
+  pointer-events: none;
+}
+.hydro-experience .stage-lower button {
+  pointer-events: auto;
+}
+.hydro-experience .element-footer {
+  display: block;
+  text-align: left;
+  gap: 0;
+}
+.element-kicker {
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--exp-muted);
+  margin: 0 0 16px;
+}
+.hydro-experience .element-identity {
+  text-align: left;
+  max-width: 100%;
+  width: auto;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0;
+}
+.hydro-experience .element-number {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--aura-text, var(--aura-color));
+  margin-bottom: 4px;
+}
+.hydro-experience .element-identity h1 {
+  font:
+    400 clamp(44px, 5.5vw, 80px)/1.12 Geist,
+    sans-serif;
+  letter-spacing: -4px;
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+.hydro-experience .element-identity[data-long-name="true"] h1 {
+  font-size: clamp(38px, 4.2vw, 60px);
+}
+.hydro-experience .element-identity h1::after {
+  content: ".";
+  color: var(--aura-text, var(--aura-color));
+}
+.hydro-experience .element-identity small {
+  font:
+    10px Geist,
+    sans-serif;
+  color: var(--exp-muted);
+  margin: 0;
+}
+.element-story {
+  font:
+    12px/1.9 Geist,
+    sans-serif;
+  color: var(--exp-muted);
+  max-width: 275px;
+  margin: 20px 0 24px;
+}
+.element-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.explore-element {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 44px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--exp-accent);
+  color: var(--exp-button-ink);
+  font:
+    700 11px Geist,
+    sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s,
+    filter 0.25s;
+}
+.explore-element:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+.element-next {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1px solid var(--exp-border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.element-next:hover {
+  background: var(--exp-border);
+}
+.element-art-note {
+  font-size: 9px;
+  color: var(--exp-muted);
+  margin: 14px 0 0;
+}
+.hydro-experience #hint {
+  position: absolute;
+  left: calc(100% + 50px);
+  top: 340px;
+  width: 420px;
+  font:
+    9px Geist,
+    sans-serif;
+  color: var(--exp-muted);
+  text-align: center;
+  white-space: nowrap;
+  margin: 0;
+  transform: translateX(-15%);
+}
+.hydro-experience #pk {
+  position: absolute;
+  top: 10px;
+  left: calc(100% + 120px);
+  width: 230px;
+  font-size: 11px;
+  color: var(--aura-text, var(--aura-color));
+  background: var(--exp-bg);
+  border: 1px solid var(--exp-border);
+}
+.hydro-experience .onboarding-card {
+  top: auto;
+  left: auto;
+  right: 32px;
+  bottom: 80px;
+  width: auto;
+  font:
+    10px Geist,
+    sans-serif;
+  border: 0;
+  background: var(--exp-bg);
+  color: var(--exp-ink);
+  z-index: 5;
+}
+.hydro-experience .onboarding-card button {
+  color: var(--aura-text, var(--aura-color));
+}
+.hydro-experience .stage-bottom-tools {
+  left: 36px;
+  right: 28px;
+  bottom: 22px;
+  align-items: center;
+}
+.hydro-experience .model-caption {
+  font:
+    9px Geist,
+    sans-serif;
+  color: var(--exp-muted);
+  max-width: none;
+}
+.scene-orbit-label {
+  position: absolute;
+  right: 30px;
+  top: 42px;
+  z-index: 2;
+  margin-right: 54px;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: var(--exp-muted);
+  font-size: 8px;
+  letter-spacing: 1.7px;
+  pointer-events: none;
+}
+.scene-orbit-label > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--aura-color);
+  box-shadow: 0 0 10px var(--aura-color);
+}
+.hydro-experience .aura-section {
+  order: 3;
+  min-width: 0;
+}
+.aura-heading {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 0 0 16px;
+}
+.aura-heading h2 {
+  font:
+    400 20px Geist,
+    sans-serif;
+  letter-spacing: -0.6px;
+  margin: 0;
+}
+.aura-heading > span {
+  font-size: 10px;
+  color: var(--exp-muted);
+}
+.aura-heading small {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--exp-muted);
+}
+.aura-viewport {
+  overflow: hidden;
+  padding: 3px;
+  margin: -3px;
+  touch-action: pan-y;
+  min-width: 0;
+}
+.aura-track {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+.aura-card {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  gap: 4px;
+  padding: 20px 16px 20px 4px;
+  border: 1px solid var(--exp-border);
+  border-radius: 10px;
+  background: var(--exp-bg);
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+  overflow: hidden;
+  min-height: 118px;
+}
+.aura-card[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--aura-color) 5%, var(--exp-bg));
+  border-color: color-mix(in srgb, var(--aura-color) 45%, transparent);
+}
+.aura-card:hover {
+  background: color-mix(in srgb, var(--aura-color) 8%, var(--exp-bg));
+}
+.aura-card > img {
+  object-fit: contain;
+  width: 100px;
+  height: 90px;
+  flex-shrink: 0;
+  transition: transform 0.6s;
+  filter: saturate(0.7);
+  pointer-events: none;
+}
+.aura-card:hover > img {
+  transform: scale(1.1) rotate(-8deg);
+}
+.aura-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.aura-card-copy > small {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  color: var(--exp-muted);
+}
+.aura-card-copy > strong {
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: -0.8px;
+  font-weight: 400;
+  color: var(--aura-text, var(--aura-color));
+}
+.aura-card-copy > span {
+  font-size: 9px;
+  white-space: nowrap;
+  color: var(--exp-muted);
+}
+.aura-check {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--exp-border);
+  border-radius: 50%;
+  color: var(--exp-muted);
+}
+.aura-card[aria-pressed="true"] .aura-check {
+  color: var(--exp-button-ink);
+  background: var(--aura-color);
+  border: 0;
+}
+.aura-caption {
+  font:
+    8px Geist,
+    sans-serif;
+  color: var(--exp-muted);
+  margin: 12px 0 0;
+}
+.hydro-experience .explorer-nav {
+  order: 4;
+  margin: 28px auto 0;
+  min-height: 54px;
+  background: var(--exp-panel);
+  border: 1px solid var(--exp-border);
+  box-shadow: none;
+  padding: 4px 8px;
+  gap: 8px;
+  border-radius: 100px;
+}
+.hydro-experience .explorer-nav button,
+.hydro-experience .explorer-nav a {
+  color: var(--exp-muted);
+  width: 52px;
+  height: 42px;
+  min-width: 44px;
+}
+.hydro-experience .dock-selection {
+  background: var(--exp-border);
+}
+.hydro-experience .explorer-nav button[data-active="true"] {
+  color: var(--exp-accent);
+}
+.hydro-experience .explorer-nav svg {
+  width: 20px;
+  height: 20px;
+}
+.discovery-intro {
+  grid-column: 1/-1;
+  padding: 140px 0 56px;
+  max-width: 780px;
+}
+.discovery-thought {
+  font-size: clamp(32px, 4.8vw, 62px);
+  line-height: 1.2;
+  letter-spacing: -2px;
+  margin: 0;
+  font-weight: 400;
+}
+.hydro-experience .journey-rail,
+.hydro-experience .story-rail {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.hydro-experience .journey-rail {
+  grid-column: 1;
+}
+.hydro-experience .story-rail {
+  grid-column: 2;
+}
+.hydro-experience .rail-card {
+  background: var(--exp-panel);
+  color: var(--exp-ink);
+  border: 1px solid var(--exp-border);
+  border-radius: 10px;
+  padding: 32px;
+  box-shadow: none;
+  gap: 20px;
+}
+.hydro-experience .rail-card p,
+.hydro-experience .rail-card .panel-copy {
+  color: var(--exp-muted);
+}
+.hydro-experience .rail-card h2 {
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+}
+.hydro-experience .rail-card h3 {
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+.hydro-experience .rail-card .eyebrow {
+  font:
+    9px Geist,
+    sans-serif;
+  color: var(--exp-accent);
+  letter-spacing: 1px;
+}
+.hydro-experience .rail-card .story-symbol {
+  font-size: 56px;
+  color: var(--aura-color) !important;
+}
+.hydro-experience .rail-card .tag {
+  background: var(--exp-border);
+  color: var(--exp-muted);
+  font-size: 10px;
+}
+.hydro-experience .rail-card .level-copy {
+  font-size: 11px;
+}
+.hydro-experience .rail-card .action-button {
+  background: var(--exp-accent);
+  color: var(--exp-button-ink);
+  border: 0;
+  font-size: 11px;
+  border-radius: 5px;
+  width: fit-content;
+  min-width: 44px;
+}
+.hydro-experience .rail-card .text-button,
+.hydro-experience .rail-card .text-link {
+  color: var(--exp-accent);
+  font:
+    11px Geist,
+    sans-serif;
+}
+.hydro-experience .mission-mini {
+  border-color: var(--exp-border);
+  font-size: 11px;
+}
+.hydro-experience .mission-mini b {
+  font-weight: 400;
+}
+.hydro-experience .mission-mini small {
+  color: var(--exp-muted);
+  font-size: 9px;
+}
+.hydro-experience .fact-callout {
+  background: var(--exp-border);
+  font-size: 12px;
+  color: var(--exp-muted);
+}
+.hydro-experience .learning-progress {
+  accent-color: var(--exp-accent);
+  background: var(--exp-border);
+}
+.hydro-experience .learning-progress::-webkit-progress-bar {
+  background: var(--exp-border);
+}
+.hydro-experience .learning-progress::-webkit-progress-value {
+  background: var(--exp-accent);
+}
+.hydro-experience .lead-copy {
+  font-size: 16px;
+}
+.hydro-experience .connection-card p {
+  font-size: 12px;
+}
+.element-marquee {
+  grid-column: 1/-1;
+  overflow: hidden;
+  border-top: 1px solid var(--exp-border);
+  border-bottom: 1px solid var(--exp-border);
+  margin: 128px -56px 0;
+  padding: 24px 0;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+.element-marquee > div {
+  display: flex;
+  width: max-content;
+  animation: element-drift 90s linear infinite;
+}
+.element-marquee span {
+  width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  color: var(--exp-accent);
+}
+.element-marquee small {
+  font-size: 9px;
+  color: var(--exp-muted);
+}
+@keyframes element-drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.experience-footer {
+  display: grid;
+  grid-column: 1/-1;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 60px;
+  padding: 112px 0 28px;
+}
+.experience-footer p {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--exp-muted);
+  margin: 0 0 20px;
+}
+.experience-footer h2 {
+  font-size: clamp(32px, 4.5vw, 60px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -2px;
+  margin: 0;
+}
+.experience-footer small,
+.experience-footer > a {
+  font-size: 9px;
+  color: var(--exp-muted);
+}
+.experience-footer > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  justify-self: end;
+  min-height: 44px;
+}
+@media (min-width: 1600px) {
+  .hydro-experience #app {
+    min-height: 600px;
+  }
+  .hydro-experience .stage-lower {
+    top: 140px;
+  }
+  .hydro-experience #hint {
+    top: 370px;
+  }
+}
+@media (max-width: 1199px) {
+  .hydro-experience .site-header {
+    padding: 24px 32px;
+  }
+  .hydro-experience .explorer-layout {
+    padding: 0 32px;
+    gap: 0 20px;
+  }
+  .desktop-navigation {
+    margin-left: 0;
+    gap: 24px;
+  }
+  .desktop-navigation button.active:after {
+    bottom: -25px;
+  }
+  .experience-intro {
+    padding: 40px 0 28px;
+  }
+  .experience-intro .intro-note {
+    max-width: 235px;
+    font-size: 10px;
+  }
+  .hydro-experience #app {
+    min-height: 490px;
+  }
+  .hydro-experience .stage-lower {
+    width: 300px;
+    top: 100px;
+    left: 28px;
+  }
+  .hydro-experience .stage-topline {
+    left: 28px;
+  }
+  .hydro-experience .element-identity h1 {
+    font-size: 64px;
+  }
+  .element-story {
+    max-width: 240px;
+    font-size: 11px;
+  }
+  .hydro-experience #hint {
+    width: 300px;
+    top: 300px;
+    left: calc(100% + 30px);
+  }
+  .aura-card {
+    padding: 20px 10px 20px 0;
+  }
+  .aura-card > img {
+    width: 80px;
+    height: 80px;
+  }
+  .aura-card-copy > strong {
+    font-size: 20px;
+  }
+  .aura-card-copy > span {
+    font-size: 8px;
+  }
+  .element-marquee {
+    margin-left: -32px;
+    margin-right: -32px;
+  }
+}
+@media (max-width: 899px) {
+  .hydro-experience .site-header {
+    padding: 20px 24px;
+    max-width: none;
+  }
+  .hydro-experience .explorer-layout {
+    padding: 0 24px;
+    max-width: none;
+  }
+  .desktop-navigation {
+    gap: 20px;
+  }
+  .desktop-navigation button,
+  .desktop-navigation a {
+    font-size: 10px;
+  }
+  .desktop-navigation button.active:after {
+    bottom: -21px;
+  }
+  .experience-intro h2 {
+    font-size: 34px;
+  }
+  .experience-intro .intro-note {
+    max-width: 205px;
+    font-size: 9px;
+  }
+  .hydro-experience .atom-column {
+    height: auto;
+  }
+  .hydro-experience #app {
+    min-height: 490px;
+  }
+  .hydro-experience .stage-lower {
+    width: 250px;
+    left: 24px;
+    top: 100px;
+  }
+  .hydro-experience .element-identity h1 {
+    font-size: 52px;
+    letter-spacing: -2.5px;
+  }
+  .element-story {
+    max-width: 210px;
+    font-size: 11px;
+  }
+  .element-kicker {
+    font-size: 8px;
+    max-width: 180px;
+  }
+  .scene-orbit-label {
+    font-size: 7px;
+    right: 18px;
+  }
+  .hydro-experience .onboarding-card {
+    right: 20px;
+    font-size: 8px;
+    bottom: 72px;
+  }
+  .hydro-experience #hint {
+    display: none;
+  }
+  .hydro-experience .stage-topline {
+    left: 24px;
+    right: 20px;
+  }
+  .hydro-experience .stage-bottom-tools {
+    left: 24px;
+    right: 20px;
+  }
+  .aura-track {
+    gap: 12px;
+  }
+  .aura-card {
+    flex: 0 0 calc((100% - 12px)/2);
+    padding: 18px 12px;
+  }
+  .aura-card > img {
+    width: 100px;
+  }
+  .aura-card-copy > span {
+    font-size: 9px;
+  }
+  .aura-heading > span {
+    display: none;
+  }
+  .aura-heading h2 {
+    font-size: 19px;
+  }
+  .discovery-intro {
+    padding-top: 112px;
+  }
+  .hydro-experience .rail-card {
+    padding: 24px;
+  }
+  .hydro-experience .rail-card h2 {
+    font-size: 24px;
+  }
+  .element-marquee {
+    margin: 96px -24px 0;
+  }
+  .experience-footer {
+    padding-top: 80px;
+  }
+}
+@media (max-width: 599px) {
+  .hydro-experience .site-header {
+    padding: 16px 20px;
+    gap: 12px;
+  }
+  .hydro-experience .brand-link strong {
+    font-size: 24px;
+  }
+  .hydro-experience .brand-link svg {
+    width: 26px;
+    height: 26px;
+  }
+  .desktop-navigation {
+    display: none;
+  }
+  .hydro-experience .header-actions {
+    gap: 8px;
+  }
+  .hydro-experience .header-actions .icon-button {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+  .hydro-experience .explorer-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0 16px;
+    gap: 0;
+  }
+  .experience-intro {
+    padding: 28px 4px 24px;
+  }
+  .experience-intro > div > p {
+    font-size: 7px;
+    letter-spacing: 1.4px;
+    margin-bottom: 10px;
+  }
+  .experience-intro h2 {
+    font-size: 32px;
+    letter-spacing: -1.4px;
+  }
+  .experience-intro .intro-note {
+    display: none;
+  }
+  .hydro-experience #app {
+    min-height: 600px;
+    border-radius: 14px;
+    touch-action: pan-y;
+  }
+  .hydro-experience .atom-column {
+    height: auto;
+    max-height: none;
+  }
+  .elemental-canvas {
+    top: 46px;
+    bottom: auto;
+    height: 345px;
+    width: 100%;
+    right: 0;
+  }
+  .hydro-experience #gh {
+    top: 72px;
+    font-size: 260px;
+    right: 10%;
+    letter-spacing: -14px;
+    opacity: 0.035;
+  }
+  .hydro-experience .stage-topline {
+    left: 20px;
+    right: 16px;
+    top: 14px;
+  }
+  .hydro-experience .family-badge {
+    font-size: 9px;
+  }
+  .scene-orbit-label {
+    top: 30px;
+    font-size: 6px;
+    letter-spacing: 1px;
+    right: 16px;
+    margin-right: 52px;
+  }
+  .hydro-experience .stage-topline .icon-button {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+  }
+  .hydro-experience .stage-topline .icon-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .hydro-experience .stage-lower {
+    left: 20px;
+    right: 20px;
+    top: 370px;
+    width: auto;
+    bottom: auto;
+    display: block;
+  }
+  .hydro-experience .element-footer {
+    position: relative;
+  }
+  .element-kicker {
+    font-size: 7px;
+    margin: 0 0 8px;
+    max-width: none;
+  }
+  .hydro-experience .element-identity h1 {
+    font-size: 46px;
+    letter-spacing: -2px;
+    margin: 0 0 4px;
+    line-height: 1.1;
+  }
+  .hydro-experience .element-identity[data-long-name="true"] h1 {
+    font-size: 40px;
+  }
+  .hydro-experience .element-number {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+    margin: 0 0 3px;
+  }
+  .hydro-experience .element-identity small {
+    font-size: 9px;
+  }
+  .element-story {
+    max-width: 90%;
+    font-size: 10px;
+    line-height: 1.65;
+    margin: 12px 0 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .element-actions {
+    position: absolute;
+    right: 0;
+    top: 18px;
+    gap: 6px;
+  }
+  .element-actions .explore-element {
+    font-size: 0;
+    width: 38px;
+    min-height: 38px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .element-actions .explore-element svg {
+    width: 17px;
+    height: 17px;
+  }
+  .element-next {
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+  }
+  .element-art-note {
+    display: none;
+  }
+  .hydro-experience .stage-bottom-tools {
+    left: 20px;
+    right: 20px;
+    bottom: 16px;
+  }
+  .hydro-experience .stage-bottom-tools .tool-button {
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0;
+  }
+  .hydro-experience .stage-bottom-tools .tool-button svg {
+    width: 15px;
+    height: 15px;
+  }
+  .hydro-experience .model-caption {
+    font-size: 7px;
+    max-width: 180px;
+  }
+  .hydro-experience #pk {
+    top: -250px;
+    left: 25%;
+    width: auto;
+    font-size: 9px;
+  }
+  .hydro-experience .onboarding-card {
+    right: 16px;
+    left: 16px;
+    bottom: 236px;
+    top: auto;
+    justify-content: center;
+    font-size: 8px;
+    padding: 5px 8px;
+  }
+  .hydro-experience .onboarding-card button {
+    font-size: 8px;
+    min-height: 28px;
+  }
+  .hydro-experience #pr {
+    font-size: 8px;
+    height: 32px;
+    margin-bottom: 24px;
+  }
+  .hydro-experience .save-indicator {
+    font-size: 7px;
+  }
+  .aura-heading {
+    margin-bottom: 14px;
+  }
+  .aura-heading h2 {
+    font-size: 19px;
+  }
+  .aura-heading small {
+    font-size: 8px;
+    gap: 6px;
+  }
+  .aura-card {
+    flex: 0 0 calc(100% - 68px);
+    min-height: 112px;
+    padding: 14px 14px 14px 0;
+  }
+  .aura-card > img {
+    width: 110px;
+    height: 86px;
+  }
+  .aura-card-copy > strong {
+    font-size: 24px;
+  }
+  .aura-card-copy > small {
+    font-size: 7px;
+  }
+  .aura-card-copy > span {
+    font-size: 9px;
+  }
+  .aura-caption {
+    font-size: 7px;
+    line-height: 1.6;
+    max-width: 280px;
+  }
+  .hydro-experience .explorer-nav {
+    margin-top: 24px;
+    min-height: 52px;
+  }
+  .hydro-experience .explorer-nav button,
+  .hydro-experience .explorer-nav a {
+    width: 48px;
+    height: 40px;
+  }
+  .discovery-intro {
+    padding: 96px 4px 32px;
+  }
+  .discovery-thought {
+    font-size: 34px;
+    letter-spacing: -1.2px;
+    line-height: 1.2;
+  }
+  .hydro-experience .journey-rail,
+  .hydro-experience .story-rail {
+    grid-column: 1;
+    display: grid;
+    gap: 12px;
+  }
+  .hydro-experience .story-rail {
+    margin-top: 12px;
+  }
+  .hydro-experience .rail-card {
+    padding: 24px;
+  }
+  .hydro-experience .rail-card.story-card {
+    gap: 16px;
+  }
+  .hydro-experience .connection-card {
+    margin-top: 0;
+  }
+  .element-marquee {
+    margin: 80px -16px 0;
+    padding: 20px 0;
+  }
+  .element-marquee span {
+    width: 120px;
+    font-size: 24px;
+  }
+  .element-marquee small {
+    font-size: 8px;
+  }
+  .experience-footer {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 64px 4px 24px;
+  }
+  .experience-footer h2 {
+    font-size: 38px;
+    letter-spacing: -1.4px;
+  }
+  .experience-footer .explore-element {
+    width: fit-content;
+  }
+  .experience-footer small {
+    margin-top: 20px;
+  }
+  .experience-footer > a {
+    justify-self: start;
+    margin-top: -20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .element-marquee > div {
+    animation: none;
+  }
+  .hydro-experience * {
+    scroll-behavior: auto;
+  }
+  .aura-card > img,
+  .explore-element {
+    transition: none;
+  }
+}
+/* Keep primary mobile controls comfortably tappable. */
+.hydro-experience .element-identity:hover {
+  background: transparent;
+}
+.hydro-experience .element-story {
+  font-size: 14px;
+  line-height: 1.7;
+}
+@media (max-width: 599px) {
+  .hydro-experience .header-actions .icon-button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .hydro-experience .element-actions {
+    top: -12px;
+    gap: 8px;
+  }
+  .hydro-experience .element-actions .explore-element {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    gap: 0;
+  }
+  .hydro-experience .element-next {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .hydro-experience .element-story {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .hydro-experience .stage-topline .icon-button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .hydro-experience .stage-bottom-tools .tool-button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .hydro-experience .stage-bottom-tools {
+    bottom: 10px;
+  }
+  .hydro-experience .scene-orbit-label {
+    top: 34px;
+    margin-right: 58px;
+  }
+}
+.hydro-experience .element-identity[data-long-name="true"] h1 {
+  font-size: clamp(32px, 3.4vw, 48px);
+}
+@media (max-width: 599px) {
+  .hydro-experience .element-identity[data-long-name="true"] h1 {
+    font-size: clamp(28px, 8.8vw, 36px);
+  }
+}
+
+.hydro-experience,
+.aura-card {
+  --aura-text: var(--aura-color);
+}
+:root[data-theme="day"] .hydro-experience,
+:root[data-theme="day"] .aura-card {
+  --aura-text: var(--aura-ink);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .hydro-experience,
+  :root:not([data-theme]) .aura-card {
+    --aura-text: var(--aura-ink);
+  }
+}

@@ -5,7 +5,32 @@ export interface FeedbackOptions {
 }
 
 let audioContext: AudioContext | null = null;
-let ambient: { oscillator: OscillatorNode; gain: GainNode } | null = null;
+type AmbientPreset = "hydro" | "ember" | "solar" | "breeze";
+let ambientPreset: AmbientPreset = "hydro";
+const ambientFrequencies: Record<AmbientPreset, readonly [number, number]> = {
+  hydro: [130.81, 196],
+  ember: [110, 164.81],
+  solar: [164.81, 246.94],
+  breeze: [146.83, 220],
+};
+let ambient: { oscillators: OscillatorNode[]; gain: GainNode; modulation: GainNode } | null = null;
+function audioVisibility() {
+  if (!audioContext || audioContext.state === "closed") return;
+  if (document.hidden) void audioContext.suspend().catch(() => {});
+  else if (ambient) void audioContext.resume().catch(() => {});
+}
+export function setAmbientPreset(preset: AmbientPreset) {
+  ambientPreset = preset;
+  const context = audioContext;
+  if (!context || !ambient) return;
+  ambient.oscillators.slice(0, 2).forEach((oscillator, index) => {
+    oscillator.frequency.setTargetAtTime(
+      ambientFrequencies[preset][index],
+      context.currentTime,
+      0.8,
+    );
+  });
+}
 
 function contextFromGesture() {
   if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return null;
@@ -78,11 +103,13 @@ export function setAmbientAudio(enabled: boolean) {
   if (!enabled) {
     if (ambient) {
       try {
-        ambient.oscillator.stop();
+        ambient.oscillators.forEach((oscillator) => oscillator.stop());
       } catch {
         // A browser can refuse to start audio; stopping remains harmless.
       }
-      ambient.oscillator.disconnect();
+      ambient.oscillators.forEach((oscillator) => oscillator.disconnect());
+      ambient.modulation.disconnect();
+      document.removeEventListener("visibilitychange", audioVisibility);
       ambient.gain.disconnect();
       ambient = null;
     }
@@ -92,14 +119,26 @@ export function setAmbientAudio(enabled: boolean) {
   try {
     const context = contextFromGesture();
     if (!context) return;
-    const oscillator = context.createOscillator();
     const gain = context.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.value = 130.81;
-    gain.gain.value = 0.008;
-    oscillator.connect(gain).connect(context.destination);
-    ambient = { oscillator, gain };
-    oscillator.start();
+    gain.gain.setValueAtTime(0, context.currentTime);
+    gain.gain.linearRampToValueAtTime(0.006, context.currentTime + 1.5);
+    gain.connect(context.destination);
+    const tones = ambientFrequencies[ambientPreset].map((frequency) => {
+      const oscillator = context.createOscillator();
+      oscillator.type = "sine";
+      oscillator.frequency.value = frequency;
+      oscillator.connect(gain);
+      oscillator.start();
+      return oscillator;
+    });
+    const lfo = context.createOscillator();
+    const modulation = context.createGain();
+    lfo.frequency.value = 0.09;
+    modulation.gain.value = 0.001;
+    lfo.connect(modulation).connect(gain.gain);
+    lfo.start();
+    ambient = { oscillators: [...tones, lfo], gain, modulation };
+    document.addEventListener("visibilitychange", audioVisibility);
     void context.resume().catch(() => {
       setAmbientAudio(false);
     });

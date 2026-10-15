@@ -10,7 +10,48 @@ concurrency:
   group: vercel-production
   cancel-in-progress: false
 jobs:
+  release:
+    name: Version the verified main commit
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check that the verified commit is still current
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          current_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$current_sha" = "$DEPLOY_SHA" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish a semantic version and GitHub release
+        if: steps.current.outputs.ready == 'true'
+        run: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
   configuration:
+    needs: release
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
@@ -50,7 +91,6 @@ jobs:
     timeout-minutes: 20
     environment: production
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
@@ -68,8 +108,32 @@ jobs:
       - name: Install tested dependencies
         run: pnpm install --frozen-lockfile
       - name: Pull Vercel production configuration
-        run: pnpm dlx vercel@62.2.0 pull --yes --environment=production --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@62.2.0 pull --yes --environment=production
       - name: Build for the Vercel runtime
-        run: pnpm dlx vercel@62.2.0 build --prod --token="$VERCEL_TOKEN"
-      - name: Deploy the prebuilt output
-        run: pnpm dlx vercel@62.2.0 deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+        run: pnpm dlx vercel@62.2.0 build --prod
+      - name: Stage the tested production build
+        id: stage
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          deployment_url="$(pnpm dlx vercel@62.2.0 deploy --prebuilt --prod --skip-domain)"
+          DEPLOYMENT_URL="$deployment_url" node --input-type=module -e '
+            const value = process.env.DEPLOYMENT_URL;
+            const url = new URL(value);
+            if (url.protocol !== "https:" || url.origin !== value || !url.hostname.endsWith(".vercel.app")) process.exit(1);
+          '
+          printf 'url=%s\n' "$deployment_url" >> "$GITHUB_OUTPUT"
+      - name: Check the staged site
+        env:
+          DEPLOYMENT_URL: ${{ steps.stage.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: node scripts/check-deployment.mjs
+      - name: Promote the verified build
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_URL: ${{ steps.stage.outputs.url }}
+        run: pnpm dlx vercel@62.2.0 promote "$DEPLOYMENT_URL" --yes

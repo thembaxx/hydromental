@@ -104,3 +104,7 @@ Configure the real public origin before deployment. [Discovery and offline docum
 The uploaded notes remain in `PROTOTYPE-NOTES.md`. The original prototype has no assigned license. Dependency and font notices are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 See the [security audit](docs/security-audit.md) for findings, browser defenses and remaining account-level work.
+
+## Elemental redesign
+
+The immersive mobile-first explorer uses React Three Fiber, Blender-generated GLB models, complete interactive GLSL shaders, GSAP drag/snapping and local procedural audio. It stays in this Next.js/TypeScript/Tailwind application. See [the source manifest, asset workflow and touch verification](docs/elemental-redesign.md), and [CI/release setup](docs/deployment.md).

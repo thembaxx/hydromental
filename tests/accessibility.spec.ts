@@ -146,19 +146,21 @@ test("long names and explorer controls fit narrow, landscape and desktop layouts
       )
       .toBe(true);
     const bounds = await page.evaluate(() => {
-      const hint = document.querySelector("#hint")!.getBoundingClientRect();
-      const mass = document.querySelector(".element-number")!.getBoundingClientRect();
+      const stage = document.querySelector("#app")!.getBoundingClientRect();
+      const identity = document.querySelector("#in")!.getBoundingClientRect();
       const title = document.querySelector("#in h1")!;
       return {
         overflow: document.documentElement.scrollWidth > innerWidth,
-        hintBottom: hint.bottom,
-        massTop: mass.top,
+        identityFits:
+          identity.left >= stage.left &&
+          identity.right <= stage.right &&
+          identity.bottom <= stage.bottom,
         titleHeight: title.getBoundingClientRect().height,
         lineHeight: Number.parseFloat(getComputedStyle(title).lineHeight),
       };
     });
     expect(bounds.overflow).toBe(false);
-    expect(bounds.massTop).toBeGreaterThan(bounds.hintBottom + 5);
+    expect(bounds.identityFits).toBe(true);
     expect(bounds.titleHeight).toBeLessThanOrEqual(bounds.lineHeight + 1);
   }
 });

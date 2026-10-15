@@ -26,7 +26,7 @@ test("all 118 symbols are visible without granting unearned discoveries", async 
       .evaluateAll((shells) => shells.map((shell) => shell.children.length)),
   ).toEqual(getScience(118).shells);
   await expect(page.locator("#dt .fa b").first()).toHaveCSS("font-family", /JetBrains Mono/);
-  await expect(page.locator("#dt .fa b").last()).toHaveCSS("font-family", /Nunito/);
+  await expect(page.locator("#dt .fa b").last()).toHaveCSS("font-family", /Geist/);
 });
 
 test("tapping the orb opens its popup and restores keyboard focus on close", async ({ page }) => {
@@ -35,6 +35,7 @@ test("tapping the orb opens its popup and restores keyboard focus on close", asy
   await ready(page);
   await page.locator("#app").scrollIntoViewIfNeeded();
   // The nucleus sits above the scene's ground plane, at the visual centre of the orb.
+  await expect(page.locator("#gl")).toBeVisible();
   const box = (await page.locator("#gl").boundingBox())!;
   await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.4);
   await expect(page.getByRole("dialog", { name: "Element details", exact: true })).toBeVisible();
@@ -88,7 +89,7 @@ test("browser theme colour follows selected themes and the background covers the
     /viewport-fit=cover/,
   );
   for (const [label, color] of [
-    ["Midnight", "#0a1028"],
+    ["Midnight", "#0c1210"],
     ["Noir", "#2c2d31"],
     ["Dusk", "#232b65"],
     ["Day", "#f0f5fc"],

@@ -9,6 +9,7 @@ async function openExplorer(page: Page) {
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("#in")).toContainText("Oxygen");
+  await expect(page.locator("#gl")).toBeVisible();
   await page.waitForFunction(
     () => !!(document.querySelector("#gl") as HTMLCanvasElement).getContext("webgl2"),
   );
@@ -65,7 +66,7 @@ test("the chemical family opens a filterable list of its elements", async ({ pag
   expect(errors).toEqual([]);
 });
 
-test("removed stage controls stay gone and reduced motion still swipes", async ({ page }) => {
+test("the stage keeps essential controls and reduced motion still swipes", async ({ page }) => {
   const errors = await openExplorer(page);
   for (const name of [
     "Zoom in",
@@ -74,13 +75,13 @@ test("removed stage controls stay gone and reduced motion still swipes", async (
     "Pause atom animation",
     "Explore",
     "Previous element",
-    "Next element",
     "Up the group",
     "Down the group",
     "Rotate",
   ]) {
     await expect(page.getByRole("button", { name, exact: true })).toHaveCount(0);
   }
+  await expect(page.getByRole("button", { name: "Next element", exact: true })).toBeVisible();
   await expect(page.getByRole("slider", { name: "Period" })).toHaveCount(0);
   await expect(page.getByRole("slider", { name: "Group" })).toHaveCount(0);
   await expect(page.getByText("Meet this element")).toHaveCount(0);

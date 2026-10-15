@@ -67,34 +67,34 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --ink: #f5f7ff;
-    --ctrl: #1a2548;
-    --pill: #253354;
-    --ring: #3f5277;
-    --dw: #151f3c;
-    --chip: #263455;
-    --line: #354361;
-    --sel: #354872;
-    --dim: #2a3654;
-    --mut: #bbc7e4;
-    --accent: #abbcff;
-    --accent-soft: #28385d;
+    --ink: #edf1e9;
+    --ctrl: #17221c;
+    --pill: #1e2c23;
+    --ring: #40614f;
+    --dw: #111a16;
+    --chip: #213027;
+    --line: #314236;
+    --sel: #2e4435;
+    --dim: #24352b;
+    --mut: #b0bdb2;
+    --accent: #c3dfb3;
+    --accent-soft: #263b2d;
     --shadow: 0 14px 40px #0003;
   }
 }
 :root[data-theme="midnight"] {
-  --ink: #f5f7ff;
-  --ctrl: #1a2548;
-  --pill: #253354;
-  --ring: #3f5277;
-  --dw: #151f3c;
-  --chip: #263455;
-  --line: #354361;
-  --sel: #354872;
-  --dim: #2a3654;
-  --mut: #bbc7e4;
-  --accent: #abbcff;
-  --accent-soft: #28385d;
+  --ink: #edf1e9;
+  --ctrl: #17221c;
+  --pill: #1e2c23;
+  --ring: #40614f;
+  --dw: #111a16;
+  --chip: #213027;
+  --line: #314236;
+  --sel: #2e4435;
+  --dim: #24352b;
+  --mut: #b0bdb2;
+  --accent: #c3dfb3;
+  --accent-soft: #263b2d;
   --shadow: 0 14px 40px #0003;
 }
 :root[data-theme="dusk"] {
@@ -494,7 +494,7 @@ body {
   min-height: 100svh;
   min-height: 100dvh;
   color: var(--ink);
-  font-family: Nunito, system-ui, sans-serif;
+  font-family: Geist, system-ui, sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.55;
@@ -896,7 +896,7 @@ small {
   font-size: 12px;
 }
 .save-indicator {
-  font-family: Nunito, system-ui, sans-serif;
+  font-family: Geist, system-ui, sans-serif;
   font-size: 11px;
   font-weight: 600;
 }

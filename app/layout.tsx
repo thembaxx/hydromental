@@ -4,6 +4,7 @@ import { BrowserChrome } from "@/components/browser-chrome";
 import { jsonLd, siteOrigin } from "@/lib/site";
 import { themeBootstrapScript, themeCriticalCss, themeSurfaces } from "@/lib/theme";
 import "./globals.css";
+import "./elemental.css";
 
 const origin = siteOrigin();
 export const metadata: Metadata = {

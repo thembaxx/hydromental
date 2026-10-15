@@ -28,3 +28,13 @@ Vercel production deployment is configured and verified at https://hydromental.v
 ## Recovery
 
 A failed CI run prevents production deployment. Rerun failed checks after fixing the cause. For an urgent rollback, use Vercel's dashboard to promote the last healthy deployment, then revert the code via a pull request so main matches production. Logs, test traces, and deployment summaries are available in GitHub Actions.
+
+## Automated versions
+
+After the full CI workflow succeeds for a trusted push to `main`, Semantic Release analyzes Conventional Commits and creates a version tag and GitHub release with generated notes. Use `fix: ...` for patches, `feat: ...` for minor versions, and `feat!: ...` or a `BREAKING CHANGE:` footer for major versions. Squash-merge PR titles using this convention. Documentation and maintenance commits do not create a release unless they include a breaking change.
+
+The application stays private: the release does not publish to npm, require `NPM_TOKEN`, or write generated version commits back to `main`. The immutable `vX.Y.Z` tag is the release version; `package.json` is the development baseline. The release job has `contents: write`; other jobs remain read-only. Release comments on issues and PRs are disabled.
+
+Production is staged using `--skip-domain`. The workflow checks the application, element library and manifest on the staged URL, then promotes that exact build. Configure `VERCEL_AUTOMATION_BYPASS_SECRET` in GitHub Actions if Deployment Protection is enabled. A failed smoke check leaves the current production deployment in place. Restrict the GitHub `production` environment to `main` and configure required reviewers for production releases.
+
+Vercel credentials remain necessary for deployment, while GitHub release creation only needs the workflow's built-in `GITHUB_TOKEN`. New workflows take effect after the branch is merged. Local checks do not publish releases or deploy production.
