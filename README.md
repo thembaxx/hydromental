@@ -27,7 +27,7 @@ The playful atom and scientific shell schematic are teaching illustrations. They
 - Motion 14.0.0 and Three.js 0.186.1
 - pnpm 12.9.1, oxlint 1.87.0 and oxfmt 0.72.0
 
-Versions are pinned in `package.json` and the committed pnpm lockfile. These were the npm `latest` releases checked on October 6, 2026. Font assets are self-hosted; the application does not request Google Fonts.
+Versions are pinned in `package.json` and the committed pnpm lockfile. The dependency baseline was checked on October 6, 2026; subsequent reviewed updates are recorded in the lockfile. Font assets are self-hosted; the application does not request Google Fonts.
 
 ## Run locally
 
