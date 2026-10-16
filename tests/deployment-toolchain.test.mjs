@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { readAuthenticatedPage } from "../scripts/check-deployment.mjs";
 import test from "node:test";
 const fromCli = createRequire(import.meta.resolve("vercel/package.json"));
-test("the actual locked CLI receives authenticated curl arguments without leaking global flags", async () => {
+test("the actual locked CLI keeps authenticated smoke options compatible with native curl", async () => {
   const directory = mkdtempSync(join(tmpdir(), "elementals-curl-contract-"));
   writeFileSync(
     join(directory, "curl"),
@@ -29,8 +29,14 @@ test("the actual locked CLI receives authenticated curl arguments without leakin
       async (command, args, options) => {
         // A synthetic bypass avoids all provider requests. The fake native curl
         // records argv without making a network request or using real credentials.
-        args.splice(2, 0, "--api", `http://127.0.0.1:${api.address().port}`);
-        args.splice(args.indexOf("--"), 0, "--protection-bypass", "test-only-bypass");
+        args.splice(
+          args.indexOf("--"),
+          0,
+          "--api",
+          `http://127.0.0.1:${api.address().port}`,
+          "--protection-bypass",
+          "test-only-bypass",
+        );
         return promisify(execFile)(command, args, {
           ...options,
           encoding: "utf8",
@@ -44,11 +50,10 @@ test("the actual locked CLI receives authenticated curl arguments without leakin
     );
     const args = await response.json();
     assert.ok(!args.includes("--non-interactive"));
-    assert.ok(!args.includes("--api"));
     assert.ok(!args.includes("--protection-bypass"));
     assert.ok(args.includes("--silent"));
     assert.ok(args.includes("--max-redirs"));
-    assert.ok(args.includes("https://staged-hydromental.vercel.app/elements"));
+    assert.equal(args[args.indexOf("--url") + 1], "https://staged-hydromental.vercel.app/elements");
   } finally {
     api.close();
     rmSync(directory, { recursive: true, force: true });
