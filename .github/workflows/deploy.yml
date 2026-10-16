@@ -125,7 +125,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          deployment_output="$(pnpm exec vercel deploy --prebuilt --prod --skip-domain --non-interactive)"
+          # Archive the prebuilt output to avoid a burst of individual file uploads.
+          # Keep the production alias untouched until smoke checks pass.
+          deployment_output=""
+          for attempt in 1 2 3; do
+            if deployment_output="$(pnpm exec vercel deploy --prebuilt --archive=tgz --prod --skip-domain --non-interactive)"; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error::Staging upload failed after 3 attempts; production was not promoted."
+              exit 1
+            fi
+            echo "Staging upload failed (attempt ${attempt}/3); retrying..."
+            sleep $((10 * attempt))
+          done
           deployment_url="$(DEPLOYMENT_OUTPUT="$deployment_output" node --input-type=module -e '
             import { stagedDeploymentUrl } from "./scripts/check-deployment.mjs";
             process.stdout.write(stagedDeploymentUrl(process.env.DEPLOYMENT_OUTPUT));
@@ -136,6 +149,17 @@ jobs:
           DEPLOYMENT_URL: ${{ steps.stage.outputs.url }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: node scripts/check-deployment.mjs
+      - name: Confirm the staged commit is still current
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$current_sha" != "$DEPLOY_SHA" ]; then
+            echo "::error::Main changed during staging; refusing to promote an older commit."
+            exit 1
+          fi
       - name: Promote the verified build
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
