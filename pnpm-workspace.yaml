@@ -1,6 +1,24 @@
 packages:
   - .
 minimumReleaseAge: 1440
+allowBuilds:
+  esbuild: true
+# Keep deployment tooling inside the audited lockfile. Compatible patched releases
+# replace the vulnerable transitive versions pinned by the Vercel CLI builders.
+overrides:
+  tar: 7.5.22
+  smol-toml: 1.9.1
+  undici@6: 6.29.0
+  # These two CLI clients pin the unsupported 5.x line. Their fetch/Agent APIs
+  # are covered by deployment-toolchain.test.mjs on our Node 24 runtime.
+  vercel>undici: 6.29.0
+  "@vercel/node>undici": 6.29.0
+  "@fastify/busboy": 3.2.3
+  js-yaml@4: 4.3.2
+  minimatch@10: 10.2.6
+  path-to-regexp@6: 6.3.0
+  path-to-regexp@8: 8.4.2
+  ajv@8: 8.20.0
 patchedDependencies:
   braces@3.0.3: patches/braces@3.0.3.patch
 

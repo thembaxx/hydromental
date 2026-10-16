@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import type { LearningState } from "@/lib/learning";
+import { MeasurementPreferences } from "@/components/measurement";
 
 type Settings = LearningState["settings"];
 export function SettingsPanel({
@@ -125,6 +126,7 @@ export function SettingsPanel({
           </Link>
         </Button>
       </section>
+      <MeasurementPreferences />
     </div>
   );
 }

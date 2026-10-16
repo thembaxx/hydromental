@@ -66,11 +66,25 @@ test("theoretical assignments, unavailable measurements and model limits are exp
     for (const property of science.properties) {
       expect(property.value).not.toBe("");
       expect(property.note).toBeTruthy();
-      if (property.value !== "Not reported" && property.label !== "Standard state") {
+      expect(property.source.url).toMatch(/^https:\/\//);
+      expect(property.source.retrievedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      if (property.numericValue !== null) expect(Number.isFinite(property.numericValue)).toBe(true);
+      if (property.quantity === "standard-atomic-weight") {
+        expect(property.unit).toBeUndefined();
+        if (property.interval) expect(property.numericValue).toBeNull();
+      } else if (
+        property.value !== "Not reported" &&
+        [
+          "Atomic mass",
+          "First ionisation energy",
+          "Melting point",
+          "Boiling point",
+          "Density",
+          "Atomic radius",
+          "Electron affinity",
+        ].includes(property.label)
+      )
         expect(property.unit).toBeTruthy();
-        expect(property.note).toMatch(/uncertainty/i);
-        expect(Number.isFinite(Number(property.value))).toBe(true);
-      }
     }
   }
   expect(scienceMetadata.modelNote).toMatch(/quantum states.*not a probability-density simulation/);
@@ -103,7 +117,7 @@ test("each editorial record has non-self connections and authoritative citations
     }
     expect(science.connection.atomicNumber).not.toBe(science.atomicNumber);
     expect(() => getScience(science.connection.atomicNumber)).not.toThrow();
-    expect(science.sources).toHaveLength(2);
+    expect(science.sources).toHaveLength(5);
     const rsc = science.sources.find((source) => new URL(source.url).hostname === "www.rsc.org");
     const pubchem = science.sources.find(
       (source) => new URL(source.url).hostname === "pubchem.ncbi.nlm.nih.gov",
@@ -195,4 +209,41 @@ test("snapshot validation rejects corrupted science instead of silently displayi
     corrupt(broken);
     expect(() => validateScienceSnapshot(broken)).toThrow();
   }
+});
+
+test("all views derive mass and phase from the scientific record; layout coordinates stay separate", () => {
+  for (const element of elements) {
+    const science = getScience(element.z);
+    const mass = science.properties.find((property) => property.label === "Atomic mass")!;
+    expect(element.m).toBe(mass.value);
+    expect(element.massUnit).toBe(mass.unit);
+    expect(element.phaseLabel).toBe(
+      science.properties.find((property) => property.label === "Standard state")!.value,
+    );
+    expect(element.p).toBeGreaterThanOrEqual(1);
+    expect(element.p).toBeLessThanOrEqual(7);
+    if (["l", "c"].includes(element.c)) expect(element.g).toBeNull();
+  }
+  expect(elements[2].m).toBe("[6.938, 6.997]");
+  expect(elements[17].m).toBe("[39.792, 39.963]");
+  expect(getScience(90).properties[0].quantity).toBe("standard-atomic-weight");
+  expect(getScience(43).properties[0].quantity).toBe("isotope-mass");
+});
+
+test("isotope selections preserve evaluated decay, abundances, uncertainty and citations", () => {
+  for (const record of scienceRecords) {
+    expect(record.isotopes.length).toBeGreaterThan(0);
+    for (const isotope of record.isotopes) {
+      expect(isotope.massNumber).toBeGreaterThanOrEqual(record.atomicNumber);
+      expect(isotope.sources.nuclear.edition).toContain("NUBASE2020");
+      if (isotope.abundance) expect(isotope.sources.massAndAbundance?.label).toContain("NIST");
+    }
+  }
+  expect(getScience(1).isotopes.find((isotope) => isotope.massNumber === 3)?.halfLife).toBe(
+    "12.32",
+  );
+  expect(getScience(6).isotopes.find((isotope) => isotope.massNumber === 14)?.decay).toContain(
+    "B-",
+  );
+  expect(getScience(8).isotopes.map((isotope) => isotope.massNumber)).toEqual([16, 17, 18]);
 });

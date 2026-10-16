@@ -41,6 +41,17 @@ export const auras = [
   },
 ] as const;
 export type Aura = (typeof auras)[number];
+export type ElementalAsset = {
+  path: string;
+  material: "procedural" | "authored";
+  animation?: string;
+};
+export const elementalAssets: Record<Aura["id"], ElementalAsset> = {
+  hydro: { path: "/models/hydro.glb", material: "procedural" },
+  ember: { path: "/models/ember.glb", material: "procedural" },
+  solar: { path: "/models/solar.glb", material: "procedural" },
+  breeze: { path: "/models/breeze.glb", material: "procedural" },
+};
 export type ElementalSceneApi = {
   inspect: (x: number, y: number) => import("./atom-scene").AtomInspection | null;
   resetCamera: () => void;

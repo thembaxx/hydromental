@@ -6,7 +6,7 @@ import { PeriodicTable } from "@/components/periodic-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/icon";
-import { categories, elements, phases, type Category } from "@/lib/elements";
+import { categories, elements, type Category } from "@/lib/elements";
 import { searchElements } from "@/lib/search";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 
@@ -205,14 +205,15 @@ export function ElementLibrary({
                         <span className="element-card-top">
                           <span className="element-card-z">{element.z}</span>
                           <span className="element-card-phase" data-phase={element.f}>
-                            {phases[element.f]}
+                            {element.phaseLabel}
                           </span>
                         </span>
                         <span className="element-card-symbol">{element.s}</span>
                         <span className="element-card-name">{element.n}</span>
                         <span className="element-card-foot">
                           <span className="element-card-mass">
-                            {element.m} <i className="unit">u</i>
+                            {element.m}{" "}
+                            {element.massUnit && <i className="unit">{element.massUnit}</i>}
                           </span>
                           <span className="element-card-dot" aria-hidden="true" />
                         </span>

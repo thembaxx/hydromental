@@ -14,15 +14,23 @@
     "check": "pnpm lint && pnpm format:check && pnpm typecheck",
     "test:e2e": "playwright test",
     "security:audit": "pnpm audit --audit-level=high",
-    "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/learning.test.mjs tests/release-security.test.mjs tests/deployment-smoke.test.mjs tests/offline-assets.test.mjs",
+    "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.mjs",
     "science:check": "node scripts/refresh-science.mjs --check",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "science:refresh": "node scripts/refresh-science.mjs",
+    "science:report": "node scripts/science-report.mjs",
+    "assets:check": "node scripts/check-assets.mjs",
+    "repository:configure": "node scripts/configure-repository.mjs",
+    "test:devices": "playwright test --config playwright.devices.config.ts",
+    "performance:check": "node scripts/check-performance.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
     "@phosphor-icons/react": "2.1.10",
     "@react-three/fiber": "9.8.1",
     "@react-three/postprocessing": "3.2.0",
+    "@vercel/analytics": "2.0.1",
+    "@vercel/speed-insights": "2.0.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "gsap": "3.15.0",
@@ -32,7 +40,8 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "tailwind-merge": "3.7.0",
-    "three": "0.186.1"
+    "three": "0.186.1",
+    "web-vitals": "5.1.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -47,9 +56,11 @@
     "@types/three": "0.186.0",
     "oxfmt": "0.72.0",
     "oxlint": "1.87.0",
+    "parse5": "8.0.0",
     "semantic-release": "25.0.9",
     "tailwindcss": "4.3.3",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vercel": "64.0.2"
   },
   "engines": {
     "node": ">=22.18.0",

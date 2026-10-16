@@ -1,5 +1,7 @@
 "use client";
 
+import { ScienceProperties, IsotopeReference } from "@/components/science-reference";
+
 import Link from "next/link";
 import { useState } from "react";
 import { categories, group, period, type Element } from "@/lib/elements";
@@ -29,7 +31,7 @@ export function ElementDetails({
   const color = categories[element.c][1];
   const facts = [
     ["Atomic no.", element.z],
-    [`Atomic mass${mass.unit ? ` · ${mass.unit}` : ""}`, mass.value],
+    [`${mass.displayLabel ?? mass.label}${mass.unit ? ` · ${mass.unit}` : ""}`, mass.value],
     [
       "Standard state",
       science.properties.find((property) => property.label === "Standard state")!.value,
@@ -134,20 +136,8 @@ export function ElementDetails({
         </section>
         <section className="panel-section">
           <h3>Scientific reference</h3>
-          <dl className="property-list">
-            {science.properties.map((property) => (
-              <div key={property.label}>
-                <dt>{property.label}</dt>
-                <dd>
-                  <span className={/^[-+]?\d/.test(property.value) ? "n" : undefined}>
-                    {property.value}
-                    {property.unit ? ` ${property.unit}` : ""}
-                  </span>
-                  {property.note && <small>{property.note}</small>}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <ScienceProperties science={science} className="property-list" />
+          <IsotopeReference science={science} symbol={element.s} />
           <p className="panel-copy">
             Atomic weights can depend on isotopic composition. Where stable isotopes do not exist,
             the source mass value may describe a representative isotope rather than a standard

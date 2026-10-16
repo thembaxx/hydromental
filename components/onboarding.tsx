@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { elements } from "@/lib/elements";
 import type { SceneControls } from "@/lib/atom-scene";
+import { trackProductEvent } from "@/lib/measurement";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 
 const steps = [
@@ -82,6 +83,40 @@ const serverReady = () => false;
 
 export function Onboarding({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
+  const latestStep = useRef(0);
+  const finished = useRef(false);
+  const mounted = useRef(false);
+  const reported = useRef(false);
+  const started = useRef(false);
+  useEffect(() => {
+    latestStep.current = step;
+  }, [step]);
+  useEffect(() => {
+    mounted.current = true;
+    if (!started.current) {
+      trackProductEvent("onboarding_started", {});
+      started.current = true;
+    }
+    const leave = () => {
+      if (!finished.current && !reported.current) {
+        reported.current = true;
+        trackProductEvent("onboarding_abandoned", { step: latestStep.current });
+      }
+    };
+    window.addEventListener("pagehide", leave);
+    return () => {
+      mounted.current = false;
+      window.removeEventListener("pagehide", leave);
+      queueMicrotask(() => {
+        if (!mounted.current) leave();
+      });
+    };
+  }, []);
+  const complete = (skipped = false) => {
+    finished.current = true;
+    trackProductEvent("onboarding_completed", { result: skipped ? "skipped" : "finished" });
+    onComplete();
+  };
   const [current, setCurrent] = useState(7);
   const [rotate, setRotate] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -204,7 +239,7 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
           <BrandMark />
           <strong>Elementals</strong>
         </Link>
-        <Button variant="unstyled" className="text-button" onClick={onComplete}>
+        <Button variant="unstyled" className="text-button" onClick={() => complete(true)}>
           Skip introduction <Icon name="next" />
         </Button>
       </header>
@@ -448,7 +483,7 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
           className="action-button primary-action"
           onClick={() =>
             step === steps.length - 1
-              ? onComplete()
+              ? complete()
               : setStep((value) => Math.min(steps.length - 1, value + 1))
           }
         >

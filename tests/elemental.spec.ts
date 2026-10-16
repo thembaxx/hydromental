@@ -157,3 +157,32 @@ test("dragging the aura cards snaps to a new atmosphere without navigating eleme
   await expect(page.locator('.aura-card[aria-pressed="true"]')).toHaveCount(1);
   await expect(page.locator("#in h1")).toHaveText("Oxygen");
 });
+
+test("offscreen rendering pauses GPU draws and reduced motion renders on demand", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const view = window as unknown as { gpuDraws: number };
+    view.gpuDraws = 0;
+    const original = WebGL2RenderingContext.prototype.drawElements;
+    WebGL2RenderingContext.prototype.drawElements = function (...args) {
+      view.gpuDraws += 1;
+      return original.apply(this, args);
+    };
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await ready(page);
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { gpuDraws: number }).gpuDraws))
+    .toBeGreaterThan(0);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.locator("#gl")).toHaveAttribute("data-render-state", "paused");
+  const paused = await page.evaluate(() => (window as unknown as { gpuDraws: number }).gpuDraws);
+  await page.waitForTimeout(250);
+  expect(await page.evaluate(() => (window as unknown as { gpuDraws: number }).gpuDraws)).toBe(
+    paused,
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.locator("#gl").scrollIntoViewIfNeeded();
+  await expect(page.locator("#gl")).toHaveAttribute("data-render-state", "on-demand");
+});

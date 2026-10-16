@@ -1,56 +1,98 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {
+  checkConfiguredDeployment,
+  checkDeployment,
+  readAuthenticatedPage,
+} from "../scripts/check-deployment.mjs";
 
-let attempt = 0;
-async function runSmoke(mockFetch, origin = "https://staged-hydromental.vercel.app") {
-  const previousFetch = globalThis.fetch;
-  const previousUrl = process.env.DEPLOYMENT_URL;
-  const previousBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-  globalThis.fetch = mockFetch;
-  process.env.DEPLOYMENT_URL = origin;
-  process.env.VERCEL_AUTOMATION_BYPASS_SECRET = "test-bypass";
-  try {
-    const moduleUrl = new URL("../scripts/check-deployment.mjs", import.meta.url);
-    moduleUrl.searchParams.set("test", String(attempt));
-    attempt += 1;
-    await import(moduleUrl.href);
-  } finally {
-    globalThis.fetch = previousFetch;
-    if (previousUrl === undefined) delete process.env.DEPLOYMENT_URL;
-    else process.env.DEPLOYMENT_URL = previousUrl;
-    if (previousBypass === undefined) delete process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-    else process.env.VERCEL_AUTOMATION_BYPASS_SECRET = previousBypass;
-  }
-}
-
-test("deployment checks verify every public entry point and scope the protection bypass", async () => {
+test("the production entrypoint adapts fetch options without replacing the authenticated runner", async () => {
   const paths = [];
-  await runSmoke(async (url, options) => {
-    assert.equal(url.origin, "https://staged-hydromental.vercel.app");
-    assert.equal(options.headers["x-vercel-protection-bypass"], "test-bypass");
-    assert.equal(options.redirect, "error");
-    paths.push(url.pathname);
-    return new Response(url.pathname === "/elements" ? "Hydrogen" : "Elementals");
+  await checkConfiguredDeployment(
+    { DEPLOYMENT_URL: "https://staged-hydromental.vercel.app", VERCEL_TOKEN: "test-only" },
+    async (_command, args) => {
+      const path = new URL(args[3]).pathname;
+      paths.push(path);
+      const body =
+        path === "/elements"
+          ? "Hydrogen"
+          : path === "/element-data.json"
+            ? '{"schemaVersion":2}'
+            : "Elementals";
+      return { stdout: `${body}\n200` };
+    },
+  );
+  assert.deepEqual(paths, ["/", "/elements", "/manifest.webmanifest", "/element-data.json"]);
+});
+
+test("deployment checks verify app, library, manifest and the upgraded scientific data", async () => {
+  const paths = [];
+  await checkDeployment({
+    origin: "https://staged-hydromental.vercel.app",
+    fetchPage: async (url, options) => {
+      assert.equal(url.origin, "https://staged-hydromental.vercel.app");
+      assert.equal(options.redirect, "error");
+      paths.push(url.pathname);
+      return new Response(
+        url.pathname === "/elements"
+          ? "Hydrogen"
+          : url.pathname === "/element-data.json"
+            ? '{"schemaVersion":2}'
+            : "Elementals",
+      );
+    },
   });
-  assert.deepEqual(paths, ["/", "/elements", "/manifest.webmanifest"]);
+  assert.deepEqual(paths, ["/", "/elements", "/manifest.webmanifest", "/element-data.json"]);
 });
-
-test("deployment checks block promotion for a protected or broken site", async () => {
+test("a protected, redirected or broken staged site cannot be promoted", async () => {
+  for (const [status, body] of [
+    [403, "Login"],
+    [302, "Redirect"],
+    [200, "Not the application"],
+  ])
+    await assert.rejects(
+      checkDeployment({
+        origin: "https://staged-hydromental.vercel.app",
+        fetchPage: async () => new Response(body, { status }),
+      }),
+      /smoke check/,
+    );
   await assert.rejects(
-    runSmoke(async () => new Response("Login", { status: 403 })),
-    /smoke check \(403\)/,
-  );
-  await assert.rejects(
-    runSmoke(async () => new Response("Not the application")),
-    /smoke check \(200\)/,
+    readAuthenticatedPage(new URL("https://staged-hydromental.vercel.app/"), async () => ({
+      stdout: "Login\n302",
+    })),
+    /returned 302/,
   );
 });
-
-test("deployment checks reject unexpected origins without sending credentials", async () => {
-  await assert.rejects(
-    runSmoke(() => {
-      throw new Error("Must not fetch");
-    }, "https://example.com"),
-    /staged HTTPS Vercel/,
+test("unexpected origins are rejected before any authenticated request", async () => {
+  for (const origin of [
+    "https://example.com",
+    "https://staged-hydromental.vercel.app/path",
+    "https://user:pass@staged-hydromental.vercel.app",
+  ])
+    await assert.rejects(
+      checkDeployment({
+        origin,
+        fetchPage: () => {
+          throw new Error("Must not fetch");
+        },
+      }),
+      /staged HTTPS Vercel/,
+    );
+});
+test("authenticated CLI requests scope the target, reject redirects and keep credentials out of argv", async () => {
+  const response = await readAuthenticatedPage(
+    new URL("https://staged-hydromental.vercel.app/elements"),
+    async (command, args, options) => {
+      assert.equal(command, "pnpm");
+      assert.equal(args[3], "https://staged-hydromental.vercel.app/elements");
+      assert.ok(args.includes("--non-interactive"));
+      assert.ok(args.includes("--max-redirs"));
+      assert.ok(!args.includes("--location"));
+      assert.ok(!args.includes("--token"));
+      assert.equal(options.timeout, 60_000);
+      return { stdout: "Hydrogen\n200" };
+    },
   );
+  assert.equal(await response.text(), "Hydrogen");
 });

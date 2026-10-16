@@ -14,9 +14,12 @@ jobs:
   verify:
     name: Code checks, production build and browser tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       NEXT_TELEMETRY_DISABLED: 1
+      # Exercise eligible-plan event paths with local stubbed SDK endpoints.
+      # Production detects actual plan eligibility before its separate build.
+      NEXT_PUBLIC_PRODUCT_EVENTS_ENABLED: true
       CI: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -32,13 +35,15 @@ jobs:
       - name: Lint, formatting and types
         run: pnpm check
       - name: Learning rules and science data validation
-        run: pnpm test:unit && pnpm science:check
+        run: pnpm test:unit && pnpm science:check && pnpm assets:check
       - name: Production build
-        run: pnpm build
+        run: pnpm build && pnpm performance:check
       - name: Install the test browser
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium webkit
       - name: Mobile and desktop regression tests
         run: pnpm test:e2e --workers=2
+      - name: Android Chromium and iOS WebKit touch workflows
+        run: pnpm test:devices --workers=1
       - name: Upload browser reports and failure traces
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -47,6 +52,8 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            device-report/
+            device-results/
           retention-days: 14
           if-no-files-found: ignore
   security:

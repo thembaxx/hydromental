@@ -1,6 +1,40 @@
 import { elements, type Element } from "./elements";
 import snapshot from "./science-data.json";
 
+export interface ScienceSource {
+  label: string;
+  url: string;
+  edition: string;
+  retrievedAt: string;
+  reviewedAt: string | null;
+  sha256: string;
+}
+export interface ScienceProperty {
+  label: string;
+  displayLabel?: string;
+  quantity?: string;
+  value: string;
+  unit?: string;
+  note: string;
+  numericValue: number | null;
+  interval: number[] | null;
+  uncertainty: string | null;
+  status: string;
+  conditions: { temperatureK: number | null; pressurePa: number | null; allotrope: string | null };
+  source: ScienceSource;
+}
+export interface Isotope {
+  massNumber: number;
+  relativeAtomicMass: string | null;
+  abundance: string | null;
+  halfLife: string;
+  halfLifeUnit: string | null;
+  halfLifeUncertainty: string | null;
+  estimated: boolean;
+  decay: string | null;
+  representative: boolean;
+  sources: { massAndAbundance: ScienceSource | null; nuclear: ScienceSource };
+}
 export interface ScienceRecord {
   atomicNumber: number;
   configuration: string;
@@ -11,7 +45,8 @@ export interface ScienceRecord {
   everyday: string;
   fact: string;
   connection: { atomicNumber: number; explanation: string };
-  properties: Array<{ label: string; value: string; unit?: string; note?: string }>;
+  properties: ScienceProperty[];
+  isotopes: Isotope[];
   sources: Array<{ label: string; url: string }>;
 }
 
@@ -30,10 +65,25 @@ export interface SandboxRecipe {
   explanation: string;
 }
 
-export const scienceRecords: readonly ScienceRecord[] = snapshot.records;
+export const scienceRecords: readonly ScienceRecord[] = snapshot.records.map((record) => ({
+  ...record,
+  properties: record.properties.map((property) => ({
+    ...property,
+    source: snapshot.sources[property.sourceId as keyof typeof snapshot.sources],
+  })),
+  isotopes: record.isotopes.map((isotope) => ({
+    ...isotope,
+    sources: {
+      massAndAbundance: isotope.sources.massAndAbundance ? snapshot.sources.nist : null,
+      nuclear: snapshot.sources.nubase,
+    },
+  })),
+}));
 export const scienceMetadata = {
+  schemaVersion: snapshot.schemaVersion,
   retrievedAt: snapshot.retrievedAt,
   source: snapshot.source,
+  sources: snapshot.sources,
   modelNote:
     "Orbiting dots illustrate electron counts by principal shell. Electrons occupy quantum states, rather than travelling along fixed planetary paths. The scientific view is a labeled schematic, not a probability-density simulation.",
 };

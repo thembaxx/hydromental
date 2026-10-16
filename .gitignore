@@ -1,5 +1,6 @@
 node_modules/
 .next/
+.vercel/
 out/
 *.tsbuildinfo
 next-env.d.ts
@@ -9,3 +10,5 @@ next-env.d.ts
 *.log
 test-results/
 playwright-report/
+device-report/
+device-results/

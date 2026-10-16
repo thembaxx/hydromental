@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { PwaManager } from "@/components/pwa-manager";
 import { BrowserChrome } from "@/components/browser-chrome";
+import { Measurement } from "@/components/measurement";
 import { jsonLd, siteOrigin } from "@/lib/site";
 import { themeBootstrapScript, themeCriticalCss, themeSurfaces } from "@/lib/theme";
 import "./globals.css";
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <PwaManager />
         <BrowserChrome />
+        <Measurement />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

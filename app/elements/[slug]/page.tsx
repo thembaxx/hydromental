@@ -1,3 +1,4 @@
+import { ScienceProperties, IsotopeReference } from "@/components/science-reference";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
@@ -75,7 +76,7 @@ export default async function ElementPage({ params }: Props) {
             <dd className="n">{element.z}</dd>
           </div>
           <div>
-            <dt>Atomic mass</dt>
+            <dt>{mass.displayLabel ?? mass.label}</dt>
             <dd className="n">
               {mass.value}
               {mass.unit && ` ${mass.unit}`}
@@ -158,20 +159,8 @@ export default async function ElementPage({ params }: Props) {
         {science.properties.length > 0 && (
           <section className="reference-section" aria-labelledby="properties-title">
             <h2 id="properties-title">Properties and conditions</h2>
-            <dl className="reference-properties">
-              {science.properties.map((property) => (
-                <div key={property.label}>
-                  <dt>{property.label}</dt>
-                  <dd>
-                    <span className={/^[-+]?\d/.test(property.value) ? "n" : undefined}>
-                      {property.value}
-                      {property.unit && ` ${property.unit}`}
-                    </span>
-                    {property.note && <small>{property.note}</small>}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <ScienceProperties science={science} className="reference-properties" />
+            <IsotopeReference science={science} symbol={element.s} />
           </section>
         )}
         <section className="reference-section" aria-labelledby="sources-title">

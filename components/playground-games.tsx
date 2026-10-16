@@ -20,7 +20,6 @@ import {
   objects,
   periodicHoles,
   propertyRounds,
-  propertyValue,
   sessionModel,
 } from "@/lib/playground";
 import { getScience } from "@/lib/science";
@@ -307,13 +306,21 @@ function AtomGame({ session, onChange, onInspect, paused, settings }: Props) {
       </div>
       <p className="panel-copy">
         {knownIsotopes[p]?.includes(p + n)
-          ? "This mass number is in the NIST isotopic-composition reference. Charge is set independently by your electron count."
+          ? "This mass number is in the cited NIST/NUBASE isotope selection. That does not establish stability or natural abundance. Charge is set independently by your electron count."
           : "This is an exploratory particle composition, not a claim that the isotope or ion is stable or naturally occurring."}{" "}
         Particle dots are capped at 18 of each type; the controls show exact counts. A positive ion
         has fewer electrons than protons.
       </p>
       <a className="game-source" href={isotopeSource} target="_blank" rel="noreferrer">
-        NIST isotope reference
+        NIST isotope masses and compositions
+      </a>
+      <a
+        className="game-source"
+        href="https://www-nds.iaea.org/amdc/ame2020/nubase_4.mas20.txt"
+        target="_blank"
+        rel="noreferrer"
+      >
+        NUBASE nuclear properties
       </a>
     </div>
   );
@@ -420,7 +427,7 @@ function PeriodicGame({ session, onChange, solved }: Props) {
               <div
                 key={element.z}
                 className="game-tile"
-                style={{ gridColumn: element.g, gridRow: element.p }}
+                style={{ gridColumn: element.gridColumn, gridRow: element.gridRow }}
               >
                 <span className="n">{element.z}</span>
                 <strong>{element.s}</strong>
@@ -430,7 +437,7 @@ function PeriodicGame({ session, onChange, solved }: Props) {
                 key={element.z}
                 variant="unstyled"
                 className="game-tile game-tile-hole"
-                style={{ gridColumn: element.g, gridRow: element.p }}
+                style={{ gridColumn: element.gridColumn, gridRow: element.gridRow }}
                 aria-label={`Period ${element.p}, group ${element.g}`}
                 disabled={!session.choice || solved}
                 onClick={() =>
@@ -842,6 +849,10 @@ function CrystalGame({ session, onChange, paused, settings, onInspect }: Props) 
 }
 function PropertyGame({ session, onChange, solved, onInspect }: Props) {
   const round = propertyRounds[session.index];
+  const displayValue = (z: number) => {
+    const property = getScience(z).properties.find((item) => item.label === round.name)!;
+    return `${property.value} ${property.unit ?? ""}`.trim();
+  };
   const dragging = useRef<number | null>(null);
   const move = (from: number, to: number) => {
     if (solved || from === to || to < 0 || to >= 4) return;
@@ -882,9 +893,7 @@ function PropertyGame({ session, onChange, solved, onInspect }: Props) {
               <strong className="n">{elements[z - 1].s}</strong>
               <span>{elements[z - 1].n}</span>
             </Button>
-            <span className="n game-property-value">
-              {solved ? `${propertyValue(session.index, z)} ${round.unit}` : ""}
-            </span>
+            <span className="n game-property-value">{solved ? displayValue(z) : ""}</span>
             <Button
               variant="unstyled"
               className="icon-button"
@@ -908,15 +917,8 @@ function PropertyGame({ session, onChange, solved, onInspect }: Props) {
       </ol>
       {session.hints > 0 && (
         <p className="game-hint">
-          {elements[round.zs[0] - 1].n}:{" "}
-          <span className="n">
-            {propertyValue(session.index, round.zs[0])} {round.unit}
-          </span>
-          . {elements[round.zs[3] - 1].n}:{" "}
-          <span className="n">
-            {propertyValue(session.index, round.zs[3])} {round.unit}
-          </span>
-          .
+          {elements[round.zs[0] - 1].n}: <span className="n">{displayValue(round.zs[0])}</span>.{" "}
+          {elements[round.zs[3] - 1].n}: <span className="n">{displayValue(round.zs[3])}</span>.
         </p>
       )}
       <p className="panel-copy">{round.explanation}</p>

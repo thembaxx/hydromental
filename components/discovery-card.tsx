@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
-import { categories, phases, type Element } from "@/lib/elements";
+import { categories, type Element } from "@/lib/elements";
 import { getScience, elementSlug } from "@/lib/science";
 
 const escapeXml = (value: string) =>
@@ -30,10 +30,10 @@ export function DiscoveryCard({
   const [sharing, setSharing] = useState(false);
   const science = getScience(element.z);
   const mass = science.properties.find((property) => property.label === "Atomic mass")!;
-  const isotopeMass = mass.note?.includes("without stable isotopes");
+  const isotopeMass = mass.quantity === "isotope-mass";
   const family = categories[element.c];
   function download() {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000"><rect width="800" height="1000" rx="48" fill="#0e1728"/><circle cx="400" cy="360" r="210" fill="none" stroke="${family[1]}" stroke-width="3"/><circle cx="400" cy="360" r="150" fill="none" stroke="${family[1]}" stroke-width="2"/><circle cx="400" cy="150" r="12" fill="${family[1]}"/><g font-family="system-ui,sans-serif" text-anchor="middle" fill="#fff"><text x="400" y="100" font-size="28">ELEMENTALS · DISCOVERY CARD</text><text x="400" y="300" font-size="30">${element.z}</text><text x="400" y="420" font-size="140" font-weight="700">${escapeXml(element.s)}</text><text x="400" y="645" font-size="56">${escapeXml(element.n)}</text><text x="400" y="710" font-size="26" fill="${family[1]}">${escapeXml(family[0])}</text><text x="400" y="775" font-size="24">Atomic mass: ${escapeXml(mass.value)}${mass.unit ? ` ${escapeXml(mass.unit)}` : ""}</text><text x="400" y="845" font-size="24">${discovered ? "Discovered" : "Ready to explore"}${mastery ? ` · ${mastery} correct reviews` : ""}</text><text x="400" y="890" font-size="18">${isotopeMass ? "Isotope value; not a standard atomic weight." : "Natural isotope composition can vary."}</text><text x="400" y="930" font-size="18">Illustrative atom · Data: PubChem / Royal Society of Chemistry</text></g></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000"><rect width="800" height="1000" rx="48" fill="#0e1728"/><circle cx="400" cy="360" r="210" fill="none" stroke="${family[1]}" stroke-width="3"/><circle cx="400" cy="360" r="150" fill="none" stroke="${family[1]}" stroke-width="2"/><circle cx="400" cy="150" r="12" fill="${family[1]}"/><g font-family="system-ui,sans-serif" text-anchor="middle" fill="#fff"><text x="400" y="100" font-size="28">ELEMENTALS · DISCOVERY CARD</text><text x="400" y="300" font-size="30">${element.z}</text><text x="400" y="420" font-size="140" font-weight="700">${escapeXml(element.s)}</text><text x="400" y="645" font-size="56">${escapeXml(element.n)}</text><text x="400" y="710" font-size="26" fill="${family[1]}">${escapeXml(family[0])}</text><text x="400" y="775" font-size="24">${escapeXml(mass.displayLabel ?? mass.label)}: ${escapeXml(mass.value)}${mass.unit ? ` ${escapeXml(mass.unit)}` : ""}</text><text x="400" y="845" font-size="24">${discovered ? "Discovered" : "Ready to explore"}${mastery ? ` · ${mastery} correct reviews` : ""}</text><text x="400" y="890" font-size="18">${isotopeMass ? "Isotope value; not a standard atomic weight." : "Natural isotope composition can vary."}</text><text x="400" y="930" font-size="18">Illustrative atom · Data: CIAAW / PubChem / Royal Society of Chemistry</text></g></svg>`;
     const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -80,7 +80,7 @@ export function DiscoveryCard({
         <span className="element-card-top">
           <span className="discovery-card-number">{element.z}</span>
           <span className="element-card-phase" data-phase={element.f}>
-            {phases[element.f]}
+            {element.phaseLabel}
           </span>
         </span>
         <div className="discovery-card-symbol">{element.s}</div>

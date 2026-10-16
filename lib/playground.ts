@@ -216,22 +216,13 @@ export const atomTargets = [
   },
 ];
 export const isotopeSource = "https://physics.nist.gov/PhysRefData/Compositions/index.html";
-export const knownIsotopes: Record<number, number[]> = {
-  1: [1, 2],
-  2: [3, 4],
-  3: [6, 7],
-  6: [12, 13],
-  7: [14, 15],
-  8: [16, 17, 18],
-  11: [23],
-  12: [24, 25, 26],
-  13: [27],
-  14: [28, 29, 30],
-  17: [35, 37],
-  26: [54, 56, 57, 58],
-  29: [63, 65],
-  79: [197],
-};
+export const knownIsotopes: Record<number, number[]> = Object.fromEntries(
+  elements.map((element) => [
+    element.z,
+    getScience(element.z).isotopes.map((isotope) => isotope.massNumber),
+  ]),
+);
+
 type Species = { label: string; atoms: Array<[number, number]> };
 export const equations: Array<{
   name: string;
@@ -409,7 +400,7 @@ export function mysteryClues(index: number): string[] {
   return [
     `I belong to the ${categories[element.c][0].toLowerCase()} family.`,
     `I am in period ${element.p}, group ${element.g}.`,
-    `My standard atomic mass is approximately ${element.m} u.`,
+    `My ${element.massLabel.toLowerCase()} is ${element.m}${element.massUnit ? ` ${element.massUnit}` : ""}.`,
     `My atomic number is ${element.z}.`,
   ];
 }
@@ -417,9 +408,9 @@ export const propertyRounds = [
   {
     name: "Atomic mass",
     zs: [1, 6, 8, 26],
-    unit: "u",
+    unit: "",
     explanation:
-      "Atomic mass generally increases across these examples. Atomic number counts protons; atomic mass also reflects neutrons and isotopic abundance.",
+      "CIAAW standard atomic weights reflect normal terrestrial isotope composition. Intervals are displayed in full; these selected intervals do not overlap. Atomic number counts protons, while isotopes differ in neutron count.",
   },
   {
     name: "Melting point",
@@ -444,8 +435,12 @@ export const propertyRounds = [
   },
 ];
 export function propertyValue(index: number, z: number): number {
-  return Number(
-    getScience(z).properties.find((p) => p.label === propertyRounds[index].name)?.value,
+  const property = getScience(z).properties.find((p) => p.label === propertyRounds[index].name)!;
+  // Interval midpoints are used only to order these non-overlapping teaching examples.
+  // The UI displays the complete source interval, never the midpoint as a measurement.
+  return (
+    property.numericValue ??
+    (property.interval ? (property.interval[0] + property.interval[1]) / 2 : Number.NaN)
   );
 }
 export function newGameSession(game: GameId, index = 0, free = false, daily = ""): GameSession {

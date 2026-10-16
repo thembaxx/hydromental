@@ -1,5 +1,7 @@
 "use client";
 
+import { useLessonMeasurement } from "@/lib/use-lesson-measurement";
+
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,6 +49,8 @@ export function PlaygroundApp() {
   const [learning, setLearning] = useState(initialLearningState);
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<GameSession | null>(null);
+  const [lessonRun, setLessonRun] = useState(0);
+  const measureAttempt = useLessonMeasurement(session, lessonRun);
   const [past, setPast] = useState<GameSession[]>([]);
   const [future, setFuture] = useState<GameSession[]>([]);
   const [solved, setSolved] = useState(false);
@@ -126,6 +130,7 @@ export function PlaygroundApp() {
   }, [session?.timed, paused, solved, inspect, settings, saveOpen]);
   /* oxlint-enable react/set-state-in-effect */
   const launch = (next: GameSession) => {
+    setLessonRun((value) => value + 1);
     const url = new URL(window.location.href);
     url.searchParams.set("game", next.game);
     if (session) window.history.replaceState(navigationState(), "", url);
@@ -177,6 +182,7 @@ export function PlaygroundApp() {
   const check = () => {
     if (!session || resultRef.current) return;
     const answer = checkGame(session);
+    measureAttempt(answer.correct);
     const next = recordGameAttempt(learning, session, answer.correct);
     setLearning(next);
     setSolved(answer.correct);

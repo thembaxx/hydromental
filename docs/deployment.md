@@ -35,6 +35,23 @@ After the full CI workflow succeeds for a trusted push to `main`, Semantic Relea
 
 The application stays private: the release does not publish to npm, require `NPM_TOKEN`, or write generated version commits back to `main`. The immutable `vX.Y.Z` tag is the release version; `package.json` is the development baseline. The release job has `contents: write`; other jobs remain read-only. Release comments on issues and PRs are disabled.
 
-Production is staged using `--skip-domain`. The workflow checks the application, element library and manifest on the staged URL, then promotes that exact build. Configure `VERCEL_AUTOMATION_BYPASS_SECRET` in GitHub Actions if Deployment Protection is enabled. A failed smoke check leaves the current production deployment in place. Restrict the GitHub `production` environment to `main` and configure required reviewers for production releases.
+Production is staged using `--skip-domain`. Checks verify the application, library, manifest and schema-2 science data through authenticated `vercel curl` with the existing `VERCEL_TOKEN`. No separate bypass secret or disabled protection is needed. Redirects, login pages and incorrect content block promotion. The checker refuses to start CLI login when credentials are missing. A failed check leaves the current production deployment in place.
+
+The Vercel CLI is pinned to 64.0.2 in the audited pnpm lockfile, with reviewed security overrides and the existing tested braces patch. CI no longer downloads an unaudited `pnpm dlx` graph. Tests cover fetch/Agent/FormData compatibility and CLI execution; the production pipeline checks the actual build/deploy/protection flow.
+
+Deployment enables base Web Analytics and detects the existing team's custom-event eligibility without upgrading its plan. Visitor consent remains mandatory. Free Speed Insights is provided by its SDK; Speed Insights Plus is not enabled. See [measurement](measurement.md).
+
+## Account controls
+
+An administrator can inspect and apply the proposed configuration:
+
+```sh
+pnpm repository:configure
+pnpm repository:configure --apply --reviewer thembaxx
+```
+
+The connected integration returned HTTP 403 for all three attempted changes on October 15, 2026: main ruleset, production environment and default Actions-token permissions. They remain unapplied. The script requires PRs, exact CI check names and resolved conversations, and blocks force pushes/deletion. Its approval count is zero for this solo-maintainer repository; add an independent reviewer requirement when the team supports one. It refuses to overwrite an existing named ruleset.
+
+Production is restricted to main and gets the named reviewer while preserving existing reviewers/wait timers. Self-review is allowed for a solo maintainer. Default workflow tokens become read-only. The script reports individual failures and partial success; source publication permissions do not establish administration access.
 
 Vercel credentials remain necessary for deployment, while GitHub release creation only needs the workflow's built-in `GITHUB_TOKEN`. New workflows take effect after the branch is merged. Local checks do not publish releases or deploy production.

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { elements, categories, period, type Element } from "@/lib/elements";
 import { getScience } from "@/lib/science";
+import { trackProductEvent } from "@/lib/measurement";
 import { getDueElements, type LearningState } from "@/lib/learning";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardTitle } from "@/components/ui/card";
@@ -68,37 +69,37 @@ export function ElementQuiz({
   const [question, setQuestion] = useState<Question | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [sequence, setSequence] = useState(0);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firstOption = useRef<HTMLButtonElement | null>(null);
   const answered = useRef(false);
   const latest = useRef(state);
   useEffect(() => {
     latest.current = state;
   }, [state]);
   const next = () => {
-    if (timer.current) clearTimeout(timer.current);
     setQuestion(makeQuestion(latest.current, mode));
     setSelected(null);
     setSequence((value) => value + 1);
     answered.current = false;
   };
   useEffect(() => {
+    trackProductEvent("quiz_started", { mode });
     // oxlint-disable-next-line react/set-state-in-effect -- Random questions are generated only after browser hydration.
     setQuestion(makeQuestion(latest.current, mode));
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
   }, [mode]);
+  useEffect(() => {
+    if (sequence > 0) firstOption.current?.focus();
+  }, [sequence]);
   const answer = (value: string) => {
     if (answered.current || !question) return;
     answered.current = true;
     setSelected(value);
+    trackProductEvent("quiz_answer", {
+      mode,
+      concept: ["symbol", "name", "atomic_number", "family", "everyday"][question.type],
+      result: value === question.answer ? "correct" : "incorrect",
+      element: question.element.z,
+    });
     result(question.element.z, value === question.answer);
-    timer.current = setTimeout(() => {
-      setQuestion(makeQuestion(latest.current, mode));
-      setSelected(null);
-      setSequence((v) => v + 1);
-      answered.current = false;
-    }, 2500);
   };
   const names = {
     standard: "Quick quiz",
@@ -155,10 +156,11 @@ export function ElementQuiz({
         </CardTitle>
         {question?.clue && <p className="quiz-clue">{question.clue}</p>}
         <CardContent variant="unstyled" id="qa">
-          {question?.options.map((value) => (
+          {question?.options.map((value, index) => (
             <Button
               variant="unstyled"
               key={value}
+              ref={index === 0 ? firstOption : undefined}
               className={`opt ${selected && value === question.answer ? "ok" : selected === value ? "no" : ""}`}
               disabled={selected !== null}
               onClick={() => answer(value)}
@@ -173,6 +175,17 @@ export function ElementQuiz({
           <b>
             {selected === question.answer ? "Nicely spotted." : `The answer is ${question.answer}.`}
           </b>
+          <p>
+            {question.type === 0
+              ? `${question.element.s} is the chemical symbol for ${question.element.n}. Symbols identify elements independently of language.`
+              : question.type === 1
+                ? `${question.element.s} identifies ${question.element.n}.`
+                : question.type === 2
+                  ? `${question.element.n} has ${question.element.z} protons. Proton count defines the element; changing neutrons makes an isotope.`
+                  : question.type === 3
+                    ? `${question.element.n} belongs to the ${categories[question.element.c][0].toLowerCase()} family in period ${period(question.element)}.`
+                    : getScience(question.element.z).everyday}
+          </p>
           <p>{getScience(question.element.z).fact}</p>
           <Button
             variant="unstyled"
