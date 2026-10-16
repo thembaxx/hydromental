@@ -114,9 +114,9 @@ export function SettingsPanel({
             "Pause any game to stop its animation and timer. Every game has buttons and keyboard controls alongside its interactive models."
           ) : (
             <>
-              Swipe to travel between elements, pinch to zoom, and hold the atom to peek at its
-              identity. Tap the chemical family name to browse that family. Arrow keys also move
-              through the table.
+              Drag to spin, tap to excite, pinch to zoom, and hold to peek at particle counts. Use
+              the scrubber or left/right arrows to step through elements. Keys 1, 2 and 3 switch the
+              model; M toggles sound. Tap the element name to open its story.
             </>
           )}
         </p>

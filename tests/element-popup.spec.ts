@@ -29,7 +29,9 @@ test("all 118 symbols are visible without granting unearned discoveries", async 
   await expect(page.locator("#dt .fa b").last()).toHaveCSS("font-family", /Geist/);
 });
 
-test("tapping the orb opens its popup and restores keyboard focus on close", async ({ page }) => {
+test("tapping the atom excites it and explicit details restore keyboard focus on close", async ({
+  page,
+}) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await ready(page);
@@ -38,6 +40,8 @@ test("tapping the orb opens its popup and restores keyboard focus on close", asy
   await expect(page.locator("#gl")).toBeVisible();
   const box = (await page.locator("#gl").boundingBox())!;
   await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.4);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.getByRole("button", { name: "Element details", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Element details", exact: true })).toBeVisible();
   await expect(page.locator(".workspace-header h2")).toHaveText("Oxygen");
   await expect(page.locator("#dt .lead-copy")).toHaveText(getScience(8).description);

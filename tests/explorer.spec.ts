@@ -150,6 +150,8 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
   await page.mouse.down();
   await page.mouse.move(box.x + box.width * 0.25, box.y + box.height * 0.55, { steps: 3 });
   await page.mouse.up();
+  await expect(page.locator("#in")).toContainText("Cobalt");
+  await page.getByRole("button", { name: "Next element", exact: true }).click();
   await expect(page.locator("#in")).toContainText("Nickel");
   await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
   await page.mouse.down();

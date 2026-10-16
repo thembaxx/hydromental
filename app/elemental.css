@@ -234,6 +234,282 @@
   width: 68%;
   z-index: 1;
 }
+
+/* Shared glass controls sit in document flow and stay reachable on small screens. */
+.elemental-control-dock {
+  position: sticky;
+  bottom: 12px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 660px);
+  margin: 12px auto 24px;
+  color: #f4f8f7;
+  color-scheme: dark;
+}
+.hydro-experience .elemental-control-dock {
+  position: fixed;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  width: min(calc(100% - 32px), 660px);
+  margin: 0;
+}
+.hydro-experience .explorer-layout {
+  padding-bottom: 160px;
+}
+.elemental-mode-pill,
+.elemental-scrubber-dock {
+  background: rgb(15 27 30 / 94%);
+  border: 1px solid rgb(255 255 255 / 20%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+  backdrop-filter: blur(20px);
+}
+.elemental-mode-pill {
+  display: flex;
+  padding: 4px;
+  border-radius: 32px;
+}
+.elemental-control-dock button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+.elemental-control-dock button > svg,
+.elemental-control-dock button > span:not(.elemental-mode-indicator) {
+  position: relative;
+}
+.elemental-control-dock button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.elemental-control-dock button:hover:not(:disabled) {
+  background: rgb(255 255 255 / 10%);
+}
+.elemental-mode-indicator {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgb(255 255 255 / 15%);
+  border: 1px solid rgb(255 255 255 / 25%);
+}
+.elemental-control-dock .elemental-mute {
+  padding: 8px;
+  margin-left: 4px;
+  border-left: 1px solid rgb(255 255 255 / 18%);
+}
+.elemental-scrubber-dock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 64px;
+  padding: 6px;
+  border-radius: 20px;
+}
+.elemental-scrubber-identity {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 140px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+.elemental-scrubber-identity > strong {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  color: #09111b;
+  border-radius: 11px;
+  font-size: 15px;
+}
+.elemental-scrubber-identity > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+.elemental-scrubber-identity small {
+  color: #bac9cb;
+  font:
+    9px GeistMono,
+    monospace;
+}
+.elemental-scrubber-identity b {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.elemental-scrubber-track {
+  position: relative;
+  flex: 1;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 8px;
+}
+.elemental-scrubber-ticks {
+  position: absolute;
+  inset: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.elemental-scrubber-ticks > span {
+  width: 2px;
+  background: #e9f4f2;
+  border-radius: 2px;
+}
+.elemental-scrubber-track input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: none;
+  margin: 0;
+}
+.elemental-scrubber-track:focus-within,
+.elemental-control-dock button:focus-visible {
+  outline: 2px solid #bcf9e9;
+  outline-offset: 3px;
+}
+.elemental-stage-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px 0;
+  color: var(--exp-muted);
+  font-size: 11px;
+}
+.elemental-excite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 44px;
+  border: 1px solid currentColor;
+  border-radius: 24px;
+  padding: 8px 18px;
+  color: var(--exp-text, inherit);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+.reference-stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  margin: 32px 0;
+  border: 1px solid var(--exp-border, #66747b);
+  border-radius: 24px;
+}
+.reference-stage-model {
+  position: relative;
+  min-height: 300px;
+  touch-action: none;
+  cursor: grab;
+}
+.reference-stage-model:active {
+  cursor: grabbing;
+}
+.reference-stage .elemental-canvas {
+  inset: 0;
+  width: 100%;
+}
+.reference-stage-copy {
+  align-self: center;
+}
+.reference-stage-copy > span,
+.reference-stage-copy > small {
+  font-size: 11px;
+}
+.reference-stage-copy h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 16px;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.04em;
+  margin: 16px 0;
+}
+.reference-stage-copy h2 small {
+  font-size: 0.5em;
+}
+.reference-stage-copy p {
+  line-height: 1.7;
+}
+.reference-stage-copy .elemental-excite {
+  display: flex;
+  margin-top: 20px;
+  font-size: 12px;
+}
+.reference-stage .elemental-control-dock {
+  grid-column: 1 / -1;
+  position: relative;
+  bottom: auto;
+  margin: 0 auto;
+}
+@media (max-width: 620px) {
+  .elemental-mode-pill button > span:not(.elemental-mode-indicator) {
+    display: none;
+  }
+  .elemental-mode-pill button {
+    min-width: 54px;
+  }
+  .elemental-scrubber-identity {
+    width: 100px;
+    gap: 6px;
+  }
+  .elemental-scrubber-identity > strong {
+    width: 32px;
+    height: 34px;
+  }
+  .elemental-scrubber-identity b {
+    max-width: 60px;
+    font-size: 10px;
+  }
+  .elemental-scrubber-identity small {
+    font-size: 8px;
+  }
+  .elemental-control-dock button {
+    padding: 6px;
+  }
+  .elemental-stage-actions > span {
+    max-width: 120px;
+    text-align: right;
+  }
+  .reference-stage {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+  .reference-stage-model {
+    min-height: 250px;
+  }
+}
 .elemental-canvas > div {
   width: 100%;
   height: 100%;
@@ -1431,4 +1707,38 @@
 .reference-properties dd a {
   text-decoration: underline;
   text-underline-offset: 0.15em;
+}
+
+/* Keep stage actions above the model and clear of the fixed scrubber on phones. */
+.hydro-experience .stage-bottom-tools {
+  top: 28px;
+  bottom: auto;
+  left: auto;
+  right: 84px;
+  z-index: 5;
+  gap: 8px;
+  width: 96px;
+}
+.hydro-experience .stage-model-caption {
+  position: absolute;
+  bottom: 24px;
+  left: 80px;
+  right: 80px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 3;
+}
+.hydro-experience .scene-orbit-label {
+  right: 208px;
+}
+@media (max-width: 599px) {
+  .hydro-experience .stage-bottom-tools {
+    top: 15px;
+    right: 72px;
+  }
+  .hydro-experience .scene-orbit-label {
+    top: 70px;
+    right: 20px;
+    margin-right: 0;
+  }
 }

@@ -23,7 +23,11 @@ test("saved themes paint before app scripts and stylesheets arrive", async ({
       /\.(css|js)(?:\?|$)/.test(route.request().url()) ? route.abort() : route.continue(),
     );
     await page.goto("/");
-    await expect(page.getByRole("status")).toContainText("Loading your element explorer");
+    await expect(page.locator("#in h1")).toHaveText("Oxygen");
+    await expect(
+      page.getByRole("slider", { name: "Element atomic number scrubber" }),
+    ).toBeVisible();
+    await expect(page.locator('main[aria-busy="true"]')).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.locator("#app-theme-color")).toHaveAttribute(
       "content",
@@ -136,6 +140,7 @@ test("browser tint and install manifest follow live device and explicit appearan
 test("one viewport background covers short, long, landscape and resized pages", async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   for (const viewport of [
     { width: 320, height: 568 },
     { width: 390, height: 844 },

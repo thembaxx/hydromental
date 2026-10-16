@@ -1,6 +1,8 @@
 "use client";
 
-import { AppLoading } from "@/components/app-loading";
+import { ElementalControlDock } from "@/components/ui/ElementalControlDock";
+import { soundEngine } from "@/lib/sound-engine";
+import type { VisualMode } from "@/lib/elemental-stage";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -8,6 +10,7 @@ import { ElementalCarousel } from "@/components/elemental-carousel";
 import { auras, type ElementalSceneApi } from "@/lib/elemental";
 const ElementalCanvas = dynamic(() => import("@/components/elemental-canvas"), { ssr: false });
 import {
+  Suspense,
   useCallback,
   useEffect,
   useRef,
@@ -64,6 +67,13 @@ const Onboarding = dynamic(
 import { beginOnboarding, finishOnboarding, shouldShowOnboarding } from "@/lib/onboarding";
 import { trackProductEvent } from "@/lib/measurement";
 
+const dockElements = elements.map((element) => ({
+  number: element.z,
+  symbol: element.s,
+  name: element.n,
+  categoryColor: categories[element.c][1],
+}));
+
 type Direction = "u" | "d" | "l" | "r";
 const panels = [
   "table",
@@ -96,6 +106,7 @@ const titles = {
 
 export default function ElementsExplorer() {
   const [current, setCurrent] = useState(7);
+  const [visualMode, setVisualMode] = useState<VisualMode>("bohr");
   const [auraIndex, setAuraIndex] = useState(0);
   const aura = auras[auraIndex];
   const [learning, setLearning] = useState(initialLearningState);
@@ -180,6 +191,7 @@ export default function ElementsExplorer() {
       if (toastTimer.current) clearTimeout(toastTimer.current);
       if (holdTimer.current) clearTimeout(holdTimer.current);
       cleanupFeedback();
+      soundEngine.dispose();
     };
   }, []);
   useEffect(() => {
@@ -247,13 +259,19 @@ export default function ElementsExplorer() {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(""), 2600);
   }, []);
+  useEffect(() => {
+    soundEngine.isMuted = !learning.settings.sound;
+    soundEngine.haptics = learning.settings.haptics;
+  }, [learning.settings.sound, learning.settings.haptics]);
   const settings = (change: Partial<LearningSettings>) => {
+    if (change.sound !== undefined) soundEngine.isMuted = !change.sound;
+    if (change.haptics !== undefined) soundEngine.haptics = change.haptics;
     setLearning((previous) => ({ ...previous, settings: { ...previous.settings, ...change } }));
     if (change.ambient !== undefined) setAmbientAudio(change.ambient);
     if (change.sound === true) feedback("tap", { sound: true, haptics: learning.settings.haptics });
   };
   const pick = useCallback(
-    (index: number) => {
+    (index: number, scrubbing = false) => {
       if (!Number.isInteger(index) || index < 0 || index >= elements.length) return;
       const selected = elements[index],
         isNew = !learning.discovered.includes(selected.z),
@@ -270,7 +288,8 @@ export default function ElementsExplorer() {
         notify(`Discovered ${selected.n} · +10 XP`);
         if (getLevel(next.xp).level > level.level) setCelebrate(true);
       }
-      feedback(isNew ? "discover" : "tap", learning.settings);
+      if (!scrubbing)
+        soundEngine.playElementResonance(selected.z, getScience(selected.z).shells.length);
       if (learning.settings.ambient) setAmbientAudio(true);
       scene.current.spin = 14;
       scene.current.bounce = -5;
@@ -301,7 +320,9 @@ export default function ElementsExplorer() {
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (
         event.target instanceof HTMLElement &&
-        event.target.closest("input,textarea,select,[role=combobox],[role=listbox]")
+        event.target.closest(
+          "input,textarea,select,[contenteditable],[role=combobox],[role=listbox],[role=slider]",
+        )
       )
         return;
       if (event.key === "Escape") {
@@ -309,9 +330,7 @@ export default function ElementsExplorer() {
         return;
       }
       if (sheet) return;
-      const direction = (
-        { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d" } as const
-      )[event.key as "ArrowLeft"];
+      const direction = ({ ArrowUp: "u", ArrowDown: "d" } as const)[event.key as "ArrowUp"];
       if (direction) {
         event.preventDefault();
         navigate(direction);
@@ -424,7 +443,10 @@ export default function ElementsExplorer() {
         scene.current.hold = false;
         setHold(false);
       }
-      scene.current.spin = dx * 0.6;
+      scene.current.spin = dx * 0.3;
+      scene.current.rotationY = (scene.current.rotationY ?? 0) + dx * 0.008;
+      scene.current.rotationX = (scene.current.rotationX ?? 0) + dy * 0.008;
+      atomApi.current?.invalidate?.();
       scene.current.tilt = Math.max(-0.6, Math.min(0.6, scene.current.tilt + dy * 0.005));
     }
   };
@@ -442,13 +464,11 @@ export default function ElementsExplorer() {
     if (wasHold) return;
     if (start.movement < 8) {
       scene.current.bounce = -7;
-      feedback("tap", learning.settings);
-      if (performance.now() - start.time < 350)
-        atomApi.current?.inspect(event.clientX, event.clientY);
+      soundEngine.playExcitePulse(element.z);
+      atomApi.current?.invalidate?.();
       return;
     }
-    if (Math.max(Math.abs(dx), Math.abs(dy)) > 70)
-      navigate(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "r" : "l") : dy < 0 ? "d" : "u");
+    if (Math.abs(dy) > 100 && Math.abs(dy) > Math.abs(dx) * 2) navigate(dy < 0 ? "d" : "u");
   };
   const resetCamera = () => {
     atomApi.current?.resetCamera();
@@ -497,7 +517,6 @@ export default function ElementsExplorer() {
     notify(`Mission complete · +${next.xp - learning.xp} XP`);
   };
 
-  if (!hydrated) return <AppLoading />;
   if (welcome) {
     return (
       <Onboarding
@@ -591,6 +610,7 @@ export default function ElementsExplorer() {
             id="app"
             className="atom-stage"
             data-ready={hydrated}
+            data-mode={visualMode}
             data-zoom={zoom.toFixed(2)}
             tabIndex={-1}
             aria-label="Interactive atom explorer"
@@ -602,14 +622,23 @@ export default function ElementsExplorer() {
               cancelPointer();
             }}
           >
-            <ElementalCanvas
-              aura={aura}
-              quality={learning.settings.quality}
-              element={element}
-              controls={scene}
-              apiRef={atomApi}
-              suspended={sheet !== null}
-            />
+            <Suspense
+              fallback={
+                <p className="elemental-stage-loading" role="status">
+                  Preparing the 3D model. Element controls are ready.
+                </p>
+              }
+            >
+              <ElementalCanvas
+                aura={aura}
+                mode={visualMode}
+                quality={learning.settings.quality}
+                element={element}
+                controls={scene}
+                apiRef={atomApi}
+                suspended={sheet !== null}
+              />
+            </Suspense>
             <div
               id="tn"
               className="ab"
@@ -655,7 +684,7 @@ export default function ElementsExplorer() {
             </div>
             {!learning.onboardingDismissed && (
               <div className="onboarding-card">
-                <span>Try a swipe. Meet a new element.</span>
+                <span>Drag the atom. Scrub to meet a new element.</span>
                 <Button
                   variant="unstyled"
                   className="text-button"
@@ -701,7 +730,7 @@ export default function ElementsExplorer() {
                 {element.z} protons · {element.z} electrons
               </div>
               <LearningTip id="hint" active={hydrated}>
-                Swipe to travel · Hold to peek · Tap the atom to learn
+                Drag to spin · Tap to excite · Scrub to explore
               </LearningTip>
               <div className="element-footer">
                 <p className="element-kicker">A closer look at the extraordinary</p>
@@ -738,14 +767,32 @@ export default function ElementsExplorer() {
                   <Button
                     variant="unstyled"
                     className="element-next"
-                    aria-label="Next element"
+                    aria-label="Next in period"
                     onClick={() => navigate("r")}
                   >
                     <Icon name="next" size={18} />
                   </Button>
                 </div>
-                <p className="element-art-note">An artistic atom. A real story.</p>
+                <p className="element-art-note">
+                  {visualMode === "bohr"
+                    ? "Shell populations, not fixed electron paths."
+                    : visualMode === "cloud"
+                      ? "Illustrative density, not a calculated orbital."
+                      : element.f === "u"
+                        ? "Standard state unknown. Arrangement is illustrative."
+                        : `${element.phaseLabel}. Illustrative arrangement at standard conditions.`}
+                </p>
               </div>
+            </div>
+            <div className="stage-model-caption">
+              {" "}
+              <LearningTip className="model-caption" active={hydrated}>
+                {visualMode === "bohr"
+                  ? `${science.shells.join(" · ")} electrons per shell`
+                  : visualMode === "cloud"
+                    ? "Quantum probability · Illustrative density"
+                    : "Matter · Not an element-specific crystal structure"}
+              </LearningTip>
             </div>
             <div className="stage-bottom-tools">
               <Button
@@ -763,9 +810,7 @@ export default function ElementsExplorer() {
               >
                 <Icon name="spread" />
               </Button>
-              <LearningTip className="model-caption" active={hydrated}>
-                Playful illustration · Representative electrons
-              </LearningTip>
+
               <Button
                 variant="unstyled"
                 className="tool-button icon-action"
@@ -794,6 +839,30 @@ export default function ElementsExplorer() {
                 />
               ))}
           </div>
+          <div className="elemental-stage-actions">
+            <button
+              type="button"
+              className="elemental-excite"
+              onClick={() => {
+                scene.current.bounce = -7;
+                soundEngine.playExcitePulse(element.z);
+                atomApi.current?.invalidate?.();
+              }}
+            >
+              Excite atom <span aria-hidden="true">↗</span>
+            </button>
+            <span>118 elements. Three perspectives.</span>
+          </div>
+          <ElementalControlDock
+            elements={dockElements}
+            activeNumber={element.z}
+            onSelectElement={(number) => pick(number - 1, true)}
+            visualMode={visualMode}
+            onChangeMode={setVisualMode}
+            muted={!learning.settings.sound}
+            onToggleMute={() => settings({ sound: !learning.settings.sound })}
+            shortcutsEnabled={!sheet && !welcome}
+          />
           <ElementalCarousel
             active={auraIndex}
             onChange={(index) => {

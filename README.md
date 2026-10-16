@@ -7,9 +7,10 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 ## What you can do
 
 - First-time visitors get a four-step introduction with an interactive Three.js atom, animated text and real app screenshots. Practice swipe, rotation, zoom and element details, then start exploring. Replay it anytime from Settings or `/welcome`; the tutorial does not award XP or change saved discoveries.
-- Explore with swipe and arrow keys. One Element library combines typo-tolerant search, family cards and the periodic table; switching views preserves the query and family filter. Favorite an element or open its story from the same library.
+- Explore Bohr orbitals, an illustrative quantum cloud, and matter views at `/` and `/elements`. Drag to spin, tap to excite, and scrub through all 118 elements. Left/right arrows step, 1/2/3 switch models, and M toggles optional procedural sound. See the [interactive stage guide](docs/interactive-stage.md).
+- One Element library combines typo-tolerant search, family cards and the periodic table; switching views preserves the query and family filter. Favorite an element or open its story from the same library.
 - Pinch to zoom, spread the electrons, and reset the view from Settings. Hold the atom to reveal proton and electron counts. Stories include scientific shell diagrams with pause controls; games include explicit rotation, zoom and inspection controls.
-- Explore all 118 visible symbols without discovery placeholders. Tap the central orb for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support.
+- Explore all 118 visible symbols without discovery placeholders. Select the element name for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support. Header, metadata and controls render before the deferred WebGL scene.
 - Read original element stories, connections and source-linked physical properties, then switch to a postcard in the same detail sheet. The Experiment lab combines comparison and bonding in persistent tabs. The Journal keeps progress and practice together, and Settings includes the exploration guide.
 - Play eight games at `/playground`: Molecule Builder, Atom Workshop, Balance It, Periodic Puzzle, Everyday Detective, Mystery Element, Crystal Builder and Property Challenge. Solve 38 authored rounds, use hints, undo/reset, try optional timing, and earn first-completion and daily XP. Model games have free play and saved creations with SVG export.
 - Save favorites, revisit recent discoveries, follow collections and expeditions, and earn daily mission rewards. Standard, review, mystery and everyday-context quizzes build a spaced-review queue.
@@ -17,7 +18,7 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 - Export and import validated progress backups. Install when supported, explore the cached playground offline, and read previously visited reference pages offline.
 - Share directly addressable `/elements/<name>` reference pages. These pages remain readable without JavaScript; the interactive playground requires JavaScript. The 3D scenes use WebGL and offer fully functional game controls when rendering is unavailable.
 
-The playful atom and scientific shell schematic are teaching illustrations. They do not simulate quantum orbitals or electron probability densities. The playful view uses representative orbiting dots; the scientific view and detail diagrams use the sourced neutral-atom shell populations. See [scientific sources and limitations](docs/sources.md).
+The atom, cloud, matter and shell schematic views are teaching illustrations. They do not calculate quantum orbitals or element-specific crystal structures. Bohr rings and detail diagrams use sourced neutral-atom shell populations; nuclei use representative isotope counts. The introduction retains its separate practice model. See [scientific sources and limitations](docs/sources.md).
 
 ## Stack
 

@@ -12,22 +12,23 @@ export function ExplorationHelp() {
         <Card variant="unstyled" className="feature-card">
           <h3>Travel</h3>
           <p>
-            Swipe across the atom to meet another element. Arrow keys travel the same way. Tap the
-            chemical family name to browse every element in that family.
+            Scrub through atomic numbers 1–118, or use the left and right arrow keys to step. Tap
+            the chemical family name to browse every element in that family.
           </p>
         </Card>
         <Card variant="unstyled" className="feature-card">
           <h3>Touch</h3>
           <p>
-            Hold to peek at particle counts. Pinch to zoom. Tap the orb, or the element name, to
-            open its story.
+            Drag to spin, tap to excite, and hold to peek at particle counts. Pinch to zoom. Select
+            the element name to open its story.
           </p>
         </Card>
         <Card variant="unstyled" className="feature-card">
           <h3>Understand</h3>
           <p>
-            The home atom is a playful illustration of representative electrons, not a calculated
-            orbital. Open the element story for shell populations and sourced properties.
+            Switch between Bohr shell populations, illustrative quantum density, and matter. Clouds
+            and matter arrangements are teaching illustrations. Open the element story for sourced
+            properties.
           </p>
         </Card>
         <Card variant="unstyled" className="feature-card">
@@ -42,7 +43,15 @@ export function ExplorationHelp() {
       <dl className="keyboard-help">
         <div>
           <dt>Arrow keys</dt>
-          <dd>Travel through the table</dd>
+          <dd>Left/right step by atomic number; up/down travel through the table</dd>
+        </div>
+        <div>
+          <dt>1 / 2 / 3</dt>
+          <dd>Bohr orbitals / quantum cloud / crystal and matter</dd>
+        </div>
+        <div>
+          <dt>M</dt>
+          <dd>Mute or unmute sound effects</dd>
         </div>
         <div>
           <dt>G</dt>

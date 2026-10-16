@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BrandMark } from "@/components/brand-mark";
+import { ElementalPreview } from "@/components/elemental-preview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { categories, elements } from "@/lib/elements";
@@ -35,6 +36,7 @@ export default function ElementsPage() {
           and facts you can trace to their sources.
         </p>
       </section>
+      <ElementalPreview />
       <nav className="reference-family-nav" aria-label="Element families">
         {Object.entries(categories).map(([key, [name]]) => (
           <a key={key} href={`#family-${key}`}>

@@ -53,6 +53,7 @@ export const elementalAssets: Record<Aura["id"], ElementalAsset> = {
   breeze: { path: "/models/breeze.glb", material: "procedural" },
 };
 export type ElementalSceneApi = {
+  invalidate?: () => void;
   inspect: (x: number, y: number) => import("./atom-scene").AtomInspection | null;
   resetCamera: () => void;
 };

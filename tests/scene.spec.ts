@@ -27,9 +27,13 @@ async function dragAtom(page: Page) {
   await page.mouse.up();
 }
 
-test("swipe navigates and a hold peeks without opening details", async ({ page }) => {
+test("drag rotates without changing the element and a hold peeks without opening details", async ({
+  page,
+}) => {
   const errors = await openExplorer(page);
   await dragAtom(page);
+  await expect(page.locator("#in")).toContainText("Oxygen");
+  await page.getByRole("button", { name: "Next element", exact: true }).click();
   await expect(page.locator("#in")).toContainText("Fluorine");
   const box = (await page.locator("#app").boundingBox())!;
   await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.42);
@@ -44,6 +48,8 @@ test("swipe navigates and a hold peeks without opening details", async ({ page }
   await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.42, { steps: 3 });
   await expect(page.locator("#pk")).not.toHaveClass(/on/);
   await page.mouse.up();
+  await expect(page.locator("#in")).toContainText("Fluorine");
+  await page.getByRole("button", { name: "Next element", exact: true }).click();
   await expect(page.locator("#in")).toContainText("Neon");
   expect(errors).toEqual([]);
 });
@@ -66,7 +72,9 @@ test("the chemical family opens a filterable list of its elements", async ({ pag
   expect(errors).toEqual([]);
 });
 
-test("the stage keeps essential controls and reduced motion still swipes", async ({ page }) => {
+test("the stage keeps essential controls and reduced motion supports drag and stepping", async ({
+  page,
+}) => {
   const errors = await openExplorer(page);
   for (const name of [
     "Zoom in",
@@ -74,7 +82,6 @@ test("the stage keeps essential controls and reduced motion still swipes", async
     "Reset camera",
     "Pause atom animation",
     "Explore",
-    "Previous element",
     "Up the group",
     "Down the group",
     "Rotate",
@@ -87,11 +94,13 @@ test("the stage keeps essential controls and reduced motion still swipes", async
   await expect(page.getByText("Meet this element")).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await dragAtom(page);
+  await expect(page.locator("#in")).toContainText("Oxygen");
+  await page.getByRole("button", { name: "Next element", exact: true }).click();
   await expect(page.locator("#in")).toContainText("Fluorine");
   expect(errors).toEqual([]);
 });
 
-test("pinch changes zoom and a cancelled gesture leaves swipe navigation usable", async ({
+test("pinch changes zoom and a cancelled gesture leaves rotation and stepping usable", async ({
   page,
 }) => {
   const errors = await openExplorer(page);
@@ -119,6 +128,8 @@ test("pinch changes zoom and a cancelled gesture leaves swipe navigation usable"
   await session.send("Input.dispatchTouchEvent", { type: "touchCancel", touchPoints: [] });
   await session.detach();
   await dragAtom(page);
+  await expect(page.locator("#in")).toContainText("Oxygen");
+  await page.getByRole("button", { name: "Next element", exact: true }).click();
   await expect(page.locator("#in")).toContainText("Fluorine");
   await expect(page.locator("#pk")).not.toHaveClass(/on/);
   expect(errors).toEqual([]);

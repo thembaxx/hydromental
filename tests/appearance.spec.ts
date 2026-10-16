@@ -32,12 +32,14 @@ test("learning tips retire without moving controls, and new interaction modes te
   page,
 }) => {
   test.setTimeout(60_000);
+  // Mock the retirement timer with unrelated 3D and dialog motion disabled.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.clock.install();
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await expect(page.locator("#hint")).toHaveCSS("opacity", "1");
   await expect(page.locator(".model-caption")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".model-caption")).toContainText("Playful illustration");
+  await expect(page.locator(".model-caption")).toContainText("2 · 6 electrons per shell");
   await page.evaluate(() => document.fonts.ready);
   const identity = await page.locator("#in").boundingBox();
   await page.clock.fastForward(9000);
@@ -50,7 +52,7 @@ test("learning tips retire without moving controls, and new interaction modes te
   await expect(page.locator(".brand-link small")).toHaveCount(0);
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   await page.getByRole("tab", { name: "How to explore", exact: true }).click();
-  await expect(page.getByRole("dialog")).toContainText("Swipe");
+  await expect(page.getByRole("dialog")).toContainText("Scrub");
 });
 
 test("the icon dock reflects the active workspace and restores focus after dismissal", async ({

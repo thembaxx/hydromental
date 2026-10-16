@@ -12,22 +12,21 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { Element } from "@/lib/elements";
 import type { SceneControls } from "@/lib/atom-scene";
-import { prepareElementalModel } from "@/lib/elemental-model";
-import { elementalAssets } from "@/lib/elemental";
+import { categories } from "@/lib/elements";
+import { getScience } from "@/lib/science";
+import { matterPhase, representativeMassNumber, type VisualMode } from "@/lib/elemental-stage";
+import { ElementalStage3D } from "@/components/canvas/ElementalStage3D";
 import { trackProductEvent } from "@/lib/measurement";
-import type { ElementalAsset, Aura, ElementalSceneApi } from "@/lib/elemental";
+import type { Aura, ElementalSceneApi } from "@/lib/elemental";
 import {
   createElementalUniforms,
   elementalVertexShader,
   elementalFragmentShader,
-  coreVertexShader,
-  coreFragmentShader,
 } from "@/lib/elemental-shader";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 
@@ -46,70 +45,25 @@ class SceneBoundary extends Component<
     return this.state.failed ? this.props.fallback : this.props.children;
   }
 }
-function ModelAsset({
-  asset,
-  uniforms,
-  controls,
-  reduced,
-}: {
-  asset: ElementalAsset;
-  uniforms: ReturnType<typeof createElementalUniforms>;
-  controls: RefObject<SceneControls>;
-  reduced: boolean;
-}) {
-  const { scene, animations } = useLoader(GLTFLoader, asset.path);
-  const model = useMemo(() => {
-    const material =
-      asset.material === "procedural"
-        ? new THREE.ShaderMaterial({
-            uniforms,
-            vertexShader: coreVertexShader,
-            fragmentShader: coreFragmentShader,
-          })
-        : undefined;
-    const prepared = prepareElementalModel(scene, material);
-    material?.dispose();
-    return prepared;
-  }, [scene, asset.material, uniforms]);
-  const mixer = useMemo(() => new THREE.AnimationMixer(model.scene), [model]);
-  useEffect(() => {
-    const clip = asset.animation
-      ? animations.find((item) => item.name === asset.animation)
-      : animations[0];
-    if (clip) {
-      mixer.clipAction(clip).play();
-      mixer.update(0);
-    }
-    return () => {
-      mixer.stopAllAction();
-      mixer.uncacheRoot(model.scene);
-    };
-  }, [asset.animation, animations, mixer, model]);
-  useEffect(() => () => model.dispose(), [model]);
-  useFrame((_, delta) => {
-    if (!reduced && !controls.current.paused) mixer.update(Math.min(delta, 0.05));
-  });
-  return <primitive object={model.root} dispose={null} />;
-}
 function ElementalScene({
   aura,
   element,
   controls,
   apiRef,
   reduced,
+  mode,
 }: {
   aura: Aura;
   element: Element;
   controls: RefObject<SceneControls>;
   apiRef: RefObject<ElementalSceneApi | null>;
   reduced: boolean;
+  mode: VisualMode;
 }) {
-  const { viewport, size, gl, camera } = useThree();
+  const { viewport, size, gl, camera, invalidate } = useThree();
   const backdrop = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, -3));
   const world = useRef<THREE.Group>(null);
-  const core = useRef<THREE.Group>(null);
   const auraMaterial = useRef<THREE.ShaderMaterial>(null);
-  const electrons = useRef<THREE.Group>(null);
   const uniforms = useMemo(() => createElementalUniforms(), []);
   const colorA = useMemo(() => new THREE.Color(aura.color), [aura.color]);
   const colorB = useMemo(() => new THREE.Color(aura.secondary), [aura.secondary]);
@@ -117,16 +71,25 @@ function ElementalScene({
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const timer = useRef(0);
   const sample = useRef({ elapsed: 0, frames: 0, reported: false });
+  const science = getScience(element.z);
+  const modelRadius =
+    mode === "bohr"
+      ? 1.05 + (science.shells.length - 1) * 0.32
+      : mode === "cloud"
+        ? 2.1
+        : element.f === "g"
+          ? 2.5
+          : 1.6;
   useEffect(() => {
     const canvas = gl.domElement;
     canvas.id = "gl";
     canvas.setAttribute(
       "aria-label",
-      `Interactive ${element.n} atom with ${aura.name} aura. Swipe to explore; use Element details to learn more.`,
+      `Interactive ${element.n} ${mode} model. Drag to rotate; tap or use Excite atom for an energy burst.`,
     );
     apiRef.current = {
       inspect(x, y) {
-        if (!core.current) return null;
+        if (!world.current) return null;
         const rect = canvas.getBoundingClientRect();
         raycaster.setFromCamera(
           new THREE.Vector2(
@@ -135,20 +98,28 @@ function ElementalScene({
           ),
           camera,
         );
-        if (!raycaster.intersectObject(core.current, true).length) return null;
+        if (
+          !raycaster
+            .intersectObject(world.current, true)
+            .some((hit) => hit.object.name === "nucleus")
+        )
+          return null;
         const hit = { kind: "nucleus" as const, atomicNumber: element.z };
         controls.current.onInspect?.(hit);
         return hit;
       },
+      invalidate,
       resetCamera() {
         Object.assign(controls.current, { x: 0, y: 0, spin: 0, tilt: 0, zoom: 1 });
-        if (core.current) core.current.rotation.set(0, 0, 0);
+        Object.assign(controls.current, { rotationX: 0, rotationY: 0 });
+        controls.current.resetVersion = (controls.current.resetVersion ?? 0) + 1;
+        invalidate();
       },
     };
     return () => {
       apiRef.current = null;
     };
-  }, [apiRef, gl, camera, element, aura.name, controls, raycaster]);
+  }, [apiRef, gl, camera, element, aura.name, controls, raycaster, invalidate, mode]);
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
     const state = controls.current;
@@ -169,33 +140,12 @@ function ElementalScene({
         if (material.uniforms[name]) material.uniforms[name].value = uniforms[name].value;
       }
     };
-    core.current?.traverse((node) => {
-      if (node instanceof THREE.Mesh) {
-        if (Array.isArray(node.material)) node.material.forEach(syncUniforms);
-        else syncUniforms(node.material);
-      }
-    });
     syncUniforms(auraMaterial.current);
     if (world.current) {
-      const scale = (size.width < 600 ? 0.88 : 1) * (state.zoom ?? 1);
+      const scale =
+        ((Math.min(viewport.width, viewport.height) * 0.34) / modelRadius) * (state.zoom ?? 1);
       world.current.scale.setScalar(scale);
       world.current.position.y = 0.15 + (reduced ? 0 : Math.sin(timer.current * 0.65) * 0.06);
-    }
-    if (core.current && !reduced) {
-      core.current.rotation.y += dt * (0.1 + state.spin * 0.15);
-      core.current.rotation.x = state.tilt;
-      state.spin *= Math.exp(-3 * dt);
-      state.tilt *= Math.exp(-3 * dt);
-    }
-    if (electrons.current) {
-      const spread = state.spread || state.hold ? 1.3 : 1;
-      electrons.current.scale.setScalar(
-        THREE.MathUtils.damp(electrons.current.scale.x, spread, 5, dt),
-      );
-      electrons.current.children.forEach((child, i) => {
-        const angle = timer.current * (0.12 + i * 0.015) + i * Math.PI * 0.68;
-        child.position.set(Math.cos(angle) * 2.05, Math.sin(angle) * 0.6, Math.sin(angle) * 1.4);
-      });
     }
     if (!reduced && delta > 0 && delta < 0.25) {
       sample.current.elapsed += delta;
@@ -218,21 +168,8 @@ function ElementalScene({
       }
     }
   });
-  const material = (
-    <shaderMaterial
-      uniforms={uniforms}
-      vertexShader={coreVertexShader}
-      fragmentShader={coreFragmentShader}
-    />
-  );
   return (
     <>
-      {elementalAssets[aura.id].material === "authored" && (
-        <>
-          <hemisphereLight args={["#e6f3ed", "#26352e", 1.5]} />
-          <directionalLight position={[3, 4, 5]} intensity={2} />
-        </>
-      )}
       <mesh position={[0, 0, -3]} scale={[backdrop.width, backdrop.height, 1]}>
         <planeGeometry />
         <shaderMaterial
@@ -245,48 +182,16 @@ function ElementalScene({
         />
       </mesh>
       <group ref={world}>
-        <group ref={core}>
-          <Suspense
-            fallback={
-              <mesh>
-                <sphereGeometry args={[1.25, 48, 32]} />
-                {material}
-              </mesh>
-            }
-          >
-            <SceneBoundary
-              key={aura.id}
-              kind="asset"
-              fallback={
-                <mesh>
-                  <sphereGeometry args={[1.25, 48, 32]} />
-                  {material}
-                </mesh>
-              }
-            >
-              <ModelAsset
-                asset={elementalAssets[aura.id]}
-                uniforms={uniforms}
-                controls={controls}
-                reduced={reduced}
-              />
-            </SceneBoundary>
-          </Suspense>
-        </group>
-        {[0, 1, 2].map((i) => (
-          <mesh key={i} rotation={[Math.PI / 2 + i * 0.38, i * 0.42, i * 0.65]}>
-            <torusGeometry args={[1.9 + i * 0.16, 0.006, 6, 160]} />
-            <meshBasicMaterial color={aura.color} transparent opacity={0.18 + i * 0.07} />
-          </mesh>
-        ))}
-        <group ref={electrons}>
-          {Array.from({ length: Math.min(8, element.z) }, (_, i) => (
-            <mesh key={i}>
-              <sphereGeometry args={[i % 3 === 0 ? 0.038 : 0.021, 12, 8]} />
-              <meshBasicMaterial color={aura.color} toneMapped={false} />
-            </mesh>
-          ))}
-        </group>
+        <ElementalStage3D
+          atomicNumber={element.z}
+          massNumber={representativeMassNumber(science.isotopes, element.z)}
+          shells={science.shells}
+          categoryColor={categories[element.c][1]}
+          phase={matterPhase(element.f)}
+          mode={mode}
+          controls={controls}
+          reduced={reduced}
+        />
       </group>
     </>
   );
@@ -337,6 +242,7 @@ export default function ElementalCanvas({
   apiRef,
   suspended,
   quality,
+  mode = "bohr",
 }: {
   aura: Aura;
   element: Element;
@@ -344,6 +250,7 @@ export default function ElementalCanvas({
   apiRef: RefObject<ElementalSceneApi | null>;
   suspended: boolean;
   quality: "auto" | "low" | "high";
+  mode?: VisualMode;
 }) {
   const reduced = useReducedMotionPreference();
   const [lost, setLost] = useState(false);
@@ -364,25 +271,28 @@ export default function ElementalCanvas({
     </div>
   );
   return (
-    <div ref={container} className="elemental-canvas" data-aura={aura.id}>
+    <div ref={container} className="elemental-canvas" data-aura={aura.id} data-mode={mode}>
       <SceneBoundary fallback={fallback}>
         {lost && fallback}
         <Canvas
-          camera={{ position: [0, 0, 7], fov: 42 }}
+          camera={{ position: [0, 0, 8.5], fov: 46 }}
           dpr={quality === "low" ? 1 : [1, 1.5]}
           gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
         >
           <ContextLifecycle onLost={setLost} />
           <RenderActivity suspended={suspended || lost || !visible} reduced={reduced} />
-          <ElementalScene
-            aura={aura}
-            element={element}
-            controls={controls}
-            apiRef={apiRef}
-            reduced={reduced}
-          />
-          {quality === "high" && !reduced && (
-            <EffectComposer multisampling={0}>
+          <Suspense fallback={null}>
+            <ElementalScene
+              aura={aura}
+              element={element}
+              controls={controls}
+              apiRef={apiRef}
+              reduced={reduced}
+              mode={mode}
+            />
+          </Suspense>
+          {quality !== "low" && !reduced && (
+            <EffectComposer enableNormalPass={false} multisampling={0}>
               <Bloom luminanceThreshold={0.7} intensity={0.6} mipmapBlur />
             </EffectComposer>
           )}

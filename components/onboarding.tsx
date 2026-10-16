@@ -39,12 +39,12 @@ const steps = [
   {
     title: "Make it move.",
     description:
-      "Swipe across the atom to meet another element. Pinch to zoom. Tap the chemical family name to see every element in that family.",
+      "In the explorer, drag to spin and use the bottom scrubber to meet another element. Pinch to zoom. This practice model also lets you swipe between atoms.",
     instruction: "Try a swipe here. Arrow keys work too.",
     image: "explore",
     alt: "The explorer showing an atom you can swipe, pinch, and open by chemical family.",
     points: [
-      "Swipe: change the element",
+      "Explorer: scrub to change the element",
       "Pinch: zoom the atom",
       "Family name: browse that chemical family",
     ],
@@ -52,7 +52,7 @@ const steps = [
   {
     title: "Every atom has a story.",
     description:
-      "Tap the central orb to learn what the element is, where you encounter it, and how its electrons are arranged. The shell diagram can animate, or pause when you prefer.",
+      "In the explorer, tap the element name to learn its story and tap the atom to excite it. This practice model opens details when you tap its center. The shell diagram can animate, or pause when you prefer.",
     instruction: "Tap this atom's center, or choose Try element details.",
     image: "details",
     alt: "Oxygen's details showing its definition, everyday uses, animated shell diagram and atomic properties.",

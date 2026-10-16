@@ -26,6 +26,7 @@ export interface SceneControls {
   rotationMode?: boolean;
   rotationX?: number;
   rotationY?: number;
+  resetVersion?: number;
   selectedShell?: number | null;
   paused?: boolean;
   direction?: "u" | "d" | "l" | "r" | null;
