@@ -2388,7 +2388,7 @@ input[type="file"].form-input {
   align-items: center;
   gap: 8px;
   max-width: calc(100vw - 40px);
-  z-index: 35;
+  z-index: 101;
   font-size: 12px;
 }
 .native-status > span,
