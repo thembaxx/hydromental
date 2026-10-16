@@ -44,7 +44,6 @@ export async function readAuthenticatedPage(url, run = exec) {
       "vercel",
       "curl",
       url.href,
-      "--non-interactive",
       "--",
       "--silent",
       "--show-error",
@@ -59,7 +58,7 @@ export async function readAuthenticatedPage(url, run = exec) {
     {
       timeout: 60_000,
       maxBuffer: 4 * 1024 * 1024,
-      env: { ...process.env, VERCEL_TELEMETRY_DISABLED: "1", NO_UPDATE_NOTIFIER: "1" },
+      env: { ...process.env, CI: "1", VERCEL_TELEMETRY_DISABLED: "1", NO_UPDATE_NOTIFIER: "1" },
     },
   );
   const split = stdout.lastIndexOf("\n");

@@ -32,7 +32,7 @@ test("the production entrypoint adapts fetch options without replacing the authe
   await checkConfiguredDeployment(
     { DEPLOYMENT_URL: "https://staged-hydromental.vercel.app", VERCEL_TOKEN: "test-only" },
     async (_command, args) => {
-      const path = new URL(args[3]).pathname;
+      const path = new URL(args[args.indexOf("curl") + 1]).pathname;
       paths.push(path);
       const body =
         path === "/elements"
@@ -106,12 +106,16 @@ test("authenticated CLI requests scope the target, reject redirects and keep cre
     new URL("https://staged-hydromental.vercel.app/elements"),
     async (command, args, options) => {
       assert.equal(command, "pnpm");
-      assert.equal(args[3], "https://staged-hydromental.vercel.app/elements");
-      assert.ok(args.includes("--non-interactive"));
+      assert.equal(
+        args[args.indexOf("curl") + 1],
+        "https://staged-hydromental.vercel.app/elements",
+      );
+      assert.ok(!args.includes("--non-interactive"));
       assert.ok(args.includes("--max-redirs"));
       assert.ok(!args.includes("--location"));
       assert.ok(!args.includes("--token"));
       assert.equal(options.timeout, 60_000);
+      assert.equal(options.env.CI, "1");
       return { stdout: "Hydrogen\n200" };
     },
   );
