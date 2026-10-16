@@ -24,3 +24,12 @@ test("superheavy bulk phases are explicitly predictions on every reference surfa
   await expect(page.locator(".reference-facts")).toContainText("Predicted solid");
   await expect(page.locator(".reference-properties")).toContainText("Prediction");
 });
+test("property hints retain the source atomic-weight interval", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/playground?game=properties");
+  await expect(page.locator(".playground-page")).toHaveAttribute("data-ready", "true");
+  await page.getByRole("button", { name: "Reveal hint", exact: true }).click();
+  const hint = page.locator(".game-body .game-hint");
+  await expect(hint).toContainText("[1.00784, 1.00811]");
+  await expect(hint).not.toContainText("1.007975");
+});

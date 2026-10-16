@@ -76,7 +76,10 @@ function ModelAsset({
     const clip = asset.animation
       ? animations.find((item) => item.name === asset.animation)
       : animations[0];
-    if (clip) mixer.clipAction(clip).play();
+    if (clip) {
+      mixer.clipAction(clip).play();
+      mixer.update(0);
+    }
     return () => {
       mixer.stopAllAction();
       mixer.uncacheRoot(model.scene);

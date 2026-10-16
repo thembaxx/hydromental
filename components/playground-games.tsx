@@ -20,7 +20,6 @@ import {
   objects,
   periodicHoles,
   propertyRounds,
-  propertyValue,
   sessionModel,
 } from "@/lib/playground";
 import { getScience } from "@/lib/science";
@@ -850,6 +849,10 @@ function CrystalGame({ session, onChange, paused, settings, onInspect }: Props) 
 }
 function PropertyGame({ session, onChange, solved, onInspect }: Props) {
   const round = propertyRounds[session.index];
+  const displayValue = (z: number) => {
+    const property = getScience(z).properties.find((item) => item.label === round.name)!;
+    return `${property.value} ${property.unit ?? ""}`.trim();
+  };
   const dragging = useRef<number | null>(null);
   const move = (from: number, to: number) => {
     if (solved || from === to || to < 0 || to >= 4) return;
@@ -890,11 +893,7 @@ function PropertyGame({ session, onChange, solved, onInspect }: Props) {
               <strong className="n">{elements[z - 1].s}</strong>
               <span>{elements[z - 1].n}</span>
             </Button>
-            <span className="n game-property-value">
-              {solved
-                ? `${getScience(z).properties.find((property) => property.label === round.name)!.value} ${getScience(z).properties.find((property) => property.label === round.name)!.unit ?? ""}`
-                : ""}
-            </span>
+            <span className="n game-property-value">{solved ? displayValue(z) : ""}</span>
             <Button
               variant="unstyled"
               className="icon-button"
@@ -918,15 +917,8 @@ function PropertyGame({ session, onChange, solved, onInspect }: Props) {
       </ol>
       {session.hints > 0 && (
         <p className="game-hint">
-          {elements[round.zs[0] - 1].n}:{" "}
-          <span className="n">
-            {propertyValue(session.index, round.zs[0])} {round.unit}
-          </span>
-          . {elements[round.zs[3] - 1].n}:{" "}
-          <span className="n">
-            {propertyValue(session.index, round.zs[3])} {round.unit}
-          </span>
-          .
+          {elements[round.zs[0] - 1].n}: <span className="n">{displayValue(round.zs[0])}</span>.{" "}
+          {elements[round.zs[3] - 1].n}: <span className="n">{displayValue(round.zs[3])}</span>.
         </p>
       )}
       <p className="panel-copy">{round.explanation}</p>

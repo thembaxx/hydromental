@@ -1,6 +1,29 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { checkDeployment, readAuthenticatedPage } from "../scripts/check-deployment.mjs";
+import {
+  checkConfiguredDeployment,
+  checkDeployment,
+  readAuthenticatedPage,
+} from "../scripts/check-deployment.mjs";
+
+test("the production entrypoint adapts fetch options without replacing the authenticated runner", async () => {
+  const paths = [];
+  await checkConfiguredDeployment(
+    { DEPLOYMENT_URL: "https://staged-hydromental.vercel.app", VERCEL_TOKEN: "test-only" },
+    async (_command, args) => {
+      const path = new URL(args[3]).pathname;
+      paths.push(path);
+      const body =
+        path === "/elements"
+          ? "Hydrogen"
+          : path === "/element-data.json"
+            ? '{"schemaVersion":2}'
+            : "Elementals";
+      return { stdout: `${body}\n200` };
+    },
+  );
+  assert.deepEqual(paths, ["/", "/elements", "/manifest.webmanifest", "/element-data.json"]);
+});
 
 test("deployment checks verify app, library, manifest and the upgraded scientific data", async () => {
   const paths = [];

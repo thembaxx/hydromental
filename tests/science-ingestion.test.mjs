@@ -42,6 +42,9 @@ test("the master snapshot validates and rejects missing provenance or fabricated
     (data) => {
       data.records[0].isotopes[0].massNumber = 0;
     },
+    (data) => {
+      data.records[0].isotopes[0].sources.massAndAbundance = "unknown";
+    },
   ]) {
     const broken = structuredClone(snapshot);
     corrupt(broken);

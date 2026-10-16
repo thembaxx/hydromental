@@ -34,7 +34,10 @@ jobs:
         run: |
           set -euo pipefail
           # Retrieval dates alone do not justify a new PR.
-          if node scripts/science-diff.mjs --quiet; then exit 0; fi
+          diff_status=0
+          node scripts/science-diff.mjs --quiet || diff_status=$?
+          if [ "$diff_status" -eq 0 ]; then exit 0; fi
+          if [ "$diff_status" -ne 1 ]; then exit "$diff_status"; fi
           git switch -c science/source-refresh
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

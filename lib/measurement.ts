@@ -2,6 +2,7 @@
 export const MEASUREMENT_KEY = "elementals.measurement.v1";
 export const MEASUREMENT_CHANGE = "elementals-measurement-change";
 let deniedInSession = false;
+let analyticsInjected = false;
 type EventFields = {
   element_discovered: { element: number };
   quiz_started: { mode: string };
@@ -149,7 +150,10 @@ export function trackProductEvent<K extends keyof EventFields>(name: K, data: Ev
       if (measurementAllowed() && navigator.onLine) {
         // Early renderer errors can precede the React Analytics mount. Register
         // the URL/consent filter before queueing even that very first event.
-        inject({ mode: "production", beforeSend: filterMeasurementEvent });
+        if (!analyticsInjected) {
+          inject({ mode: "production", beforeSend: filterMeasurementEvent });
+          analyticsInjected = true;
+        }
         track(name, safe);
       }
     })

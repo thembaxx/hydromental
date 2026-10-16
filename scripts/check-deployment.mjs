@@ -70,9 +70,12 @@ export async function checkDeployment({ origin: value, fetchPage = fetch } = {})
     console.log(`Verified ${path}`);
   }
 }
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
-  await checkDeployment({
-    origin: process.env.DEPLOYMENT_URL,
-    fetchPage: process.env.VERCEL_TOKEN ? readAuthenticatedPage : fetch,
+export function checkConfiguredDeployment(env = process.env, run = exec) {
+  return checkDeployment({
+    origin: env.DEPLOYMENT_URL,
+    fetchPage: env.VERCEL_TOKEN ? (url) => readAuthenticatedPage(url, run) : fetch,
   });
+}
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  await checkConfiguredDeployment();
 }
