@@ -4,7 +4,28 @@ import {
   checkConfiguredDeployment,
   checkDeployment,
   readAuthenticatedPage,
+  stagedDeploymentUrl,
 } from "../scripts/check-deployment.mjs";
+
+test("locked CLI structured output yields only a ready, validated production origin", () => {
+  const ready = {
+    status: "ok",
+    deployment: {
+      url: "https://staged-hydromental.vercel.app",
+      target: "production",
+      readyState: "READY",
+    },
+  };
+  assert.equal(stagedDeploymentUrl(JSON.stringify(ready)), ready.deployment.url);
+  assert.throws(() => stagedDeploymentUrl(ready.deployment.url), /structured deployment/);
+  for (const invalid of [
+    { ...ready, status: "error" },
+    { ...ready, deployment: { ...ready.deployment, target: "preview" } },
+    { ...ready, deployment: { ...ready.deployment, readyState: "BUILDING" } },
+    { ...ready, deployment: { ...ready.deployment, url: "https://example.com" } },
+  ])
+    assert.throws(() => stagedDeploymentUrl(JSON.stringify(invalid)));
+});
 
 test("the production entrypoint adapts fetch options without replacing the authenticated runner", async () => {
   const paths = [];

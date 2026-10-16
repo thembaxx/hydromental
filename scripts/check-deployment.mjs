@@ -15,6 +15,21 @@ export function deploymentOrigin(value) {
     throw new Error("Expected a staged HTTPS Vercel deployment origin");
   return url;
 }
+export function stagedDeploymentUrl(output) {
+  let result;
+  try {
+    result = JSON.parse(output);
+  } catch {
+    throw new Error("Expected structured deployment output from the locked Vercel CLI");
+  }
+  if (
+    result?.status !== "ok" ||
+    result.deployment?.readyState !== "READY" ||
+    result.deployment.target !== "production"
+  )
+    throw new Error("The staged production deployment is not ready");
+  return deploymentOrigin(result.deployment.url).origin;
+}
 export async function readAuthenticatedPage(url, run = exec) {
   if (run === exec && !process.env.VERCEL_TOKEN)
     throw new Error(
