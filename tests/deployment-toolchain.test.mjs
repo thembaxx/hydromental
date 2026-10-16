@@ -2,10 +2,63 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { createServer } from "node:http";
 import { once } from "node:events";
-import { execFileSync } from "node:child_process";
+import { execFile, execFileSync } from "node:child_process";
+import { promisify } from "node:util";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { readAuthenticatedPage } from "../scripts/check-deployment.mjs";
 import test from "node:test";
 const fromCli = createRequire(import.meta.resolve("vercel/package.json"));
+test("the actual locked CLI keeps authenticated smoke options compatible with native curl", async () => {
+  const directory = mkdtempSync(join(tmpdir(), "elementals-curl-contract-"));
+  writeFileSync(
+    join(directory, "curl"),
+    '#!/usr/bin/env node\nprocess.stdout.write(JSON.stringify(process.argv.slice(2)) + "\\n200");\n',
+    { mode: 0o755 },
+  );
+  const api = createServer((_request, response) => {
+    response.setHeader("Content-Type", "application/json");
+    response.end(JSON.stringify({ user: { uid: "testuser", username: "testuser" } }));
+  });
+  api.listen(0, "127.0.0.1");
+  await once(api, "listening");
+  try {
+    const response = await readAuthenticatedPage(
+      new URL("https://staged-hydromental.vercel.app/elements"),
+      async (command, args, options) => {
+        // A synthetic bypass avoids all provider requests. The fake native curl
+        // records argv without making a network request or using real credentials.
+        args.splice(
+          args.indexOf("--"),
+          0,
+          "--api",
+          `http://127.0.0.1:${api.address().port}`,
+          "--protection-bypass",
+          "test-only-bypass",
+        );
+        return promisify(execFile)(command, args, {
+          ...options,
+          encoding: "utf8",
+          env: {
+            ...options.env,
+            VERCEL_TOKEN: "testonly",
+            PATH: `${directory}:${process.env.PATH}`,
+          },
+        });
+      },
+    );
+    const args = await response.json();
+    assert.ok(!args.includes("--non-interactive"));
+    assert.ok(!args.includes("--protection-bypass"));
+    assert.ok(args.includes("--silent"));
+    assert.ok(args.includes("--max-redirs"));
+    assert.equal(args[args.indexOf("--url") + 1], "https://staged-hydromental.vercel.app/elements");
+  } finally {
+    api.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 test("the locked CLI uses the patched HTTP client for its fetch/Agent/FormData APIs", async () => {
   const { fetch, Agent, FormData } = fromCli("undici");
   assert.equal(fromCli("undici/package.json").version, "6.29.0");
