@@ -1,5 +1,29 @@
 # Elementals
 
+Explore all 118 chemical elements through interactive models, sourced stories, property comparisons and learning games.
+
+**[Explore the live application](https://hydromental.vercel.app/)** · [Browse the source](https://github.com/thembaxx/hydromental)
+
+## Engineering highlights
+
+Sourced scientific snapshots and explicit model limitations; browser-local progress and portable backups; rendering fallbacks and keyboard alternatives.
+
+## Technology
+
+Declared in [package.json](package.json): Next.js `16.4.0` · React `19.3.0` · TypeScript `7.0.2` · Tailwind CSS `4.3.3` · Three.js `0.186.1` · Motion `14.0.0` · React Three Fiber `9.8.1`.
+
+**Quality tooling:** `lint`, `format:check`, `typecheck`, `check`, `test:e2e`, `test:unit`, `science:check` scripts are available. See the setup guide below for prerequisites; this documentation pass does not assert that those checks were run.
+
+## Application preview
+
+![Elementals — desktop application](docs/screenshots/desktop.jpg)
+
+Captured from the live application on 17 October 2026. [Capture details and limitations](docs/screenshots/README.md).
+
+---
+
+## Project guide
+
 A playful science playground for all 118 chemical elements, evolved from the supplied Claude prototype. Explore interactive atoms, read sourced stories, build a learning journal, compare properties, and discover everyday connections.
 
 Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
