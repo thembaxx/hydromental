@@ -1,5 +1,10 @@
 # Elementals
 
+> **Portfolio project** · [Live application](https://hydromental.vercel.app) · [GitHub source](https://github.com/thembaxx/hydromental)
+>
+> Built with a focus on intuitive interfaces, responsive design and practical product engineering. Explore the live experience or review the implementation below.
+
+
 A playful science playground for all 118 chemical elements, evolved from the supplied Claude prototype. Explore interactive atoms, read sourced stories, build a learning journal, compare properties, and discover everyday connections.
 
 Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
