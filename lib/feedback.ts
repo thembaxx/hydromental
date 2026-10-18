@@ -1,3 +1,5 @@
+import { soundEngine } from "./sound-engine";
+
 export type FeedbackKind = "tap" | "discover" | "correct" | "incorrect";
 export interface FeedbackOptions {
   sound?: boolean;
@@ -34,17 +36,18 @@ export function setAmbientPreset(preset: AmbientPreset) {
 
 function contextFromGesture() {
   if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return null;
+  if (document.hidden) return null;
   if (navigator.userActivation && !navigator.userActivation.isActive) return null;
   if (!audioContext || audioContext.state === "closed") audioContext = new AudioContext();
   return audioContext;
 }
 
-/** Optional, locally generated feedback. Call directly from a user action. */
+/** Optional, locally hosted feedback. Call directly from a user action. */
 export function feedback(
   kind: FeedbackKind,
   { sound = false, haptics = false }: FeedbackOptions = {},
 ) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || document.hidden) return;
   if (
     haptics &&
     (!navigator.userActivation || navigator.userActivation.isActive) &&
@@ -58,41 +61,10 @@ export function feedback(
       // Unsupported devices and embedded browsers can silently omit haptics.
     }
   }
+  soundEngine.isMuted = !sound;
   if (!sound) return;
   try {
-    const context = contextFromGesture();
-    if (!context) return;
-    const notes: Record<FeedbackKind, number[]> = {
-      tap: [440],
-      discover: [523.25, 659.25, 783.99],
-      correct: [659.25, 783.99],
-      incorrect: [220, 196],
-    };
-    void context
-      .resume()
-      .then(() => {
-        if (context.state === "closed") return;
-        notes[kind].forEach((frequency, index) => {
-          const oscillator = context.createOscillator();
-          const gain = context.createGain();
-          const start = context.currentTime + index * 0.065;
-          oscillator.type = "sine";
-          oscillator.frequency.value = frequency;
-          gain.gain.setValueAtTime(0, start);
-          gain.gain.linearRampToValueAtTime(0.035, start + 0.01);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.15);
-          oscillator.connect(gain).connect(context.destination);
-          oscillator.onended = () => {
-            oscillator.disconnect();
-            gain.disconnect();
-          };
-          oscillator.start(start);
-          oscillator.stop(start + 0.16);
-        });
-      })
-      .catch(() => {
-        /* Browser audio permission is optional. */
-      });
+    soundEngine.playFeedback(kind);
   } catch {
     // Audio must never prevent navigation or learning.
   }
@@ -148,6 +120,7 @@ export function setAmbientAudio(enabled: boolean) {
 }
 
 export function cleanupFeedback() {
+  soundEngine.dispose();
   setAmbientAudio(false);
   const context = audioContext;
   audioContext = null;

@@ -31,7 +31,7 @@ Repository: [thembaxx/hydromental](https://github.com/thembaxx/hydromental).
 ## What you can do
 
 - First-time visitors get a four-step introduction with an interactive Three.js atom, animated text and real app screenshots. Practice swipe, rotation, zoom and element details, then start exploring. Replay it anytime from Settings or `/welcome`; the tutorial does not award XP or change saved discoveries.
-- Explore Bohr orbitals, an illustrative quantum cloud, and matter views at `/` and `/elements`. Drag to spin, tap to excite, and scrub through all 118 elements. Left/right arrows step, 1/2/3 switch models, and M toggles optional procedural sound. See the [interactive stage guide](docs/interactive-stage.md).
+- Explore Bohr orbitals, an illustrative quantum cloud, and matter views at `/` and `/elements`. Drag to spin, tap to excite, and scrub through all 118 elements. Left/right arrows step, 1/2/3 switch models, and M toggles optional, softly tuned Sound Lab effects. See the [interactive stage guide](docs/interactive-stage.md) and [sound palette](docs/sound-design.md).
 - One Element library combines typo-tolerant search, family cards and the periodic table; switching views preserves the query and family filter. Favorite an element or open its story from the same library.
 - Pinch to zoom, spread the electrons, and reset the view from Settings. Hold the atom to reveal proton and electron counts. Stories include scientific shell diagrams with pause controls; games include explicit rotation, zoom and inspection controls.
 - Explore all 118 visible symbols without discovery placeholders. Select the element name for a plain-language definition, everyday uses, and an animated shell diagram with pause and live reduced-motion support. Header, metadata and controls render before the deferred WebGL scene.
@@ -136,7 +136,7 @@ See the [security audit](docs/security-audit.md) for findings, browser defenses 
 
 ## Elemental redesign
 
-The immersive mobile-first explorer uses React Three Fiber, Blender-generated GLB models, complete interactive GLSL shaders, GSAP drag/snapping and local procedural audio. It stays in this Next.js/TypeScript/Tailwind application. See [the source manifest, asset workflow and touch verification](docs/elemental-redesign.md), and [CI/release setup](docs/deployment.md).
+The immersive mobile-first explorer uses React Three Fiber, Blender-generated GLB models, complete interactive GLSL shaders, GSAP drag/snapping and local audio playback. It stays in this Next.js/TypeScript/Tailwind application. See [the source manifest, asset workflow and touch verification](docs/elemental-redesign.md), and [CI/release setup](docs/deployment.md).
 
 ## Trusted reference data and mobile measurement
 

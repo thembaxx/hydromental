@@ -19,8 +19,10 @@ touch input. Forty surrounding ticks respond with motion springs. Left/right
 step by atomic number, 1/2/3 change mode, and M toggles sound. Shortcuts defer to
 editable fields and dialogs. Existing up/down table navigation remains available.
 
-`lib/sound-engine.ts` synthesizes gesture-only ticks, resonance chords, and pulses
-without dependencies. Sound starts muted and follows the existing explorer
+`lib/sound-engine.ts` plays locally hosted, tuned Sound Lab ticks, resonance cues,
+and liquid pulses, with immediate procedural fallbacks and no new dependencies.
+See the [sound palette and playback behavior](sound-design.md).
+Sound starts muted and follows the existing explorer
 preference. Haptics follow their separate preference and stop for reduced motion.
 Reduced motion also disables automatic animation, springs, and bloom; rendering
 pauses for hidden tabs, offscreen stages, and open explorer panels. The Canvas

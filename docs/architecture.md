@@ -20,7 +20,7 @@ Raycasting the central orb opens the element details dialog in either model. Tap
 
 The root and body paint the theme background through the full dynamic viewport. Viewport-fit coverage, translucent installed-iOS status bars, safe-area spacing and theme-aware browser-chrome metadata support edge-to-edge presentation. Browser and operating-system policies control the final status/navigation-bar appearance; verify installed iOS and Android behavior on devices. Numeric facts use tabular JetBrains Mono while descriptions, family names and state labels retain Nunito.
 
-The playful scene uses representative orbiting electrons. The scientific mode is a shell-population schematic derived from the sourced neutral configuration; it is not a quantum-mechanical simulation. Rendering quality is configurable, reduced motion is respected, and unavailable WebGL has a visible fallback. Sound and ambient feedback use generated Web Audio after interaction rather than downloading media or starting automatically.
+The playful scene uses representative orbiting electrons. The scientific mode is a shell-population schematic derived from the sourced neutral configuration; it is not a quantum-mechanical simulation. Rendering quality is configurable, reduced motion is respected, and unavailable WebGL has a visible fallback. Optional sound effects use self-hosted Sound Lab exports through Web Audio after interaction, with procedural fallbacks. Ambient feedback is generated locally. Neither starts automatically. See [sound design](sound-design.md).
 
 ## Game playground
 

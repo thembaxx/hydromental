@@ -751,7 +751,8 @@ export function PlaygroundApp() {
             settings={learning.settings}
             onChange={(change) => {
               setLearning((state) => ({ ...state, settings: { ...state.settings, ...change } }));
-              if (change.sound) feedback("tap", { ...learning.settings, sound: true });
+              if (change.sound !== undefined)
+                feedback("tap", { ...learning.settings, sound: change.sound });
             }}
           />
           <p className="panel-copy">

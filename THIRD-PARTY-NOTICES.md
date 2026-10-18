@@ -9,6 +9,7 @@ The archived original prototype used Three.js r128 and remotely hosted fonts. Th
 - **shadcn/ui** — MIT license, included in `docs/SHADCN-LICENSE.md`. Local components are adapted from the official New York v4 registry to support unstyled rendering. https://github.com/shadcn-ui/ui
 - **Phosphor Icons** — MIT license, included in `docs/PHOSPHOR-LICENSE.md`. Outline and solid weights are used through `@phosphor-icons/react`. https://github.com/phosphor-icons/react
 - **Motion 14.0.0** — MIT license, included in `docs/MOTION-LICENSE.md`. https://github.com/motiondivision/motion
+- **React Bits Sound Lab** — tuned audio exports (Felt, Notch, Halo, Dew, Bloom, Shrug, Crest), generated using https://reactbits.dev/tools/sound-lab on October 18, 2026. Only exported audio is shipped; no Sound Lab application code or recorded keyboard samples are included. Parameters and reproduction steps are in `docs/sound-design.md`.
 
 ## Redesign dependencies
 

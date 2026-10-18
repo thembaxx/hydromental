@@ -47,10 +47,12 @@ test("offline installation deduplicates absolute shell URLs and relative lazy as
     },
   });
   await completion;
-  assert.equal(saved.length, 10);
+  assert.equal(saved.length, 17);
   assert(saved.includes("https://elementals.test/_next/static/chunks/elemental.js"));
   for (const name of ["hydro", "ember", "solar", "breeze"]) {
     assert(saved.includes(`https://elementals.test/models/${name}.glb`));
     assert(saved.includes(`https://elementals.test/auras/${name}.png`));
   }
+  for (const name of ["felt", "notch", "halo", "dew", "bloom", "shrug", "crest"])
+    assert(saved.includes(`https://elementals.test/sounds/${name}.wav`));
 });
