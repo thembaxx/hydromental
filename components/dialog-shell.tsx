@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useRef } from "react";
+import { type CSSProperties, type ReactNode, useRef } from "react";
 import { Dialog } from "radix-ui";
 import { motion, useDragControls } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ export interface DialogShellProps {
   children: ReactNode;
   className?: string;
   bottomSheet?: boolean;
+  style?: CSSProperties;
 }
 
 /** Radix owns focus trapping, Escape dismissal and focus restoration. */
@@ -27,6 +28,7 @@ export function DialogShell({
   children,
   className,
   bottomSheet = false,
+  style,
 }: DialogShellProps) {
   const reducedMotion = useReducedMotionPreference();
   const dragControls = useDragControls();
@@ -68,6 +70,7 @@ export function DialogShell({
             <motion.div
               id={id}
               className={cn("dialog-content", className)}
+              style={style}
               initial={{ opacity: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: reducedMotion ? 0 : 0.2, ease: "easeOut" }}

@@ -1,0 +1,743 @@
+/* Shared specimen views and the hands-on laboratory. Existing theme tokens stay authoritative. */
+.atom-study {
+  --study-color: #93ccbb;
+  margin: 0;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--dw);
+  overflow: hidden;
+}
+.atom-study-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+}
+.atom-study-header button,
+.atom-study-tools button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.atom-study-header button {
+  font-size: 12px;
+}
+.atom-study-header button:hover,
+.atom-study-tools button:hover {
+  background: var(--chip);
+}
+.atom-study-header h2 {
+  font-size: clamp(22px, 4vw, 34px);
+  margin-top: 6px;
+}
+.atom-study-header h2 span {
+  font-size: 0.58em;
+  color: var(--study-color);
+  margin-left: 12px;
+}
+.atom-study-viewport {
+  position: relative;
+  height: clamp(260px, 35vw, 390px);
+  background: radial-gradient(ellipse at 50% 40%, #203538, #0b1719 75%);
+  color: #bcd0cb;
+  touch-action: none;
+  cursor: grab;
+  overflow: hidden;
+}
+.atom-study-viewport:active {
+  cursor: grabbing;
+}
+.atom-study-viewport:focus-visible {
+  outline: 2px solid var(--study-color);
+  outline-offset: -4px;
+}
+.atom-study-renderer {
+  position: absolute;
+  inset: 0;
+}
+.atom-study-renderer canvas {
+  display: block;
+}
+.atom-study-corner {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  pointer-events: none;
+  font:
+    10px "JetBrains Mono",
+    monospace;
+  letter-spacing: 0.12em;
+}
+.atom-study-caption {
+  position: absolute;
+  bottom: 12px;
+  inset-inline: 12px;
+  text-align: center;
+  pointer-events: none;
+  font-size: 11px;
+}
+.atom-study-loading,
+.atom-study-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 32px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #d8e4df;
+}
+.atom-study-tools {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  color: var(--ink);
+}
+.atom-study-tools button {
+  border-radius: 50%;
+}
+.atom-study-tools button[aria-pressed="true"] {
+  background: var(--sel);
+  border-color: var(--ring);
+}
+.atom-study-tools button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.atom-study-tools output {
+  font-size: 10px;
+  width: 40px;
+  text-align: center;
+}
+.atom-study-divider {
+  height: 20px;
+  width: 1px;
+  background: var(--line);
+  margin-inline: 3px;
+}
+.atom-study-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  color: var(--mut);
+  font-size: 11px;
+  padding: 0 12px 14px;
+  margin: 0;
+}
+.atom-study-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.atom-study-legend i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #b0c0b7;
+}
+.atom-study-legend span:last-child i {
+  background: #9bbdcc;
+}
+.dialog-content.atom-study-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  transform: none;
+  translate: none;
+  z-index: 300;
+}
+.atom-study-dialog .dialog-body {
+  height: 100%;
+  overflow: hidden;
+}
+.atom-study-expanded {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: #0b1719;
+  color: #edf3eb;
+}
+.atom-study-expanded .atom-study-header {
+  padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 12px
+    max(20px, env(safe-area-inset-left));
+}
+.atom-study-expanded .eyebrow {
+  color: #a5bcb5;
+}
+.atom-study-expanded .atom-study-viewport {
+  height: auto;
+  flex: 1;
+  min-height: 100px;
+  background: radial-gradient(ellipse at 50% 50%, #203538, #0b1719 72%);
+}
+.atom-study-expanded-controls {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+.atom-study-expanded .atom-study-tools {
+  color: #edf3eb;
+}
+.atom-study-expanded .atom-study-tools button:hover,
+.atom-study-expanded .atom-study-header button:hover {
+  background: #233537;
+}
+.atom-study-expanded .atom-study-tools button[aria-pressed="true"] {
+  background: #2b4545;
+  border-color: #698b83;
+}
+.atom-study-expanded .atom-study-legend {
+  color: #bdccc6;
+  padding-bottom: 6px;
+}
+.atom-study-note {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4px 20px;
+  text-align: center;
+  color: #a6bcb6;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.atom-study-native {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  margin: auto;
+  padding-inline: 12px;
+  background: none;
+  border: 0;
+  color: #c1d5cd;
+  font-size: 11px;
+  cursor: pointer;
+}
+.atom-study-native[hidden] {
+  display: none;
+}
+.reference-page article > .atom-study {
+  margin-block: 28px;
+}
+.elemental-stage-actions {
+  flex-wrap: wrap;
+}
+.atom-study-launch {
+  font-size: 12px;
+}
+
+.playground-intro {
+  max-width: 900px;
+  margin-bottom: 28px;
+}
+.playground-intro h1 {
+  font-size: clamp(34px, 5vw, 58px);
+}
+.playground-intro > p {
+  font-size: 16px;
+  max-width: 58ch;
+}
+.lab-bench {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--dw);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.lab-bench-copy {
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.playground-main .lab-bench h2 {
+  font-size: clamp(26px, 3.4vw, 43px);
+  line-height: 1.12;
+  margin: 18px 0 0;
+  text-align: left;
+}
+.lab-bench h2 em {
+  color: var(--accent);
+  font-style: normal;
+}
+.lab-bench-copy > p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--mut);
+  margin-block: 16px 24px;
+  max-width: 39ch;
+}
+.lab-bench-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 24px;
+  color: var(--mut);
+  font-size: 11px;
+}
+.lab-bench-model {
+  min-width: 0;
+  padding: 16px;
+  border-left: 1px solid var(--line);
+}
+.lab-bench-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-inline: 8px;
+}
+.lab-bench-topline .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lab-bench-topline i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.lab-bench .game-model {
+  border: 0;
+  border-radius: 16px;
+  margin-top: 8px;
+}
+.lab-bench .game-canvas {
+  height: 300px;
+}
+.lab-bench .game-model figcaption {
+  padding: 12px 16px;
+}
+.lab-specimens {
+  display: flex;
+  gap: 6px;
+  padding: 12px 0 0;
+}
+.lab-specimens button {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 56px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--mut);
+  cursor: pointer;
+}
+.lab-specimens button > span:first-child {
+  font-size: 18px;
+  color: var(--ink);
+}
+.lab-specimens button > span:last-child {
+  font-size: 10px;
+}
+.lab-specimens button[aria-pressed="true"] {
+  border-color: var(--ring);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+.playground-overview {
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.game-daily-card {
+  background: var(--dw);
+}
+.game-daily-card,
+.game-progress-card {
+  border-radius: 20px;
+}
+.lab-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.lab-filters button {
+  min-height: 44px;
+  padding: 8px 16px;
+  color: var(--mut);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.lab-filters button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--dw);
+  border-color: var(--ink);
+}
+.playground-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.playground-game-card {
+  border-radius: 20px;
+  height: 100%;
+  box-shadow: none;
+}
+.game-card-top .eyebrow {
+  font-size: 10px;
+}
+.game-workspace {
+  max-width: 1080px;
+  padding: 24px;
+  border-radius: 24px;
+}
+.game-model {
+  background: radial-gradient(ellipse at 50% 35%, var(--accent-soft), var(--dw) 80%);
+  border-radius: 20px;
+}
+.game-canvas {
+  height: clamp(320px, 43vw, 440px);
+  position: relative;
+  touch-action: none;
+}
+.game-camera-tools {
+  position: static;
+  justify-content: center;
+  padding: 8px 12px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--dw);
+}
+.game-camera-tools button {
+  width: 44px;
+  height: 44px;
+}
+.game-model figcaption {
+  padding: 12px 18px 16px;
+}
+.game-model-fallback {
+  position: absolute;
+  inset: 0;
+}
+.game-actions {
+  border-radius: 16px;
+  background: var(--dw);
+  padding-top: 18px;
+}
+.game-result-correct {
+  border-left: 3px solid var(--accent);
+}
+.game-palette {
+  gap: 8px;
+}
+.game-ingredient {
+  min-width: 76px;
+  min-height: 76px;
+}
+.game-slots {
+  gap: 8px;
+}
+
+/* The table stays spatially correct; narrow screens pan rather than shrinking touch targets. */
+.periodic-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+.periodic-context-symbol {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--family-color);
+  background: color-mix(in srgb, var(--family-color) 12%, var(--dw));
+  font-size: 22px;
+}
+.periodic-context > div {
+  flex: 1;
+  min-width: 0;
+}
+.periodic-context strong {
+  display: block;
+  font-size: 16px;
+}
+.periodic-context small {
+  display: block;
+  color: var(--mut);
+  font-size: 11px;
+  margin-top: 3px;
+}
+.periodic-context button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+.chips.periodic-tools {
+  justify-content: flex-start;
+  gap: 6px;
+}
+.periodic-tools .chip {
+  min-height: 44px;
+}
+.periodic-tools button[aria-label] {
+  width: 44px;
+  padding-inline: 0;
+}
+.periodic-tool-spacer {
+  flex: 1;
+}
+#tb {
+  position: relative;
+  scroll-padding: 30px 20px 20px;
+  overscroll-behavior: contain;
+}
+#tb em {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--dw);
+  padding-block: 4px;
+}
+#tb .c {
+  position: relative;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--c) 9%, var(--dw));
+  border: 1px solid color-mix(in srgb, var(--c) 32%, var(--line));
+  padding: 6px 3px;
+}
+#tb .c::after {
+  content: "";
+  position: absolute;
+  inset-inline: 20%;
+  bottom: 3px;
+  height: 2px;
+  background: var(--c);
+  border-radius: 2px;
+}
+#tb .c i {
+  align-self: flex-start;
+  margin-left: 3px;
+  font-size: 9px;
+}
+#tb .c b {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  font-size: clamp(17px, calc(var(--cs) * 0.36), 27px);
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+}
+#tb .c.sel {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--sel);
+}
+.periodic-cell-name {
+  font-size: clamp(7px, calc(var(--cs) * 0.12), 10px);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.table-legend {
+  padding-block: 12px;
+}
+.library-dialog #dw {
+  height: clamp(330px, calc(90dvh - 300px), 650px);
+  min-height: 0;
+}
+
+@media (max-width: 760px) {
+  .lab-bench {
+    grid-template-columns: 1fr;
+    border-radius: 22px;
+  }
+  .lab-bench-copy {
+    padding: 16px;
+    align-items: stretch;
+  }
+  .lab-bench-copy > .eyebrow,
+  .lab-bench-copy > h2,
+  .lab-bench-copy > p,
+  .lab-bench-copy > .lab-bench-facts {
+    display: none;
+  }
+  .playground-main .lab-bench h2 {
+    font-size: 30px;
+  }
+  .lab-bench-copy > p {
+    max-width: 48ch;
+  }
+  .lab-bench-facts {
+    margin-top: 16px;
+  }
+  .lab-bench-model {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 12px;
+  }
+  .lab-bench .game-canvas {
+    height: 250px;
+  }
+  .playground-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .game-daily-card {
+    flex-wrap: wrap;
+  }
+  .game-daily-card > .action-button {
+    margin: 0;
+  }
+  .game-daily-card > div {
+    min-width: 160px;
+  }
+  .game-workspace {
+    padding: 16px;
+  }
+  .game-camera-tools {
+    gap: 4px;
+  }
+  .game-canvas {
+    height: min(44dvh, 360px);
+    min-height: 260px;
+  }
+  .game-body {
+    gap: 16px;
+  }
+  .game-task {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .game-options > label:first-child {
+    flex: 1;
+  }
+  .game-options > label:first-child select {
+    width: 100%;
+    min-width: 0;
+  }
+  .game-options {
+    padding-bottom: 12px;
+  }
+  .game-actions {
+    padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+  }
+  .game-actions .game-toolbar {
+    gap: 4px;
+  }
+  .game-actions .icon-button {
+    width: 40px;
+    height: 44px;
+  }
+  .periodic-context {
+    padding-inline: 16px;
+  }
+  .periodic-tools {
+    padding-inline: 16px;
+  }
+  .periodic-context small {
+    font-size: 10px;
+  }
+}
+@media (max-width: 440px) {
+  .playground-grid {
+    grid-template-columns: 1fr;
+  }
+  .playground-game-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 20px;
+    gap: 12px;
+  }
+  .playground-game-card > :not(.game-card-play) {
+    grid-column: 1 / -1;
+  }
+  .playground-game-card .game-card-play {
+    grid-column: 2;
+  }
+  .lab-filters {
+    gap: 6px;
+  }
+  .lab-filters button {
+    padding-inline: 12px;
+    font-size: 11px;
+  }
+  .game-options > label:first-child {
+    min-width: 150px;
+  }
+  .atom-study-viewport {
+    height: 270px;
+  }
+  .atom-study-tools {
+    gap: 2px;
+  }
+  .atom-study-divider {
+    display: none;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .atom-study-expanded {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    grid-template-rows: auto 1fr;
+  }
+  .atom-study-expanded .atom-study-header {
+    grid-column: 1 / -1;
+    padding-block: 8px;
+  }
+  .atom-study-expanded .atom-study-viewport {
+    height: 100%;
+  }
+  .atom-study-expanded-controls {
+    align-self: center;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .atom-study-tools button,
+  .atom-study-header button,
+  .lab-specimens button,
+  .lab-filters button,
+  .game-ingredient {
+    transition:
+      transform 180ms cubic-bezier(0.2, 1.5, 0.5, 1),
+      background 160ms,
+      border-color 160ms;
+  }
+  .atom-study-tools button:active,
+  .atom-study-header button:active,
+  .lab-specimens button:active,
+  .lab-filters button:active,
+  .game-ingredient:active {
+    transform: scale(0.93);
+  }
+  #tb .c:hover {
+    transform: translateY(-2px);
+  }
+}

@@ -16,6 +16,7 @@ import { Icon } from "@/components/ui/icon";
 import { DialogShell } from "@/components/dialog-shell";
 import { ElementDetails } from "@/components/element-details";
 import { GameView, gameHint } from "@/components/playground-games";
+import { LabBench } from "@/components/lab-bench";
 import { elements } from "@/lib/elements";
 import {
   checkpointGame,
@@ -48,6 +49,7 @@ export function PlaygroundApp() {
   const router = useRouter();
   const [learning, setLearning] = useState(initialLearningState);
   const [ready, setReady] = useState(false);
+  const [experimentFilter, setExperimentFilter] = useState<"all" | "build" | "discover">("all");
   const [session, setSession] = useState<GameSession | null>(null);
   const [lessonRun, setLessonRun] = useState(0);
   const measureAttempt = useLessonMeasurement(session, lessonRun);
@@ -339,119 +341,137 @@ export function PlaygroundApp() {
                 </span>
               )}
             </div>
-            <Card variant="unstyled" className="game-workspace">
-              <GameView
-                key={`${session.game}:${session.index}`}
-                session={session}
-                onChange={change}
-                onInspect={inspectElement}
-                paused={paused || inspect !== null || settings || saveOpen}
-                settings={learning.settings}
-                solved={solved && !session.free}
-              />
-              {session.hints > 0 && (
-                <p className="game-hint" role="note">
-                  {gameHint(session)}
-                </p>
-              )}
-              <div className="game-actions">
-                <div className="game-toolbar">
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Undo"
-                    disabled={!past.length}
-                    onClick={undo}
-                  >
-                    <Icon name="previous" />
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Redo"
-                    disabled={!future.length}
-                    onClick={redo}
-                  >
-                    <Icon name="next" />
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Reset round"
-                    onClick={() =>
-                      launch(
-                        newGameSession(session.game, session.index, session.free, session.daily),
-                      )
-                    }
-                  >
-                    <Icon name="reset" />
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    className="icon-button"
-                    aria-label="Reveal hint"
-                    disabled={solved || session.hints >= (session.game === "mystery" ? 3 : 1)}
-                    onClick={() => {
-                      setSession({ ...session, hints: session.hints + 1 });
-                    }}
-                  >
-                    <Icon name="help" />
-                  </Button>
-                  {canSave && (
+            <motion.div
+              key={`${session.game}:${session.index}`}
+              initial={reduced ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                reduced ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 26 }
+              }
+            >
+              <Card variant="unstyled" className="game-workspace">
+                <GameView
+                  key={`${session.game}:${session.index}`}
+                  session={session}
+                  onChange={change}
+                  onInspect={inspectElement}
+                  paused={paused || inspect !== null || settings || saveOpen}
+                  settings={learning.settings}
+                  solved={solved && !session.free}
+                />
+                {session.hints > 0 && (
+                  <p className="game-hint" role="note">
+                    {gameHint(session)}
+                  </p>
+                )}
+                <div className="game-actions">
+                  <div className="game-toolbar">
                     <Button
                       variant="unstyled"
                       className="icon-button"
-                      aria-label="Save creation"
+                      aria-label="Undo"
+                      disabled={!past.length}
+                      onClick={undo}
+                    >
+                      <Icon name="previous" />
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      className="icon-button"
+                      aria-label="Redo"
+                      disabled={!future.length}
+                      onClick={redo}
+                    >
+                      <Icon name="next" />
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      className="icon-button"
+                      aria-label="Reset round"
+                      onClick={() =>
+                        launch(
+                          newGameSession(session.game, session.index, session.free, session.daily),
+                        )
+                      }
+                    >
+                      <Icon name="reset" />
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      className="icon-button"
+                      aria-label="Reveal hint"
+                      disabled={solved || session.hints >= (session.game === "mystery" ? 3 : 1)}
                       onClick={() => {
-                        setTitle(sessionModel(session).title);
-                        setSaveOpen(true);
+                        setSession({ ...session, hints: session.hints + 1 });
                       }}
                     >
-                      <Icon name="favorite" />
+                      <Icon name="help" />
+                    </Button>
+                    {canSave && (
+                      <Button
+                        variant="unstyled"
+                        className="icon-button"
+                        aria-label="Save creation"
+                        onClick={() => {
+                          setTitle(sessionModel(session).title);
+                          setSaveOpen(true);
+                        }}
+                      >
+                        <Icon name="favorite" />
+                      </Button>
+                    )}
+                  </div>
+                  {!session.free && (
+                    <Button
+                      variant="unstyled"
+                      className="action-button game-primary"
+                      disabled={solved}
+                      onClick={check}
+                    >
+                      Check answer
+                    </Button>
+                  )}
+                  {solved && (
+                    <Button
+                      aria-label="Next round"
+                      variant="unstyled"
+                      className="action-button game-primary"
+                      onClick={() =>
+                        launch(
+                          newGameSession(
+                            session.game,
+                            (session.index + 1) % gameRounds[session.game].length,
+                          ),
+                        )
+                      }
+                    >
+                      <Icon name="next" />
                     </Button>
                   )}
                 </div>
-                {!session.free && (
-                  <Button
-                    variant="unstyled"
-                    className="action-button game-primary"
-                    disabled={solved}
-                    onClick={check}
-                  >
-                    Check answer
-                  </Button>
-                )}
-                {solved && (
-                  <Button
-                    aria-label="Next round"
-                    variant="unstyled"
-                    className="action-button game-primary"
-                    onClick={() =>
-                      launch(
-                        newGameSession(
-                          session.game,
-                          (session.index + 1) % gameRounds[session.game].length,
-                        ),
-                      )
-                    }
-                  >
-                    <Icon name="next" />
-                  </Button>
-                )}
-              </div>
-              <div
-                role="status"
-                aria-live="polite"
-                className={`game-result${solved ? " game-result-correct" : ""}`}
-              >
-                {result && (
-                  <>
-                    <strong>{solved ? "Solved!" : "Keep experimenting"}</strong>
-                    <p>{result}</p>
-                  </>
-                )}
-              </div>
-            </Card>
+                <motion.div
+                  role="status"
+                  aria-live="polite"
+                  initial={false}
+                  animate={
+                    result && !reduced
+                      ? { opacity: [0.4, 1], scale: [0.98, 1] }
+                      : { opacity: 1, scale: 1 }
+                  }
+                  transition={
+                    reduced ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 23 }
+                  }
+                  className={`game-result${solved ? " game-result-correct" : ""}`}
+                >
+                  {result && (
+                    <>
+                      <strong>{solved ? "Solved!" : "Keep experimenting"}</strong>
+                      <p>{result}</p>
+                    </>
+                  )}
+                </motion.div>
+              </Card>
+            </motion.div>
             <p className="game-footnote">
               Challenges earn 20 XP on first completion. Daily challenges add 10 XP once per UTC
               day. Hints are always available; only unhinted timed solves set personal bests. Free
@@ -462,12 +482,33 @@ export function PlaygroundApp() {
           <>
             <motion.div className="playground-intro" initial={false} animate={{ opacity: 1 }}>
               <span className="eyebrow">A little science. A lot of play.</span>
-              <h1>Make something click.</h1>
+              <h1>Your curiosity, in motion.</h1>
               <p>
-                Build molecules, solve mysteries and discover the elements in your everyday world.
-                Eight games. Your pace. Every discovery counts.
+                A hands-on science lab. Build in 3D, follow a hunch, and discover what the world is
+                made of.
               </p>
             </motion.div>
+            {ready && (
+              <LabBench
+                settings={learning.settings}
+                paused={inspect !== null || settings || saveOpen}
+                onInspect={inspectElement}
+                onBuild={(index) => launch(newGameSession("molecule", index, true))}
+              />
+            )}
+            <section className="physics-invitation" aria-label="CAPS and NSC physics lab">
+              <Icon name="spark" size={28} />
+              <div>
+                <span className="eyebrow">Beyond the elements · CAPS / NSC</span>
+                <h2>Put the laws of motion to the test.</h2>
+                <p>
+                  Explore projectile motion, force vectors and Newton’s second law in a live 3D lab.
+                </p>
+              </div>
+              <Link href="/physics" className="action-button">
+                Open physics lab <Icon name="next" />
+              </Link>
+            </section>
             <div className="playground-overview">
               <Card variant="unstyled" className="game-daily-card">
                 <Icon name="spark" />
@@ -520,61 +561,92 @@ export function PlaygroundApp() {
             </div>
             <section aria-labelledby="game-list-title">
               <h2 id="game-list-title">Choose your next experiment</h2>
+              <div className="lab-filters" role="group" aria-label="Experiment type">
+                {(
+                  [
+                    ["all", "All experiments"],
+                    ["build", "Build in 3D"],
+                    ["discover", "Puzzles & discovery"],
+                  ] as const
+                ).map(([value, label]) => (
+                  <Button
+                    key={value}
+                    variant="unstyled"
+                    aria-pressed={experimentFilter === value}
+                    onClick={() => setExperimentFilter(value)}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </div>
               <div className="playground-grid">
-                {games.map((game, i) => {
-                  const count = learning.playground.completed.filter((key) =>
-                    key.startsWith(`${game.id}:`),
-                  ).length;
-                  const stats = learning.playground.stats[game.id];
-                  return (
-                    <motion.div
-                      key={game.id}
-                      initial={false}
-                      whileHover={reduced ? undefined : { y: -3 }}
-                      transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                    >
-                      <Card variant="unstyled" className="playground-game-card">
-                        <div className="game-card-top">
-                          <span className="game-card-icon">
-                            <Icon name={game.icon} />
-                          </span>
-                          <span className="eyebrow n">0{i + 1}</span>
-                        </div>
-                        <h3>{game.title}</h3>
-                        <p>{game.description}</p>
-                        <div className="game-card-mastery">
-                          <span className="n">
-                            {count}/{gameRounds[game.id].length}
-                          </span>
-                          <span>
-                            {count === gameRounds[game.id].length
-                              ? "All rounds solved ✓"
-                              : "Rounds solved"}
-                          </span>
-                        </div>
-                        <progress
-                          value={count}
-                          max={gameRounds[game.id].length}
-                          aria-label={`${game.title} mastery`}
-                        />
-                        {stats.best !== null && (
-                          <p className="game-best">
-                            Best unhinted time <span className="n">{formatTime(stats.best)}</span>
-                          </p>
-                        )}
-                        <Button
-                          variant="unstyled"
-                          className="icon-button game-card-play"
-                          aria-label={`Play ${game.title}`}
-                          disabled={!ready}
-                          onClick={() => launch(newGameSession(game.id))}
-                        >
-                          <Icon name="play" />
-                        </Button>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
+                {games
+                  .filter(
+                    (game) =>
+                      experimentFilter === "all" ||
+                      (["molecule", "atom", "crystal"].includes(game.id)
+                        ? experimentFilter === "build"
+                        : experimentFilter === "discover"),
+                  )
+                  .map((game) => {
+                    const i = games.findIndex((item) => item.id === game.id);
+                    const count = learning.playground.completed.filter((key) =>
+                      key.startsWith(`${game.id}:`),
+                    ).length;
+                    const stats = learning.playground.stats[game.id];
+                    return (
+                      <motion.div
+                        key={game.id}
+                        initial={false}
+                        whileHover={reduced ? undefined : { y: -3 }}
+                        transition={{ type: "spring", stiffness: 260, damping: 24 }}
+                      >
+                        <Card variant="unstyled" className="playground-game-card">
+                          <div className="game-card-top">
+                            <span className="game-card-icon">
+                              <Icon name={game.icon} />
+                            </span>
+                            <span className="eyebrow">
+                              {["molecule", "atom", "crystal"].includes(game.id)
+                                ? "3D lab"
+                                : `Experiment 0${i + 1}`}
+                            </span>
+                          </div>
+                          <h3>{game.title}</h3>
+                          <p>{game.description}</p>
+                          <div className="game-card-mastery">
+                            <span className="n">
+                              {count}/{gameRounds[game.id].length}
+                            </span>
+                            <span>
+                              {count === gameRounds[game.id].length
+                                ? "All rounds solved ✓"
+                                : "Rounds solved"}
+                            </span>
+                          </div>
+                          <progress
+                            value={count}
+                            max={gameRounds[game.id].length}
+                            aria-label={`${game.title} mastery`}
+                          />
+                          {stats.best !== null && (
+                            <p className="game-best">
+                              Best unhinted time <span className="n">{formatTime(stats.best)}</span>
+                            </p>
+                          )}
+                          <Button
+                            variant="unstyled"
+                            className="icon-button game-card-play"
+                            aria-label={`Play ${game.title}`}
+                            disabled={!ready}
+                            onClick={() => launch(newGameSession(game.id))}
+                          >
+                            <Icon name="play" />
+                          </Button>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
               </div>
             </section>
             <section className="game-achievements" aria-labelledby="game-achievements-title">

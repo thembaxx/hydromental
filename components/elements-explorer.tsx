@@ -46,6 +46,7 @@ import { ExplorationHelp } from "@/components/exploration-help";
 import { usePanelNavigation } from "@/lib/use-panel-navigation";
 import { navigationState } from "@/lib/navigation-state";
 import { ElementDetails } from "@/components/element-details";
+import { AtomStudyViewer } from "@/components/atom-study-viewer";
 import { ElementQuiz, type QuizMode } from "@/components/element-quiz";
 import { LearningHub } from "@/components/learning-hub";
 import { ComparisonPanel } from "@/components/comparison-panel";
@@ -107,6 +108,7 @@ const titles = {
 export default function ElementsExplorer() {
   const [current, setCurrent] = useState(7);
   const [visualMode, setVisualMode] = useState<VisualMode>("bohr");
+  const [fullscreenAtom, setFullscreenAtom] = useState(false);
   const [auraIndex, setAuraIndex] = useState(0);
   const aura = auras[auraIndex];
   const [learning, setLearning] = useState(initialLearningState);
@@ -636,7 +638,7 @@ export default function ElementsExplorer() {
                 element={element}
                 controls={scene}
                 apiRef={atomApi}
-                suspended={sheet !== null}
+                suspended={sheet !== null || fullscreenAtom}
               />
             </Suspense>
             <div
@@ -840,6 +842,12 @@ export default function ElementsExplorer() {
               ))}
           </div>
           <div className="elemental-stage-actions">
+            <AtomStudyViewer
+              key={element.z}
+              element={element}
+              launcherOnly
+              onFullscreenChange={setFullscreenAtom}
+            />
             <button
               type="button"
               className="elemental-excite"

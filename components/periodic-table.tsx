@@ -28,7 +28,8 @@ export function PeriodicTable({
   const pinch = useRef({ distance: 1, size: 56 });
   const [size, setSize] = useState(56);
   const [focused, setFocused] = useState(current);
-  const zoom = (value: number) => setSize(Math.max(30, Math.min(78, value)));
+  const selected = elements[focused];
+  const zoom = (value: number) => setSize(Math.max(44, Math.min(88, value)));
   const distance = () => {
     const [a, b] = [...pointers.current.values()];
     return Math.hypot(a[0] - b[0], a[1] - b[1]);
@@ -38,7 +39,7 @@ export function PeriodicTable({
     const wheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
-        setSize((prev) => Math.max(30, Math.min(78, prev * (e.deltaY < 0 ? 1.08 : 0.93))));
+        setSize((prev) => Math.max(44, Math.min(88, prev * (e.deltaY < 0 ? 1.08 : 0.93))));
       }
     };
     root.addEventListener("wheel", wheel, { passive: false });
@@ -50,11 +51,17 @@ export function PeriodicTable({
     const selected =
       root.querySelector<HTMLButtonElement>(".sel:not(:disabled)") ??
       root.querySelector<HTMLButtonElement>(".c:not(:disabled)");
-    if (selected)
-      root.scrollTo({
-        left: selected.offsetLeft - root.clientWidth / 2 + 28,
-        top: selected.offsetTop - 40,
-      });
+    const center = () => {
+      if (selected)
+        root.scrollTo({
+          left: selected.offsetLeft - root.clientWidth / 2 + 28,
+          top: selected.offsetTop - 40,
+        });
+    };
+    center();
+    const observer = new ResizeObserver(center);
+    observer.observe(root);
+    return () => observer.disconnect();
   }, [active, current, matches]);
   const end = (e: PointerEvent) => pointers.current.delete(e.pointerId);
   return (
@@ -68,12 +75,54 @@ export function PeriodicTable({
           </Button>
         </div>
       )}
-      <div className="chips">
+      <div
+        className="periodic-context"
+        style={{ "--family-color": categories[selected.c][1] } as CSSProperties}
+      >
+        <span className="periodic-context-symbol n">{selected.s}</span>
+        <div>
+          <strong>{selected.n}</strong>
+          <small>
+            {categories[selected.c][0]} · No. {selected.z}
+          </small>
+        </div>
+        <Button
+          variant="unstyled"
+          className="chip"
+          aria-label={`Explore focused element ${selected.n}`}
+          onClick={() => {
+            pick(focused);
+            close();
+          }}
+        >
+          <Icon name="next" />
+        </Button>
+      </div>
+      <div className="chips periodic-tools">
         <Badge variant="unstyled" className="chip n" id="c1">
           {found.size} / {elements.length}
         </Badge>
         <Button variant="unstyled" id="qb" className="chip border-0" onClick={quiz}>
           Quiz
+        </Button>
+        <span className="periodic-tool-spacer" />
+        <Button
+          variant="unstyled"
+          className="chip"
+          aria-label="Smaller table cells"
+          disabled={size <= 44}
+          onClick={() => zoom(size - 8)}
+        >
+          <Icon name="zoomOut" />
+        </Button>
+        <Button
+          variant="unstyled"
+          className="chip"
+          aria-label="Larger table cells"
+          disabled={size >= 88}
+          onClick={() => zoom(size + 8)}
+        >
+          <Icon name="zoomIn" />
         </Button>
       </div>
       <div
@@ -123,6 +172,7 @@ export function PeriodicTable({
                 : -1
             }
             onFocus={() => setFocused(i)}
+            onPointerEnter={() => setFocused(i)}
             style={
               {
                 gridColumn: element.gridColumn,
@@ -166,31 +216,14 @@ export function PeriodicTable({
           >
             <i>{element.z}</i>
             <b>{element.s}</b>
+            <span className="periodic-cell-name">{element.n}</span>
           </Button>
         ))}
       </div>
       <div className="table-legend">
         <span id="table-navigation-hint">
-          All 118 elements are ready to explore. Arrow keys move through the table; Enter selects.
+          Swipe to explore all 18 groups. Pinch to resize. Arrow keys move; Enter selects.
         </span>
-        <Button
-          variant="unstyled"
-          className="chip"
-          aria-label="Smaller table cells"
-          disabled={size <= 30}
-          onClick={() => zoom(size - 8)}
-        >
-          <Icon name="zoomOut" />
-        </Button>
-        <Button
-          variant="unstyled"
-          className="chip"
-          aria-label="Larger table cells"
-          disabled={size >= 78}
-          onClick={() => zoom(size + 8)}
-        >
-          <Icon name="zoomIn" />
-        </Button>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowsLeftRight,
+  ArrowsOut,
   BookOpen,
   Check,
   Cube,
@@ -26,6 +27,8 @@ import {
   Question,
   ShareNetwork,
   Sparkle,
+  SpeakerHigh,
+  SpeakerSlash,
   X,
   type Icon as PhosphorIcon,
   type IconWeight,
@@ -58,6 +61,9 @@ const icons = {
   sandbox: Flask,
   award: Medal,
   download: DownloadSimple,
+  fullscreen: ArrowsOut,
+  soundOn: SpeakerHigh,
+  soundOff: SpeakerSlash,
 } satisfies Record<string, PhosphorIcon>;
 
 export type IconName = keyof typeof icons;

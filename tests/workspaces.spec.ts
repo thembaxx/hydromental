@@ -16,7 +16,7 @@ test("one library preserves search and family filters across views and story nav
   await opener.click();
   const library = page.getByRole("dialog", { name: "Element library" });
   await library.getByLabel("Element family", { exact: true }).selectOption("g");
-  await page.locator("#si").fill("Neon");
+  await page.locator("#element-search-input").fill("Neon");
   await library.getByRole("tab", { name: "Families", exact: true }).click();
   await expect(library.getByRole("button", { name: "Show Neon on the stage" })).toBeVisible();
   await expect(library.getByRole("button", { name: "Show Helium on the stage" })).toHaveCount(0);
@@ -34,7 +34,7 @@ test("one library preserves search and family filters across views and story nav
   await expect(details.getByRole("button", { name: "Download card" })).toBeVisible();
   await page.goBack();
   await expect(library).toBeVisible();
-  await expect(page.locator("#si")).toHaveValue("Neon");
+  await expect(page.locator("#element-search-input")).toHaveValue("Neon");
   await expect(library.getByLabel("Element family", { exact: true })).toHaveValue("g");
   await expect(library.getByRole("button", { name: "Remove Neon from favorites" })).toBeVisible();
   await page.keyboard.press("Escape");

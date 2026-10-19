@@ -72,6 +72,8 @@ export async function checkDeployment({ origin: value, fetchPage = fetch } = {})
   for (const [path, expected] of [
     ["/", "Elementals"],
     ["/elements", "Hydrogen"],
+    ["/playground", "Your curiosity"],
+    ["/physics", "Projectile motion"],
     ["/manifest.webmanifest", "Elementals"],
     ["/element-data.json", '"schemaVersion":2'],
   ]) {

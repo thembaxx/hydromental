@@ -12,6 +12,15 @@ The current verification suite covers:
 - Journal, rewards, favorites, progress backup, comparison, sandbox, SVG postcards and persisted settings without audio autoplay.
 - Server-rendered element pages without JavaScript, canonical/structured metadata, source links, sitemap, manifest, public data, installation affordances and actual offline navigation.
 
+### Interactive 3D and curriculum physics on October 19, 2026
+
+- Studio-lit atom studies support drag/pinch, manual keyboard rotation, shell spread, excitation, opt-in audio and a viewport-filling dialog. The live molecule preview, experiment filters, responsive game workspaces and named periodic-table cells are reviewed in [Interactive lab](immersive-lab.md).
+- The [CAPS/NSC physics lab](physics-lab.md) adds React Three Fiber projectile and free-body scenes, analytical SI-unit calculations, signed results, worked equations, pause/scrub/step controls, offline access and WebGL fallback. Vertical throws and drops are core examples; the angled trajectory is explicitly an extension.
+- Formatting, lint, TypeScript, all 67 unit tests, all 118 science records, asset checks and the production build pass. Initial explorer JavaScript is 424.6 KiB gzip against a 450 KiB budget; physics and atom-study renderers load separately. No dependency or lockfile changes were needed.
+- The existing 210-case mobile/desktop regression run passed. After physics integration, all 32 affected browser cases passed; all 10 physics cases passed again after the final mobile layout adjustment. These runs include WCAG scans, real rendered changes, keyboard controls, offline navigation, audio opt-in/mute, scientific results and forced context-loss recovery.
+- All 12 Android Chromium and iOS WebKit profile checks pass, covering the fullscreen orientation change, narrow chemistry lab, reference/consent workflows and physics controls. Orientation assertions wait for the browser's resized layout. The final published commit's CI runs the complete expanded 220-case browser suite and 12-case device suite; confirm that commit's result before treating it as deployed.
+- Screenshots establish appearance at their captured viewports. Emulated browsers do not establish physical-device GPU performance, haptics, installation or sharing behavior.
+
 Run `pnpm check`, `pnpm test:unit`, `pnpm science:check`, `pnpm build`, then `pnpm test:e2e` against the current production build. Confirm the final GitHub Actions result for the published commit. A passing earlier commit does not validate later changes. Platform-specific installation, haptics, GPU performance and native sharing still need checks on the target devices.
 
 ### Connected workspaces on October 13, 2026

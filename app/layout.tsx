@@ -6,6 +6,8 @@ import { jsonLd, siteOrigin } from "@/lib/site";
 import { themeBootstrapScript, themeCriticalCss, themeSurfaces } from "@/lib/theme";
 import "./globals.css";
 import "./elemental.css";
+import "./atom-lab.css";
+import "./physics.css";
 
 const origin = siteOrigin();
 export const metadata: Metadata = {

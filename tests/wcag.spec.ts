@@ -34,7 +34,7 @@ test("explorer themes and search satisfy automated WCAG checks", async ({ page }
     await audit(page);
   }
   await page.locator("#sb").click();
-  await page.locator("#si").fill("Aluminium");
+  await page.locator("#element-search-input").fill("Aluminium");
   await audit(page);
 });
 

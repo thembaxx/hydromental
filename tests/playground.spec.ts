@@ -255,9 +255,9 @@ test("touch dragging places atoms, camera buttons work and GPU loss preserves th
     await page.touchscreen.tap(to.x, to.y);
     await expect(page.getByRole("dialog", { name: "Oxygen details" })).toBeVisible();
     await page.getByRole("button", { name: "Inspect shell 1, 2 electrons", exact: true }).click();
-    await expect(page.getByRole("dialog").getByRole("status")).toContainText(
-      "contains 2 electrons",
-    );
+    await expect(
+      page.getByRole("dialog").locator(".detail-atom-copy").getByRole("status"),
+    ).toContainText("contains 2 electrons");
     await page.keyboard.press("Escape");
     const before = await canvas.screenshot();
     await page.getByRole("button", { name: "Zoom in", exact: true }).click();

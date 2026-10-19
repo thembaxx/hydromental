@@ -3,8 +3,8 @@ import { elements } from "../lib/elements";
 
 async function search(page: Page, value: string) {
   await page.locator("#sb").click();
-  await page.locator("#si").fill(value);
-  await page.locator("#si").press("Enter");
+  await page.locator("#element-search-input").fill(value);
+  await page.locator("#element-search-input").press("Enter");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 }
 

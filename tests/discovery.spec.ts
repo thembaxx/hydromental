@@ -53,7 +53,8 @@ test("discovery endpoints expose all elements and a complete install manifest", 
     ),
   ).toBe(true);
   const sitemap = await request.get("/sitemap.xml");
-  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(123);
+  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(124);
+  expect(await sitemap.text()).toContain("/physics");
   expect(await sitemap.text()).toContain("/privacy");
   expect(await sitemap.text()).toContain("/welcome");
   const robots = await request.get("/robots.txt");

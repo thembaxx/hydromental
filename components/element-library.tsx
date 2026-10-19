@@ -268,7 +268,7 @@ export function ElementLibrary({
           <Icon name="search" />
           <Input
             variant="unstyled"
-            id="si"
+            id="element-search-input"
             className="search-input"
             data-autofocus={view === "search" ? "" : undefined}
             autoComplete="off"
@@ -310,7 +310,7 @@ export function ElementLibrary({
               onClick={() => {
                 setQuery("");
                 setActiveIndex(0);
-                document.getElementById("si")?.focus();
+                document.getElementById("element-search-input")?.focus();
               }}
             >
               <Icon name="close" />

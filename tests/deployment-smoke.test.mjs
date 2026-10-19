@@ -39,11 +39,22 @@ test("the production entrypoint adapts fetch options without replacing the authe
           ? "Hydrogen"
           : path === "/element-data.json"
             ? '{"schemaVersion":2}'
-            : "Elementals";
+            : path === "/physics"
+              ? "Projectile motion"
+              : path === "/playground"
+                ? "Your curiosity"
+                : "Elementals";
       return { stdout: `${body}\n200` };
     },
   );
-  assert.deepEqual(paths, ["/", "/elements", "/manifest.webmanifest", "/element-data.json"]);
+  assert.deepEqual(paths, [
+    "/",
+    "/elements",
+    "/playground",
+    "/physics",
+    "/manifest.webmanifest",
+    "/element-data.json",
+  ]);
 });
 
 test("deployment checks verify app, library, manifest and the upgraded scientific data", async () => {
@@ -59,11 +70,22 @@ test("deployment checks verify app, library, manifest and the upgraded scientifi
           ? "Hydrogen"
           : url.pathname === "/element-data.json"
             ? '{"schemaVersion":2}'
-            : "Elementals",
+            : url.pathname === "/physics"
+              ? "Projectile motion"
+              : url.pathname === "/playground"
+                ? "Your curiosity"
+                : "Elementals",
       );
     },
   });
-  assert.deepEqual(paths, ["/", "/elements", "/manifest.webmanifest", "/element-data.json"]);
+  assert.deepEqual(paths, [
+    "/",
+    "/elements",
+    "/playground",
+    "/physics",
+    "/manifest.webmanifest",
+    "/element-data.json",
+  ]);
 });
 test("a protected, redirected or broken staged site cannot be promoted", async () => {
   for (const [status, body] of [

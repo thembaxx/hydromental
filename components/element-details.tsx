@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { ElementStructure } from "@/components/element-structure";
+import { AtomStudyViewer } from "@/components/atom-study-viewer";
 
 export function ElementDetails({
   element,
@@ -60,6 +61,7 @@ export function ElementDetails({
         </div>
       )}
       <div id="dbody" className="panel-content">
+        <AtomStudyViewer key={element.z} element={element} selectedShell={selectedShell} />
         <p className="lead-copy">{science.description}</p>
         <p className="panel-copy">{science.story}</p>
         <section className="panel-section">

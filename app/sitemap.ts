@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${origin}/elements`, priority: 0.9 },
     { url: `${origin}/welcome`, priority: 0.6 },
     { url: `${origin}/playground`, priority: 0.8 },
+    { url: `${origin}/physics`, priority: 0.8 },
     { url: `${origin}/privacy`, priority: 0.3 },
     ...elements.map((element) => ({
       url: `${origin}/elements/${elementSlug(element)}`,

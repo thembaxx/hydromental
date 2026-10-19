@@ -2,11 +2,21 @@
 
 import { useEffect, useImperativeHandle, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { elements, categories } from "@/lib/elements";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 import type { ModelAtom, ModelBond } from "@/lib/playground";
+import {
+  advanceModelMotion,
+  advanceSpring,
+  clampZoom,
+  createModelMotion,
+  springValue,
+  type SpringValue,
+} from "@/lib/model-motion";
+import { useModelGestures } from "@/lib/use-model-gestures";
 
 export interface SceneHandle {
   pickAt: (x: number, y: number) => number | null;
@@ -44,13 +54,28 @@ export function PlaygroundScene({
     rotate: (delta: number) => void;
   } | null>(null);
   const [fallback, setFallback] = useState(false);
+  const modelMotion = useRef(createModelMotion());
+  const redraw = useRef<() => void>(() => {});
   const reduced = useReducedMotionPreference();
   const reducedRef = useRef(reduced);
+  useModelGestures(host, modelMotion, {
+    still: reduced || paused,
+    invalidate: () => redraw.current(),
+    onZoom: () => redraw.current(),
+    onTap: (x, y) => {
+      const index = pick.current(x, y);
+      if (index !== null) latest.current.onPick(index);
+      if (!reduced && !paused) modelMotion.current.pulse.velocity = 3;
+      redraw.current();
+    },
+  });
   useEffect(() => {
     reducedRef.current = reduced;
+    redraw.current();
   }, [reduced]);
   useEffect(() => {
     latest.current = { atoms, bonds, onPick, onDrop, paused };
+    redraw.current();
   }, [atoms, bonds, onPick, onDrop, paused]);
   useEffect(() => {
     rebuild.current?.();
@@ -76,20 +101,34 @@ export function PlaygroundScene({
     node.append(canvas);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "low" ? 1 : 1.5));
     const scene = new THREE.Scene();
+    const room = new RoomEnvironment();
+    const generator = new THREE.PMREMGenerator(renderer);
+    const environment = generator.fromScene(room, 0.04);
+    scene.environment = environment.texture;
+    room.dispose();
+    generator.dispose();
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
     camera.position.z = 7;
     const group = new THREE.Group();
     scene.add(group);
-    scene.add(new THREE.AmbientLight(0xffffff, 2));
-    const light = new THREE.DirectionalLight(0xffffff, 3);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const light = new THREE.DirectionalLight(0xfff4de, 2.5);
     light.position.set(3, 4, 6);
     scene.add(light);
+    const rim = new THREE.DirectionalLight(0x9acbd2, 2);
+    rim.position.set(-4, 1, -3);
+    scene.add(rim);
     const ray = new THREE.Raycaster();
     const point = new THREE.Vector2();
     let dirty = true;
+    redraw.current = () => {
+      dirty = true;
+    };
     let contextLost = false;
     let previous: Array<{ z: number; ghost?: boolean }> = [];
     let meshes: THREE.Mesh[] = [];
+    let landings: SpringValue[] = [];
+    let onScreen = true;
     let width = 1,
       height = 1;
     function disposeModel() {
@@ -102,6 +141,7 @@ export function PlaygroundScene({
       });
       group.clear();
       meshes = [];
+      landings = [];
     }
     function build() {
       dirty = true;
@@ -115,10 +155,11 @@ export function PlaygroundScene({
               : atom.kind === "electron"
                 ? "#5e85c8"
                 : categories[elements[Math.max(1, atom.z) - 1].c][1];
-        const material = new THREE.MeshStandardMaterial({
+        const material = new THREE.MeshPhysicalMaterial({
           color,
-          roughness: 0.35,
-          metalness: 0.12,
+          roughness: 0.2,
+          metalness: 0.08,
+          clearcoat: 1,
           transparent: !!atom.ghost,
           opacity: atom.ghost ? 0.2 : 1,
           wireframe: !!atom.ghost,
@@ -127,13 +168,16 @@ export function PlaygroundScene({
           new THREE.SphereGeometry(atom.kind ? 0.11 : atom.z === 1 ? 0.27 : 0.39, 24, 16),
           material,
         );
+        const landing = springValue(1);
         if (
           !atom.ghost &&
           (previous[i]?.ghost || (previous[i] && previous[i].z !== atom.z)) &&
           !latest.current.paused &&
           !reducedRef.current
         )
-          mesh.scale.setScalar(0.55);
+          landing.value = 0.55;
+        landings.push(landing);
+        mesh.scale.setScalar(landing.value);
         mesh.position.fromArray(atom.position);
         mesh.userData.index = i;
         group.add(mesh);
@@ -209,64 +253,17 @@ export function PlaygroundScene({
     controls.current = {
       zoom(delta) {
         dirty = true;
-        camera.position.z = THREE.MathUtils.clamp(camera.position.z + delta, 4, 12);
+        modelMotion.current.zoom.target = clampZoom(modelMotion.current.zoom.target - delta * 0.15);
       },
       rotate(delta) {
         dirty = true;
-        group.rotation.y += delta;
+        modelMotion.current.y += delta;
       },
       reset() {
         dirty = true;
-        group.rotation.set(0, 0, 0);
-        camera.position.z = 7;
+        Object.assign(modelMotion.current, createModelMotion());
       },
     };
-    const pointers = new Map<number, { x: number; y: number }>();
-    let moved = false;
-    let startX = 0,
-      startY = 0;
-    const down = (event: PointerEvent) => {
-      canvas.setPointerCapture(event.pointerId);
-      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      if (pointers.size === 1) {
-        startX = event.clientX;
-        startY = event.clientY;
-        moved = false;
-      } else moved = true;
-    };
-    const move = (event: PointerEvent) => {
-      dirty = true;
-      const old = pointers.get(event.pointerId);
-      if (!old) return;
-      if (Math.hypot(event.clientX - startX, event.clientY - startY) > 6) moved = true;
-      if (pointers.size === 2) {
-        const other = [...pointers.entries()].find(([id]) => id !== event.pointerId)![1];
-        const before = Math.hypot(old.x - other.x, old.y - other.y);
-        const after = Math.hypot(event.clientX - other.x, event.clientY - other.y);
-        controls.current?.zoom((before - after) * 0.015);
-      } else {
-        group.rotation.y += (event.clientX - old.x) * 0.008;
-        group.rotation.x += (event.clientY - old.y) * 0.008;
-      }
-      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    };
-    const up = (event: PointerEvent) => {
-      if (!moved && pointers.size === 1 && event.type !== "pointercancel") {
-        const picked = pickAt(event.clientX, event.clientY);
-        if (picked !== null) latest.current.onPick(picked);
-      }
-      pointers.delete(event.pointerId);
-    };
-    const wheel = (event: WheelEvent) => {
-      if (!event.ctrlKey && !event.metaKey) return;
-      event.preventDefault();
-      controls.current?.zoom(event.deltaY * 0.01);
-    };
-    canvas.addEventListener("pointerdown", down);
-    canvas.addEventListener("pointermove", move);
-    canvas.addEventListener("pointerup", up);
-    canvas.addEventListener("pointercancel", up);
-    canvas.addEventListener("wheel", wheel, { passive: false });
     const lost = (event: Event) => {
       event.preventDefault();
       contextLost = true;
@@ -283,41 +280,55 @@ export function PlaygroundScene({
       last = 0;
     const render = (time: number) => {
       frame = requestAnimationFrame(render);
-      if (contextLost || document.hidden || time - last < (quality === "low" ? 50 : 30)) return;
+      if (
+        contextLost ||
+        document.hidden ||
+        !onScreen ||
+        time - last < (quality === "low" ? 50 : 30)
+      )
+        return;
       if (
         !dirty &&
         !meshes.some((mesh) => mesh.scale.x < 0.999) &&
         (latest.current.paused || reducedRef.current) &&
-        !pointers.size
+        !modelMotion.current.dragging
       )
         return;
       dirty = false;
       const elapsed = Math.min(50, time - last);
       last = time;
-      for (const mesh of meshes)
-        if (mesh.scale.x < 1)
-          mesh.scale.setScalar(
-            latest.current.paused || reducedRef.current
-              ? 1
-              : Math.min(1, mesh.scale.x + elapsed * 0.003),
-          );
-      if (!latest.current.paused && !reducedRef.current && !pointers.size)
-        group.rotation.y += elapsed * 0.00007;
+      const still = latest.current.paused || reducedRef.current;
+      advanceModelMotion(modelMotion.current, elapsed / 1000, still);
+      const state = modelMotion.current;
+      group.rotation.set(state.x, state.y, 0);
+      group.scale.setScalar(1 + state.pulse.value * 0.05);
+      camera.position.z = 7 / state.zoom.value;
+      meshes.forEach((mesh, index) => {
+        if (still) {
+          landings[index].value = 1;
+          landings[index].velocity = 0;
+        } else advanceSpring(landings[index], elapsed / 1000, 190, 14);
+        mesh.scale.setScalar(landings[index].value);
+      });
       renderer.render(scene, camera);
     };
+    const visibility = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      dirty = true;
+    });
+    visibility.observe(node);
     frame = requestAnimationFrame(render);
     return () => {
+      visibility.disconnect();
+      environment.dispose();
+      redraw.current = () => {};
+
       cancelAnimationFrame(frame);
       size.disconnect();
       observer.disconnect();
       pick.current = () => null;
       controls.current = null;
       rebuild.current = null;
-      canvas.removeEventListener("pointerdown", down);
-      canvas.removeEventListener("pointermove", move);
-      canvas.removeEventListener("pointerup", up);
-      canvas.removeEventListener("pointercancel", up);
-      canvas.removeEventListener("wheel", wheel);
       canvas.removeEventListener("webglcontextlost", lost);
       canvas.removeEventListener("webglcontextrestored", restored);
       disposeModel();

@@ -1,6 +1,7 @@
 import { ScienceProperties, IsotopeReference } from "@/components/science-reference";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
+import { AtomStudyViewer } from "@/components/atom-study-viewer";
 import { BrandMark } from "@/components/brand-mark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,7 @@ export default async function ElementPage({ params }: Props) {
             <a href={`/?element=${element.s}`}>Explore {element.n}'s atom</a>
           </Button>
         </header>
+        <AtomStudyViewer element={element} />
         <dl className="reference-facts">
           <div>
             <dt>Atomic number</dt>

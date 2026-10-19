@@ -15,6 +15,7 @@ export function GET() {
     `- [Element library](${origin}/elements): All 118 elements grouped by chemical family.`,
     `- [Atom explorer](${origin}/): Interactive atom exploration and learning journal.`,
     `- [Science game playground](${origin}/playground): Eight chemistry games with 3D molecules, isotope and ion controls, equation balancing, periodic puzzles, everyday materials, mystery elements, crystal cutaways and sourced property ordering. Models are illustrative. Keyboard controls, optional timers, local progress and SVG creations are available.`,
+    `- [Physics lab](${origin}/physics): React Three Fiber simulations of vertical projectile motion, vector components and Newton’s second law. CAPS/NSC context, SI-unit equations, a scrubbable timeline and accessible controls. The angled projectile is an extension; all models state their assumptions.`,
     `- [Public element data](${origin}/element-data.json): Element records and source-linked scientific context.`,
     "",
     "## Elements",
