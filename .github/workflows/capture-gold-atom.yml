@@ -1,0 +1,75 @@
+name: Capture Gold atom study PNGs
+on:
+  push:
+    branches:
+      - assets/gold-atom-linkedin-capture-20261019
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install capture dependencies
+        run: |
+          mkdir -p /tmp/atom-capture
+          npm install --prefix /tmp/atom-capture --no-audit --no-fund playwright@1.56.1 sharp@0.34.4
+          /tmp/atom-capture/node_modules/.bin/playwright install --with-deps chromium
+      - name: Screenshot live Gold atom study and crop genuine LinkedIn image
+        run: |
+          node <<'JS'
+          const { chromium } = require('/tmp/atom-capture/node_modules/playwright');
+          const sharp = require('/tmp/atom-capture/node_modules/sharp');
+          const fs = require('node:fs/promises');
+          (async () => {
+            const browser = await chromium.launch({headless:true, args:['--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage','--no-sandbox']});
+            try {
+              const page = await browser.newPage({ viewport:{width:1440,height:900}, deviceScaleFactor:1, reducedMotion:'reduce' });
+              const logs=[];
+              page.on('console', message => {if(message.type()==='error') logs.push(message.text().slice(0,200));});
+              const response = await page.goto('https://hydromental.vercel.app/elements/gold', {waitUntil:'domcontentloaded',timeout:90000});
+              console.log('HTTP',response?.status(),'URL',page.url());
+              await page.getByRole('button',{name:'View Gold in fullscreen'}).first().click({timeout:20000});
+              await page.locator('.atom-study-expanded .atom-study-viewport').waitFor({state:'visible',timeout:30000});
+              await page.waitForTimeout(6000);
+              const inspection = await page.evaluate(() => ({
+                viewport:[innerWidth,innerHeight],
+                fallback:document.body.innerText.includes('3D is unavailable'),
+                canvases:[...document.querySelectorAll('.atom-study-expanded canvas')].map(c=>[c.width,c.height]),
+                title:document.title
+              }));
+              console.log('Inspection:',JSON.stringify(inspection), 'Errors:',JSON.stringify(logs));
+              if(inspection.viewport[0]!==1440||inspection.viewport[1]!==900) throw new Error('Viewport dimensions mismatch');
+              if(inspection.fallback || inspection.canvases.length===0) throw new Error('Live WebGL atom failed to render; refusing misleading screenshot');
+              await fs.mkdir('docs/screenshots',{recursive:true});
+              const original='docs/screenshots/gold-atom-desktop-1440x900.png';
+              const linkedin='docs/screenshots/gold-atom-linkedin-1200x627.png';
+              await page.screenshot({path:original,animations:'disabled'});
+              const meta=await sharp(original).metadata();
+              if(meta.width!==1440||meta.height!==900) throw new Error('Original screenshot dimensions invalid');
+              await sharp(original).extract({left:0,top:74,width:1440,height:752}).resize(1200,627,{fit:'cover'}).png({compressionLevel:9}).toFile(linkedin);
+              console.log('Created genuine images:',original,linkedin);
+              await page.close();
+            } finally { await browser.close(); }
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gold-atom-genuine-screenshots
+          path: |
+            docs/screenshots/gold-atom-desktop-1440x900.png
+            docs/screenshots/gold-atom-linkedin-1200x627.png
+          if-no-files-found: error
+      - name: Commit screenshots to capture branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/gold-atom-desktop-1440x900.png docs/screenshots/gold-atom-linkedin-1200x627.png
+          if ! git diff --staged --quiet; then
+            git commit -m "docs: capture genuine Gold atom screenshots for LinkedIn"
+            git push origin HEAD:assets/gold-atom-linkedin-capture-20261019
+          fi
