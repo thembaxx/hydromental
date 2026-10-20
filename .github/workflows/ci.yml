@@ -14,7 +14,7 @@ jobs:
   verify:
     name: Code checks, production build and browser tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       NEXT_TELEMETRY_DISABLED: 1
       # Exercise eligible-plan event paths with local stubbed SDK endpoints.

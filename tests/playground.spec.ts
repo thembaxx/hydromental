@@ -8,8 +8,12 @@ import {
 } from "../lib/learning";
 import { newGameSession } from "../lib/playground";
 async function open(page: Page, game: string) {
+  // Exercise the game controls without continuous software WebGL animation.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(`/playground?game=${game}`);
-  await expect(page.locator(".playground-page")).toHaveAttribute("data-ready", "true");
+  await expect(page.locator(".playground-page")).toHaveAttribute("data-ready", "true", {
+    timeout: 15_000,
+  });
   await page.getByRole("button", { name: "Pause animations and timer" }).click();
 }
 async function solveWater(page: Page) {
@@ -27,7 +31,7 @@ async function check(page: Page) {
 test("molecule building supports keyboard controls, undo, resume, details and SVG creations", async ({
   page,
 }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(120_000);
   await open(page, "molecule");
   await expect(page.locator(".game-canvas")).toHaveAttribute("data-renderer", "three");
   const oxygen = page.getByRole("button", { name: "Select Oxygen", exact: true });
@@ -63,6 +67,7 @@ test("molecule building supports keyboard controls, undo, resume, details and SV
   await expect(page.getByRole("button", { name: "Check answer" })).toHaveCount(0);
 });
 test("atom workshop distinguishes isotope and ion and timer pauses", async ({ page }) => {
+  test.setTimeout(60_000);
   await open(page, "atom");
   await page.getByLabel("Round", { exact: true }).selectOption("4");
   await page.getByLabel("Protons", { exact: true }).fill("11");
@@ -70,7 +75,10 @@ test("atom workshop distinguishes isotope and ion and timer pauses", async ({ pa
   await page.getByLabel("Electrons", { exact: true }).fill("10");
   await expect(page.locator(".game-readout")).toContainText("Sodium");
   await expect(page.locator(".game-readout")).toContainText("+1");
+  await page.bringToFront();
+  await page.clock.install();
   await page.getByLabel("Optional timer").check();
+  await page.clock.runFor(1100);
   await expect
     .poll(async () =>
       Number(
@@ -83,7 +91,7 @@ test("atom workshop distinguishes isotope and ion and timer pauses", async ({ pa
     .toBeGreaterThan(0);
   await page.getByRole("button", { name: "Pause animations and timer" }).click();
   const paused = await page.locator(".game-time").textContent();
-  await page.waitForTimeout(1300);
+  await page.clock.runFor(1300);
   expect(await page.locator(".game-time").textContent()).toBe(paused);
   await check(page);
   await page.getByRole("button", { name: "Free play", exact: true }).click();
@@ -142,7 +150,7 @@ test("everyday detective and mystery teach materials and progressive clues", asy
 test("crystal builder and property ordering solve with explicit touch alternatives", async ({
   page,
 }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(120_000);
   await open(page, "crystal");
   for (let i = 0; i < 3; i++)
     await page.getByRole("button", { name: "Add section", exact: true }).click();
