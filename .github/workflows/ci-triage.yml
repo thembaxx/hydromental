@@ -1,7 +1,7 @@
 name: CI failure triage
 on:
   workflow_run:
-    workflows: ["CI", "Review scientific data updates", "Deploy to Vercel", "Security"]
+    workflows: ["Review scientific data updates", "Deploy to Vercel", "Security"]
     types: [completed]
 permissions:
   contents: read
