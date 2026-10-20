@@ -147,9 +147,7 @@ test("everyday detective and mystery teach materials and progressive clues", asy
   await page.getByLabel("Mystery element", { exact: true }).selectOption("1");
   await check(page);
 });
-test("crystal builder and property ordering solve with explicit touch alternatives", async ({
-  page,
-}) => {
+test("crystal builder solves two rounds with explicit touch alternatives", async ({ page }) => {
   test.setTimeout(120_000);
   await open(page, "crystal");
   for (let i = 0; i < 3; i++)
@@ -161,6 +159,9 @@ test("crystal builder and property ordering solve with explicit touch alternativ
   for (let i = 0; i < 3; i++)
     await page.getByRole("button", { name: "Add section", exact: true }).click();
   await check(page);
+});
+test("property ordering solves and opens element details", async ({ page }) => {
+  test.setTimeout(60_000);
   await open(page, "properties");
   for (const name of ["Hydrogen", "Carbon"])
     await page.getByRole("button", { name: `Move ${name} earlier` }).click();
