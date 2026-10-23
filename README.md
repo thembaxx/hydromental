@@ -126,7 +126,7 @@ See [the architecture guide](docs/architecture.md) for state, rendering, data an
 
 ## Delivery and discovery
 
-GitHub Actions runs frozen installs, code checks, learning/data validation, production builds, browser regression tests, CodeQL, dependency review and a full dependency advisory audit on every CI run and weekly. Dependabot maintains dependencies and immutable action pins. The production deployment workflow targets Vercel after trusted successful main-branch CI and checks that the tested commit is still current.
+GitHub Actions runs frozen installs, code checks, learning/data validation, production builds, browser regression tests and a full dependency advisory audit on every CI run, with weekly security scans. Browser tests use one worker in CI to avoid competing software WebGL renderers. CodeQL and PR dependency review run on public repositories or when a private repository enables the required GitHub features and sets `ADVANCED_SECURITY_ENABLED=true`; otherwise the audit summary reports their absence. See [deployment setup](docs/deployment.md). Dependabot maintains dependencies and immutable action pins. The production deployment workflow targets Vercel after trusted successful main-branch CI and checks that the tested commit is still current.
 
 Production deployment is configured and live at [hydromental.vercel.app](https://hydromental.vercel.app). Repository protection and account-level Actions policies require administration access and have not been applied by the connected integration. See [deployment setup](docs/deployment.md). This project is not configured as a GitHub Pages static export.
 
