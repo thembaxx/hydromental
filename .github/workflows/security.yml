@@ -28,8 +28,20 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Reject known high and critical dependency vulnerabilities
         run: pnpm security:audit
+      - name: Report security coverage
+        env:
+          ADVANCED_SECURITY_ENABLED: ${{ github.event.repository.visibility == 'public' || vars.ADVANCED_SECURITY_ENABLED == 'true' }}
+        run: |
+          echo 'The full locked dependency audit is enforced on every CI run and weekly.' >> "$GITHUB_STEP_SUMMARY"
+          if [ "$ADVANCED_SECURITY_ENABLED" = 'true' ]; then
+            echo 'CodeQL and PR dependency review are enabled. Failures block CI.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'CodeQL and dependency review are unavailable on this private repository. Enable the GitHub features, then set ADVANCED_SECURITY_ENABLED=true to enforce them. See docs/deployment.md.' >> "$GITHUB_STEP_SUMMARY"
+          fi
   codeql:
     name: CodeQL (JavaScript and TypeScript)
+    # Private repositories must enable the licensed GitHub features before opting in.
+    if: github.event.repository.visibility == 'public' || vars.ADVANCED_SECURITY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -46,7 +58,7 @@ jobs:
           build-mode: none
       - uses: github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4
   dependency-review:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && (github.event.repository.visibility == 'public' || vars.ADVANCED_SECURITY_ENABLED == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

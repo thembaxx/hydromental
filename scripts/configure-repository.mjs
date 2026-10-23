@@ -2,6 +2,7 @@
 import { execFileSync } from "node:child_process";
 const repository = "thembaxx/hydromental";
 const apply = process.argv.includes("--apply");
+const advancedSecurity = process.argv.includes("--advanced-security");
 const reviewer = process.argv[process.argv.indexOf("--reviewer") + 1];
 function api(path, method = "GET", body) {
   const result = execFileSync(
@@ -41,7 +42,7 @@ const rule = {
         required_status_checks: [
           "Code checks, production build and browser tests",
           "Security analysis / Dependency vulnerability audit",
-          "Security analysis / CodeQL (JavaScript and TypeScript)",
+          ...(advancedSecurity ? ["Security analysis / CodeQL (JavaScript and TypeScript)"] : []),
         ].map((context) => ({ context })),
       },
     },
