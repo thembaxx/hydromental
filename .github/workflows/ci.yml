@@ -41,7 +41,7 @@ jobs:
       - name: Install the test browser
         run: pnpm exec playwright install --with-deps chromium webkit
       - name: Mobile and desktop regression tests
-        run: pnpm test:e2e --workers=2
+        run: pnpm test:e2e
       - name: Android Chromium and iOS WebKit touch workflows
         run: pnpm test:devices --workers=1
       - name: Upload browser reports and failure traces

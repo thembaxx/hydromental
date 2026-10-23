@@ -6,7 +6,13 @@ Repository: https://github.com/thembaxx/hydromental
 
 CI runs on pull requests and pushes to main. It uses Node.js 24 and pnpm 12.9.1 as pinned in package.json, installs with a frozen lockfile, checks oxlint/oxfmt/TypeScript, validates learning rules and the scientific snapshot, builds production output, and runs mobile and desktop Playwright tests. Reports and failure traces are retained for 14 days. Superseded CI runs are cancelled. Third-party actions are pinned to immutable commit hashes; Dependabot maintains those pins and npm/pnpm dependencies weekly.
 
-CI calls the reusable Security workflow, which performs CodeQL analysis for JavaScript/TypeScript and audits the full locked dependency graph, with additional weekly scheduled scans. The advisory audit rejects known high or critical runtime and development vulnerabilities; its install disables lifecycle scripts. Production deployment waits for the complete CI workflow, including security analysis. Dependency review rejects new high or critical vulnerabilities in pull requests. Workflows use the minimum token permissions required. PR jobs receive no Vercel credentials and do not use pull_request_target.
+CI calls the reusable Security workflow, which audits the full locked dependency graph, with additional weekly scheduled scans. The advisory audit always rejects known high or critical runtime and development vulnerabilities; its install disables lifecycle scripts. Production deployment waits for the complete CI workflow, including security analysis. Workflows use the minimum token permissions required. PR jobs receive no Vercel credentials and do not use pull_request_target.
+
+### Optional GitHub security features
+
+CodeQL upload and dependency review require GitHub Code Security/Advanced Security and the dependency graph on private repositories. This repository currently lacks those features; the October 22 PR run failed with “Code scanning is not enabled” and “Dependency review is not supported.” These are configuration failures, not scan findings.
+
+The workflow runs these jobs automatically for public repositories. For this private repository, first enable the required features under Settings → Security → Code security, then set the Actions repository variable `ADVANCED_SECURITY_ENABLED` to `true`. Both jobs become blocking checks; scan errors are never ignored. Until then they are explicitly skipped, and the mandatory dependency audit writes the coverage limitation to the job summary. A passing audit does not establish that CodeQL ran or that the code has no vulnerabilities. No paid feature or repository visibility change is made by these workflows.
 
 ## Vercel project
 
@@ -21,7 +27,7 @@ When credentials are absent, the deployment workflow records a clear skipped-dep
 
 ## Repository settings
 
-After the first successful CI run, configure a main branch ruleset requiring pull requests and the "Code checks, production build and browser tests", "Dependency vulnerability audit" and "CodeQL (JavaScript and TypeScript)" statuses. Block force pushes and deletion, require resolved review conversations, and require at least one reviewer where team size allows. Keep the default Actions token read-only and enable Dependabot vulnerability alerts. Restrict the production environment's deployment branches to main. These account-level policies and Vercel credentials require repository/account administration; the committed workflows do not invent or embed them.
+After the first successful CI run, configure a main branch ruleset requiring pull requests and the "Code checks, production build and browser tests" and "Security analysis / Dependency vulnerability audit" statuses. Add "Security analysis / CodeQL (JavaScript and TypeScript)" once the optional GitHub security features above are enabled. Block force pushes and deletion, require resolved review conversations, and require at least one reviewer where team size allows. Keep the default Actions token read-only and enable Dependabot vulnerability alerts. Restrict the production environment's deployment branches to main. These account-level policies and Vercel credentials require repository/account administration; the committed workflows do not invent or embed them.
 
 Vercel production deployment is configured and verified at https://hydromental.vercel.app. Branch-protection/default-token settings have not been applied by the connected integration: GitHub administration endpoints returned permission errors even though source publication is available. Treat the repository-policy recommendations above as setup instructions, not as already enabled controls.
 
@@ -49,6 +55,8 @@ An administrator can inspect and apply the proposed configuration:
 pnpm repository:configure
 pnpm repository:configure --apply --reviewer thembaxx
 ```
+
+Add `--advanced-security` to the dry run and apply commands only after enabling the GitHub features and the `ADVANCED_SECURITY_ENABLED` variable. This adds the CodeQL required status; the default configuration requires the always-enforced dependency audit and browser/build checks.
 
 The connected integration returned HTTP 403 for all three attempted changes on October 15, 2026: main ruleset, production environment and default Actions-token permissions. They remain unapplied. The script requires PRs, exact CI check names and resolved conversations, and blocks force pushes/deletion. Its approval count is zero for this solo-maintainer repository; add an independent reviewer requirement when the team supports one. It refuses to overwrite an existing named ruleset.
 
