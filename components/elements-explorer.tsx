@@ -49,6 +49,7 @@ import { ElementDetails } from "@/components/element-details";
 import { AtomStudyViewer } from "@/components/atom-study-viewer";
 import { ElementQuiz, type QuizMode } from "@/components/element-quiz";
 import { LearningHub } from "@/components/learning-hub";
+import { investigationFromSearch, type InvestigationId } from "@/lib/investigations";
 import { ComparisonPanel } from "@/components/comparison-panel";
 import { SandboxPanel } from "@/components/sandbox-panel";
 import { SettingsPanel } from "@/components/settings-panel";
@@ -112,6 +113,8 @@ export default function ElementsExplorer() {
   const [auraIndex, setAuraIndex] = useState(0);
   const aura = auras[auraIndex];
   const [learning, setLearning] = useState(initialLearningState);
+  const [investigationId, setInvestigationId] = useState<InvestigationId | null>(null);
+  const previousInvestigation = useRef<InvestigationId | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [welcome, setWelcome] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
@@ -169,9 +172,18 @@ export default function ElementsExplorer() {
 
   /* oxlint-disable react/set-state-in-effect -- Restore external device storage and URL selection after server hydration. */
   useEffect(() => {
+    const requestedInvestigation = investigationFromSearch(window.location.search);
+    setInvestigationId(requestedInvestigation);
+    previousInvestigation.current = requestedInvestigation;
     const firstVisit = shouldShowOnboarding();
-    if (firstVisit) beginOnboarding();
-    setWelcome(firstVisit);
+    if (firstVisit && !requestedInvestigation) beginOnboarding();
+    setWelcome(firstVisit && !requestedInvestigation);
+    if (requestedInvestigation) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("panel", "learning");
+      window.history.replaceState(navigationState(), "", url);
+      window.dispatchEvent(new Event("elementals:panel-navigation"));
+    }
     const saved = loadLearningState();
     const requested = new URLSearchParams(window.location.search)
       .get("element")
@@ -225,6 +237,18 @@ export default function ElementsExplorer() {
   }, [learning.settings, zoom, sheet, setSheet]);
   useEffect(() => {
     const restoreElement = () => {
+      const requestedInvestigation = investigationFromSearch(window.location.search);
+      const changed = requestedInvestigation !== previousInvestigation.current;
+      previousInvestigation.current = requestedInvestigation;
+      setInvestigationId(requestedInvestigation);
+      // A different teacher link opens its activity; closing the same link stays closed.
+      if (requestedInvestigation && changed) {
+        setWelcome(false);
+        const url = new URL(window.location.href);
+        url.searchParams.set("panel", "learning");
+        window.history.replaceState(navigationState(), "", url);
+        window.dispatchEvent(new Event("elementals:panel-navigation"));
+      }
       const requested = new URLSearchParams(window.location.search).get("element")?.toLowerCase();
       const selected = elements.find(
         (item) =>
@@ -1128,6 +1152,7 @@ export default function ElementsExplorer() {
                 content: (
                   <LearningHub
                     state={learning}
+                    investigationId={investigationId}
                     onPick={(z) => {
                       pick(z - 1);
                       close();
