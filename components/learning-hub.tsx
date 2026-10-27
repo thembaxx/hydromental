@@ -1,5 +1,7 @@
 "use client";
 
+import { Investigation } from "./investigation";
+import type { InvestigationId } from "@/lib/investigations";
 import { useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
@@ -20,6 +22,7 @@ import {
 
 export interface LearningHubProps {
   state: LearningState;
+  investigationId?: InvestigationId | null;
   onPick: (z: number) => void;
   onQuiz: (mode: "standard" | "review" | "mystery" | "where") => void;
   onClaim: (id: string) => void;
@@ -29,6 +32,7 @@ export interface LearningHubProps {
 
 export function LearningHub({
   state,
+  investigationId,
   onPick,
   onQuiz,
   onClaim,
@@ -218,6 +222,7 @@ export function LearningHub({
           <p className="panel-copy">Your exploration history will appear here.</p>
         )}
       </section>
+      <Investigation key={investigationId || "chooser"} initialId={investigationId} />
       <section className="panel-section">
         <h3 className="panel-title">Collections & expeditions</h3>
         <div className="feature-grid">
