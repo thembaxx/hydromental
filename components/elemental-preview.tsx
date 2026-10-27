@@ -47,7 +47,7 @@ export function ElementalPreview() {
         data-mode={mode}
         role="group"
         tabIndex={0}
-        aria-label="Interactive 3D model of ${element.n}. Use arrow keys to rotate, Home to reset and Enter to excite."
+        aria-label={'Interactive 3D model of ' + element.n + '. Use arrow keys to rotate, Home to reset and Enter to excite.'}
         aria-describedby="elemental-stage-instructions"
         onKeyDown={(event) => {
           const state = controls.current;
