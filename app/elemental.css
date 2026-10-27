@@ -435,6 +435,11 @@
 .reference-stage-model:active {
   cursor: grabbing;
 }
+.reference-stage-model:focus-visible {
+  outline: 3px solid var(--focus, #a6ca71);
+  outline-offset: -4px;
+  border-radius: 18px;
+}
 .reference-stage .elemental-canvas {
   inset: 0;
   width: 100%;
