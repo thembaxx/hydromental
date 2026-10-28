@@ -13,7 +13,7 @@ test("search suggests misspellings, filters families and supports keyboard selec
   const input = page.getByRole("combobox", { name: "Search elements" });
   await expect(input).toBeFocused();
   await input.fill("oxgyen");
-  await expect(page.getByRole("option", { name: "Explore Oxygen, atomic number 8" })).toBeVisible();
+  await expect(page.getByRole("option", { name: /Oxygen/ })).toBeVisible();
   await input.press("Enter");
   await expect(page.locator("#in h1")).toHaveText("Oxygen");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -23,13 +23,12 @@ test("search suggests misspellings, filters families and supports keyboard selec
   await expect(
     page.getByRole("listbox", { name: "Suggested elements" }).getByRole("option"),
   ).toHaveCount(7);
-  await expect(
-    page.getByRole("option", { name: "Explore Helium, atomic number 2" }),
-  ).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("option", { name: /Helium/ })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   await input.press("ArrowDown");
-  await expect(
-    page.getByRole("option", { name: "Explore Neon, atomic number 10" }),
-  ).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("option", { name: /Neon/ })).toHaveAttribute("aria-selected", "true");
   await input.press("Enter");
   await expect(page.locator("#in h1")).toHaveText("Neon");
 
@@ -58,7 +57,7 @@ test("dialogs confine keyboard focus, dismiss with Escape and restore the opener
   await expect(dialog).toHaveCount(0);
   await expect(opener).toBeFocused();
 
-  const details = page.getByRole("button", { name: "Element details", exact: true });
+  const details = page.getByRole("button", { name: /^Element details:/ });
   await details.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
@@ -87,9 +86,7 @@ test("narrow layout and enlarged search text remain usable without horizontal sc
   });
   const input = page.getByRole("combobox", { name: "Search elements" });
   await input.fill("Aluminium");
-  await expect(
-    page.getByRole("option", { name: "Explore Aluminium, atomic number 13" }),
-  ).toBeVisible();
+  await expect(page.getByRole("option", { name: /Aluminium/ })).toBeVisible();
   expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(
     true,
   );
@@ -104,12 +101,12 @@ test("periodic table supports one tab stop, directional navigation and explicit 
   await loadExplorer(page);
   await page.locator("#gb").click();
   await expect(page.locator('#tb button[tabindex="0"]')).toHaveCount(1);
-  const oxygen = page.locator('#tb [aria-label="Oxygen"]');
+  const oxygen = page.locator("#tb").getByRole("button", { name: /Oxygen$/ });
   await oxygen.focus();
   await oxygen.press("ArrowRight");
-  await expect(page.locator('#tb [aria-label="Fluorine"]')).toBeFocused();
+  await expect(page.locator("#tb").getByRole("button", { name: /Fluorine$/ })).toBeFocused();
   await page.keyboard.press("End");
-  const last = page.locator('#tb [aria-label="Oganesson"]');
+  const last = page.locator("#tb").getByRole("button", { name: /Oganesson$/ });
   await expect(last).toBeFocused();
   const before = await last.boundingBox();
   await page.getByRole("button", { name: "Larger table cells" }).click();

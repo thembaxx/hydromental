@@ -267,7 +267,7 @@ export function AtomStudyViewer({
         <Button
           variant="unstyled"
           className="action-button atom-study-launch"
-          aria-label={`View ${element.n} in fullscreen`}
+          aria-label={`Fullscreen atom of ${element.n}`}
           aria-haspopup="dialog"
           onClick={() => expand(true)}
         >
@@ -283,7 +283,7 @@ export function AtomStudyViewer({
             <span className="eyebrow">A closer look · 3D</span>
             <Button
               variant="unstyled"
-              aria-label={`View ${element.n} in fullscreen`}
+              aria-label={`Expand ${element.n} atom in fullscreen`}
               aria-haspopup="dialog"
               onClick={() => expand(true)}
             >

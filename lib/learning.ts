@@ -120,6 +120,7 @@ interface ProgressStorage {
   setItem(key: string, value: string): void;
 }
 export const LEARNING_STORAGE_KEY = "elementals.learning.v2";
+export const PROGRESS_RECOVERY_KEY = "elementals.learning.recovery";
 const DAY = 86_400_000;
 const MAX_XP = 1_000_000_000;
 const missionIds: MissionId[] = ["discover", "quiz", "review"];
@@ -330,8 +331,8 @@ export function deleteCreation(state: LearningState, id: string): LearningState 
 export function initialLearningState(): LearningState {
   return {
     version: 2,
-    discovered: Array.from({ length: 12 }, (_, i) => i + 1),
-    xp: 120,
+    discovered: [],
+    xp: 0,
     quizStreak: 0,
     favorites: [],
     history: [],
@@ -449,6 +450,67 @@ function browserStorage(): ProgressStorage | undefined {
     return undefined;
   }
 }
+function isCurrentProgress(raw: string): boolean {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!isRecord(parsed) || parsed.version !== 2) return false;
+    // Discoveries and XP are the original v2 core. Later optional fields may be absent.
+    if (
+      !Array.isArray(parsed.discovered) ||
+      !parsed.discovered.every(validZ) ||
+      typeof parsed.xp !== "number" ||
+      !Number.isFinite(parsed.xp) ||
+      parsed.xp < 0
+    )
+      return false;
+    if (
+      parsed.favorites !== undefined &&
+      (!Array.isArray(parsed.favorites) || !parsed.favorites.every(validZ))
+    )
+      return false;
+    if (
+      parsed.history !== undefined &&
+      (!Array.isArray(parsed.history) ||
+        !parsed.history.every(
+          (item) =>
+            isRecord(item) &&
+            validZ(item.z) &&
+            typeof item.at === "number" &&
+            Number.isFinite(item.at) &&
+            item.at >= 0,
+        ))
+    )
+      return false;
+    if (
+      parsed.mastery !== undefined &&
+      (!isRecord(parsed.mastery) ||
+        !Object.entries(parsed.mastery).every(
+          ([key, item]) =>
+            validZ(Number(key)) &&
+            isRecord(item) &&
+            ["correct", "wrong", "nextReview", "interval"].every(
+              (field) =>
+                typeof item[field] === "number" && Number.isFinite(item[field]) && item[field] >= 0,
+            ),
+        ))
+    )
+      return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+/** Retain unreadable or newer-version saves before any compatibility fallback is written. */
+export function readProgressRecovery(
+  storage: ProgressStorage | undefined = browserStorage(),
+): string | null {
+  try {
+    const raw = storage?.getItem(LEARNING_STORAGE_KEY);
+    return storage?.getItem(PROGRESS_RECOVERY_KEY) || (raw && !isCurrentProgress(raw) ? raw : null);
+  } catch {
+    return null;
+  }
+}
 export function loadLearningState(
   storage: ProgressStorage | undefined = browserStorage(),
 ): LearningState {
@@ -494,6 +556,13 @@ export function saveLearningState(
   if (!storage) return false;
   try {
     const clean = sanitizeState(state);
+    const previous = storage.getItem(LEARNING_STORAGE_KEY);
+    if (previous && !isCurrentProgress(previous)) {
+      const recovery = storage.getItem(PROGRESS_RECOVERY_KEY);
+      // Never overwrite either unreadable save when the recovery slot is occupied.
+      if (recovery && recovery !== previous) return false;
+      storage.setItem(PROGRESS_RECOVERY_KEY, previous);
+    }
     storage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(clean));
     storage.setItem(
       "el",

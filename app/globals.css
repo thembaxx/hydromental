@@ -4683,3 +4683,19 @@ input[type="file"].form-input {
     animation: none;
   }
 }
+
+.about-steps {
+  padding-left: 1.5rem;
+  line-height: 1.7;
+}
+.about-steps li + li {
+  margin-top: 0.75rem;
+}
+.reference-section .element-chips {
+  margin-top: 1rem;
+}
+
+.reference-section p a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

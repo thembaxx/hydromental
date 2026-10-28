@@ -123,7 +123,6 @@ export function ElementalCarousel({
               type="button"
               className="aura-card"
               aria-pressed={active === index}
-              aria-label={`${aura.name} aura`}
               style={{ "--aura-color": aura.color, "--aura-ink": aura.ink } as CSSProperties}
               onFocus={(event) => {
                 const content = track.current!,

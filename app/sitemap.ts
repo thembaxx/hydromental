@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${origin}/playground`, priority: 0.8 },
     { url: `${origin}/physics`, priority: 0.8 },
     { url: `${origin}/privacy`, priority: 0.3 },
+    { url: `${origin}/about`, priority: 0.5 },
     ...elements.map((element) => ({
       url: `${origin}/elements/${elementSlug(element)}`,
       priority: 0.7,

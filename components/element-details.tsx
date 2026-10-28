@@ -17,12 +17,14 @@ export function ElementDetails({
   close,
   onPick,
   onInspectShell,
+  onPractice,
   embedded = false,
 }: {
   element: Element;
   close: () => void;
   onPick: (z: number) => void;
   onInspectShell?: (shell: number) => void;
+  onPractice?: () => void;
   embedded?: boolean;
 }) {
   const [shellSelection, setShellSelection] = useState<{ z: number; shell: number } | null>(null);
@@ -63,6 +65,18 @@ export function ElementDetails({
       <div id="dbody" className="panel-content">
         <AtomStudyViewer key={element.z} element={element} selectedShell={selectedShell} />
         <p className="lead-copy">{science.description}</p>
+        {onPractice && (
+          <section className="panel-section">
+            <h3>Turn a discovery into practice</h3>
+            <p className="panel-copy">
+              Read the properties below, then test names, symbols and atomic numbers. Answers and
+              review progress stay in your journal.
+            </p>
+            <Button variant="unstyled" className="action-button" onClick={onPractice}>
+              Try a quick quiz
+            </Button>
+          </section>
+        )}
         <p className="panel-copy">{science.story}</p>
         <section className="panel-section">
           <h3>In your everyday world</h3>

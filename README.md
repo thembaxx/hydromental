@@ -2,7 +2,9 @@
 
 Explore all 118 chemical elements through interactive models, sourced stories, property comparisons and learning games.
 
-**[Explore the live application](https://hydromental.vercel.app/)** · [Browse the source](https://github.com/thembaxx/hydromental)
+**[Explore the live application](https://hydromental.vercel.app/)** · [Project notes & help](https://hydromental.vercel.app/about) · [Browse the source](https://github.com/thembaxx/hydromental)
+
+[Launch review and actual verification evidence](docs/portfolio-launch.md) records the first-learning journey, progress recovery, accessibility checks and the remaining development-tool advisory.
 
 ## Engineering highlights
 
@@ -10,9 +12,9 @@ Sourced scientific snapshots and explicit model limitations; browser-local progr
 
 ## Technology
 
-Declared in [package.json](package.json): Next.js `16.4.0` · React `19.3.0` · TypeScript `7.0.2` · Tailwind CSS `4.3.3` · Three.js `0.186.1` · Motion `14.0.0` · React Three Fiber `9.8.1`.
+Declared in [package.json](package.json): Next.js `16.4.2` · React `19.3.1` · TypeScript `7.0.2` · Tailwind CSS `4.3.3` · Three.js `0.186.1` · Motion `14.5.0` · React Three Fiber `9.8.2`.
 
-**Quality tooling:** `lint`, `format:check`, `typecheck`, `check`, `test:e2e`, `test:unit`, `science:check` scripts are available. See the setup guide below for prerequisites; this documentation pass does not assert that those checks were run.
+**Quality tooling:** `lint`, `format:check`, `typecheck`, `check`, `test:e2e`, `test:unit`, `science:check` scripts are available. See the setup guide below for prerequisites and the [launch review](docs/portfolio-launch.md) for the checks actually run.
 
 ## Application preview
 
@@ -48,11 +50,11 @@ The atom, cloud, matter and shell schematic views are teaching illustrations. Th
 
 ## Stack
 
-- Next.js 16.4.0, React 19.3.0 and TypeScript 7.0.2
+- Next.js 16.4.2, React 19.3.1 and TypeScript 7.0.2
 - Tailwind CSS 4.3.3, owned shadcn/ui primitives and Radix accessible dialogs
 - Phosphor Icons (`@phosphor-icons/react`) with outline (`regular`) and solid (`fill`) weights
-- Motion 14.0.0 and Three.js 0.186.1
-- pnpm 12.9.1, oxlint 1.87.0 and oxfmt 0.72.0
+- Motion 14.5.0 and Three.js 0.186.1
+- pnpm 12.9.1, oxlint 1.89.0 and oxfmt 0.74.0
 
 Versions are pinned in `package.json` and the committed pnpm lockfile. The dependency baseline was checked on October 6, 2026; subsequent reviewed updates are recorded in the lockfile. Font assets are self-hosted; the application does not request Google Fonts.
 
@@ -98,9 +100,11 @@ The introduction uses Motion for staggered text entrances and step transitions, 
 
 ## Learning and data
 
-Progress stays in browser local storage. Versioned learning state migrates the original prototype's discovery/XP/streak keys and retains a compatibility mirror. New discoveries award 10 XP. Correct quiz answers award 5 XP once per element per UTC day; repeating an answer can update mastery without repeatedly awarding XP. Daily rewards can be claimed once, review intervals respond to results, and the activity streak allows one missed day.
+Fresh journals start at zero discoveries and XP. Progress stays in browser local storage. Versioned learning state migrates the original prototype's discovery/XP/streak keys and retains a compatibility mirror. New discoveries award 10 XP. Correct quiz answers award 5 XP once per element per UTC day; repeating an answer can update mastery without repeatedly awarding XP. Daily rewards can be claimed once, review intervals respond to results, and the activity streak allows one missed day.
 
 Playground completions award 20 XP once per authored round. A deterministic UTC daily game awards an additional 10 XP once per day, including when revisiting an already completed round. Optional personal bests require unhinted timed solves. Free play awards no game XP. Each of eight games tracks solved rounds; the lab retains the latest 24 creations and checkpoints the current round. All of this is included in existing progress backups.
+
+Unreadable saves are retained for download before a recovery checkpoint is written. Settings includes a confirmed reset of this device’s learning data. Investigation notes use their separate activity report export.
 
 Progress export/import transfers learning state and settings between devices. This is a portable backup, not an account or cloud-sync service. Clearing browser storage removes local progress; keep an exported backup if it matters to you. Audio begins only after interaction and is optional.
 

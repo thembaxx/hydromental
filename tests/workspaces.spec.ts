@@ -24,8 +24,8 @@ test("one library preserves search and family filters across views and story nav
   await library.getByRole("tab", { name: "Periodic table", exact: true }).click();
   await expect(library.locator("#tb .c")).toHaveCount(118);
   await expect(library.locator("#tb .c:enabled")).toHaveCount(1);
-  await expect(library.getByRole("button", { name: "Neon", exact: true })).toBeEnabled();
-  await expect(library.getByRole("button", { name: "Helium", exact: true })).toBeDisabled();
+  await expect(library.getByRole("button", { name: /Neon$/ })).toBeEnabled();
+  await expect(library.getByRole("button", { name: /Helium$/ })).toBeDisabled();
   await library.getByRole("tab", { name: "Families", exact: true }).click();
   await library.getByRole("button", { name: "Story", exact: true }).click();
   const details = page.getByRole("dialog", { name: "Element details" });

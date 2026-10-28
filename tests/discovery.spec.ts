@@ -53,9 +53,10 @@ test("discovery endpoints expose all elements and a complete install manifest", 
     ),
   ).toBe(true);
   const sitemap = await request.get("/sitemap.xml");
-  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(124);
+  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(125);
   expect(await sitemap.text()).toContain("/physics");
   expect(await sitemap.text()).toContain("/privacy");
+  expect(await sitemap.text()).toContain("/about");
   expect(await sitemap.text()).toContain("/welcome");
   const robots = await request.get("/robots.txt");
   expect(await robots.text()).toContain("sitemap.xml");
@@ -128,7 +129,7 @@ test("production offline shell, visited references, and element data remain avai
   await expect(page.getByRole("status").filter({ hasText: "Offline" })).toBeVisible();
   await expect(page.locator("#gl")).toBeVisible();
   for (const name of ["Hydro", "Ember", "Solar", "Breeze"]) {
-    await page.getByRole("button", { name: `${name} aura`, exact: true }).click();
+    await page.getByRole("button", { name: new RegExp(`\\b${name}\\b`) }).click();
     await expect(page.locator(".elemental-canvas")).toHaveAttribute(
       "data-aura",
       name.toLowerCase(),

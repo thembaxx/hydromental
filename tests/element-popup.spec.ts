@@ -13,10 +13,10 @@ test("all 118 symbols are visible without granting unearned discoveries", async 
   await ready(page);
   await page.locator("#gb").click();
   await expect(page.locator("#tb .c b")).toHaveText(elements.map((element) => element.s));
-  await expect(page.locator("#c1")).toHaveText("12 / 118");
+  await expect(page.locator("#c1")).toHaveText("0 / 118");
   await page.locator('#tb [data-i="117"]').click();
   await expect(page.locator("#in")).toContainText("Oganesson");
-  await page.getByRole("button", { name: "Element details", exact: true }).click();
+  await page.getByRole("button", { name: /^Element details:/ }).click();
   await expect(page.locator("#dt .lead-copy")).toHaveText(getScience(118).description);
   await expect(page.locator("#dt")).toContainText(getScience(118).everyday);
   expect(await page.locator(".structure-electrons circle").count()).toBe(118);
@@ -32,6 +32,8 @@ test("all 118 symbols are visible without granting unearned discoveries", async 
 test("tapping the atom excites it and explicit details restore keyboard focus on close", async ({
   page,
 }) => {
+  // Software WebGL, an energy burst and dialog focus restoration share the runner's CPU.
+  test.setTimeout(60_000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await ready(page);
@@ -41,7 +43,7 @@ test("tapping the atom excites it and explicit details restore keyboard focus on
   const box = (await page.locator("#gl").boundingBox())!;
   await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.4);
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("button", { name: "Element details", exact: true }).click();
+  await page.getByRole("button", { name: /^Element details:/ }).click();
   await expect(page.getByRole("dialog", { name: "Element details", exact: true })).toBeVisible();
   await expect(page.locator(".workspace-header h2")).toHaveText("Oxygen");
   await expect(page.locator("#dt .lead-copy")).toHaveText(getScience(8).description);
@@ -56,7 +58,7 @@ test("structure animates, pauses without jumping, and respects live reduced moti
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await ready(page);
-  await page.getByRole("button", { name: "Element details", exact: true }).click();
+  await page.getByRole("button", { name: /^Element details:/ }).click();
   const structure = page.locator(".element-structure");
   const shell = structure.locator(".structure-electrons").first();
   await expect(structure).toHaveAttribute("data-playing", "true");

@@ -49,7 +49,7 @@ test("mobile explorer retains details and navigation with WebGL or its readable 
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   const intro = page.getByRole("button", { name: "Skip introduction", exact: true });
   if (await intro.isVisible()) await intro.tap();
-  await page.getByRole("button", { name: "Element details", exact: true }).tap();
+  await page.getByRole("button", { name: /^Element details:/ }).tap();
   await expect(page.getByRole("dialog", { name: "Element details", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Scientific reference" })).toBeVisible();
 });

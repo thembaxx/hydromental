@@ -282,7 +282,8 @@ export function LearningHub({
         <h3 className="panel-title">Take your progress with you</h3>
         <p className="panel-copy">
           Export a backup, then import it on another device. Your progress stays local; importing
-          replaces this device’s progress.
+          replaces this device’s progress. Export your current progress first. Investigation notes
+          have their own report export in the activity below and are not included in this backup.
         </p>
         <Button variant="unstyled" className="action-button" onClick={onExport}>
           Export progress
