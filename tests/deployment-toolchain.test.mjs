@@ -61,7 +61,7 @@ test("the actual locked CLI keeps authenticated smoke options compatible with na
 });
 test("the locked CLI uses the patched HTTP client for its fetch/Agent/FormData APIs", async () => {
   const { fetch, Agent, FormData } = fromCli("undici");
-  assert.equal(fromCli("undici/package.json").version, "6.29.0");
+  assert.equal(fromCli("undici/package.json").version, "6.29.1");
   const server = createServer(async (request, response) => {
     let size = 0;
     for await (const chunk of request) size += chunk.length;
@@ -91,7 +91,7 @@ test("the pinned CLI executes and our staging checker never invokes login withou
     encoding: "utf8",
     env: { ...process.env, VERCEL_TELEMETRY_DISABLED: "1", NO_UPDATE_NOTIFIER: "1" },
   });
-  assert.match(version, /64\.0\.2/);
+  assert.equal(version.trim(), fromCli("vercel/package.json").version);
   const previous = process.env.VERCEL_TOKEN;
   delete process.env.VERCEL_TOKEN;
   try {
