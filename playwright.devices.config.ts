@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const port = process.env.PLAYWRIGHT_PORT || "3000";
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./device-tests",
   outputDir: "device-results",
@@ -7,7 +10,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   timeout: 40_000,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
@@ -26,8 +29,8 @@ export default defineConfig({
     { name: "ios-webkit", use: { ...devices["iPhone 13"], browserName: "webkit" } },
   ],
   webServer: {
-    command: "pnpm start",
-    url: "http://127.0.0.1:3000",
+    command: `corepack pnpm start --port ${port}`,
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
   },
 });

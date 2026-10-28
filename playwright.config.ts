@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+const port = process.env.PLAYWRIGHT_PORT || "3000";
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
@@ -9,7 +12,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   retries: process.env.CI ? 1 : 0,
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     // Continuous screenshots compete with software WebGL rendering in CI.
     trace: { mode: "retain-on-failure", screenshots: false, snapshots: true, sources: true },
     screenshot: "only-on-failure",
@@ -23,8 +26,8 @@ export default defineConfig({
     { name: "desktop", use: { viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
-    command: "pnpm start",
-    url: "http://127.0.0.1:3000",
+    command: `corepack pnpm start --port ${port}`,
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
   },
 });

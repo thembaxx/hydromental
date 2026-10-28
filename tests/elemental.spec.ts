@@ -90,7 +90,7 @@ test("all auras select by keyboard without changing element data or discovery pr
   await ready(page);
   const before = await page.locator("#pr").textContent();
   for (const name of ["Ember", "Solar", "Breeze", "Hydro"]) {
-    const button = page.getByRole("button", { name: `${name} aura`, exact: true });
+    const button = page.getByRole("button", { name: new RegExp(`\\b${name}\\b`) });
     await button.focus();
     await page.keyboard.press("Enter");
     await expect(button).toHaveAttribute("aria-pressed", "true");
@@ -108,7 +108,7 @@ test("missing Blender models use the procedural fallback and details remain usab
 }) => {
   await page.route("**/models/hydro.glb", (route) => route.abort());
   await ready(page);
-  await page.getByRole("button", { name: "Element details", exact: true }).click();
+  await page.getByRole("button", { name: /^Element details:/ }).click();
   await expect(page.getByRole("dialog", { name: "Element details", exact: true })).toBeVisible();
 });
 
@@ -149,7 +149,7 @@ test("dragging the aura cards snaps to a new atmosphere without navigating eleme
   await page.mouse.down();
   await page.mouse.move(box.x + box.width * 0.15, box.y + box.height * 0.55, { steps: 14 });
   await page.mouse.up();
-  await expect(page.getByRole("button", { name: "Hydro aura", exact: true })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: /\bHydro\b/ })).toHaveAttribute(
     "aria-pressed",
     "false",
     { timeout: 10000 },

@@ -75,8 +75,8 @@ test("a fresh visit teaches the real interactions and remembers completion witho
     (key) => JSON.parse(localStorage.getItem(key)!),
     LEARNING_STORAGE_KEY,
   );
-  expect(saved.xp).toBe(120);
-  expect(saved.discovered).toHaveLength(12);
+  expect(saved.xp).toBe(0);
+  expect(saved.discovered).toHaveLength(0);
   await page.reload();
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await expect(page.locator(".welcome-page")).toHaveCount(0);

@@ -77,7 +77,12 @@ test("favorites, journal rewards, and validated progress transfers survive reloa
     mimeType: "application/json",
     buffer: Buffer.from("{broken"),
   });
-  await expect(page.getByRole("dialog").getByRole("status")).toContainText(/valid|JSON|format/i);
+  await expect(
+    page
+      .getByRole("heading", { name: "Take your progress with you", exact: true })
+      .locator("..")
+      .getByRole("status"),
+  ).toContainText(/valid|JSON|format/i);
   expect((await stored(page)).favorites).toContain(8);
   const restored = { ...exported, state: { ...exported.state, favorites: [26], xp: 500 } };
   await page.locator("#progress-import").setInputFiles({
@@ -172,7 +177,7 @@ test("postcards download valid attributed SVG and share a canonical element link
   const shared = await page.evaluate(
     () => (window as unknown as { sharedData: ShareData }).sharedData,
   );
-  expect(shared.url).toBe("http://127.0.0.1:3000/elements/oxygen");
+  expect(shared.url).toBe(new URL("/elements/oxygen", page.url()).href);
 });
 
 test("appearance, quality and audio preferences persist without autoplay", async ({ page }) => {

@@ -1,5 +1,7 @@
 "use client";
 
+/* oxlint-disable jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-noninteractive-element-interactions -- This named application region implements spatial keyboard controls with instructions and button alternatives. */
+
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { ElementalControlDock } from "@/components/ui/ElementalControlDock";
@@ -45,11 +47,16 @@ export function ElementalPreview() {
       <div
         className="reference-stage-model"
         data-mode={mode}
-        role="group"
+        role="application"
         tabIndex={0}
-        aria-label={'Interactive 3D model of ' + element.n + '. Use arrow keys to rotate, Home to reset and Enter to excite.'}
+        aria-label={
+          "Interactive 3D model of " +
+          element.n +
+          ". Use arrow keys to rotate, Home to reset and Enter to excite."
+        }
         aria-describedby="elemental-stage-instructions"
         onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
           const state = controls.current;
           let handled = true;
           switch (event.key) {
@@ -135,7 +142,10 @@ export function ElementalPreview() {
           />
         </Suspense>
       </div>
-      <p id="elemental-stage-instructions" className="sr-only">Drag to rotate the atom, or focus the 3D model and use arrow keys. Press Home to reset or Enter to excite it. The scientific display is illustrative as labelled.</p>
+      <p id="elemental-stage-instructions" className="sr-only">
+        Drag to rotate the atom, or focus the 3D model and use arrow keys. Press Home to reset or
+        Enter to excite it. The scientific display is illustrative as labelled.
+      </p>
       <div className="reference-stage-copy" aria-live="polite">
         <span>
           {String(number).padStart(3, "0")} / 118 · {categories[element.c][0]}

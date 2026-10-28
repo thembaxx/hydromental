@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   LEARNING_STORAGE_KEY,
+  PROGRESS_RECOVERY_KEY,
+  readProgressRecovery,
   claimMission,
   discoverElement,
   exportProgress,
@@ -26,15 +28,12 @@ function storage(entries = {}) {
   return { getItem: (key) => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) };
 }
 
-test("preserves the original first twelve elements and 120 XP", () => {
+test("new learners start with an empty personal journal", () => {
   const state = initialLearningState();
-  assert.equal(state.xp, 120);
-  assert.deepEqual(
-    state.discovered,
-    Array.from({ length: 12 }, (_, i) => i + 1),
-  );
+  assert.equal(state.xp, 0);
+  assert.deepEqual(state.discovered, []);
   state.discovered.push(13);
-  assert.equal(initialLearningState().discovered.length, 12);
+  assert.equal(initialLearningState().discovered.length, 0);
 });
 
 test("migrates legacy zero-based discoveries and theme without accepting corrupt members", () => {
@@ -84,7 +83,7 @@ test("unavailable storage never prevents an in-memory session", () => {
       throw new Error("full");
     },
   };
-  assert.equal(loadLearningState(blocked).xp, 120);
+  assert.equal(loadLearningState(blocked).xp, 0);
   assert.equal(saveLearningState(initialLearningState(), blocked), false);
 });
 
@@ -92,9 +91,9 @@ test("new discoveries earn XP once while history records the latest visit", () =
   const start = initialLearningState();
   const first = discoverElement(start, 26, now);
   const repeat = discoverElement(first, 26, now + 1);
-  assert.equal(start.xp, 120);
-  assert.equal(first.xp, 130);
-  assert.equal(repeat.xp, 130);
+  assert.equal(start.xp, 0);
+  assert.equal(first.xp, 10);
+  assert.equal(repeat.xp, 10);
   assert.deepEqual(repeat.history, [{ z: 26, at: now + 1 }]);
   assert.equal(getDailyMissions(repeat, now)[0].progress, 1);
   assert.equal(discoverElement(repeat, 119), repeat);
@@ -368,4 +367,61 @@ test("game imports bound data, reject unknown round keys and deduplicate creatio
     clean.playground.creations.every((c) => c.title.length === 60 && !c.title.includes("\u0000")),
   );
   assert.equal(sanitizeGameSession({ game: "__proto__" }), null);
+});
+
+// Recovery must survive startup writes, including blocked/full browser storage.
+test("unreadable saves are retained before a legacy recovery is checkpointed", () => {
+  const original = "{broken original";
+  const saved = storage({
+    [LEARNING_STORAGE_KEY]: original,
+    el: JSON.stringify({ f: [25], x: 10 }),
+  });
+  const state = loadLearningState(saved);
+  assert.equal(readProgressRecovery(saved), original);
+  assert.equal(saveLearningState(state, saved), true);
+  assert.equal(saved.getItem(PROGRESS_RECOVERY_KEY), original);
+  assert.deepEqual(loadLearningState(saved).discovered, [26]);
+  assert.equal(readProgressRecovery(saved), original);
+});
+test("failed recovery writes never overwrite unreadable progress", () => {
+  const saved = storage({ [LEARNING_STORAGE_KEY]: "{broken" });
+  const blocked = {
+    getItem: saved.getItem,
+    setItem(key, value) {
+      if (key === PROGRESS_RECOVERY_KEY) throw new Error("Quota exceeded");
+      saved.setItem(key, value);
+    },
+  };
+  assert.equal(saveLearningState(initialLearningState(), blocked), false);
+  assert.equal(saved.getItem(LEARNING_STORAGE_KEY), "{broken");
+});
+test("newer-version saves are preserved and valid existing journals retain earned progress", () => {
+  const saved = storage({ [LEARNING_STORAGE_KEY]: JSON.stringify({ version: 3, xp: 900 }) });
+  assert.equal(saveLearningState(initialLearningState(), saved), true);
+  assert.equal(JSON.parse(saved.getItem(PROGRESS_RECOVERY_KEY)).xp, 900);
+  const existing = { ...initialLearningState(), discovered: [1, 8], xp: 120 };
+  saved.setItem(LEARNING_STORAGE_KEY, JSON.stringify(existing));
+  assert.equal(loadLearningState(saved).xp, 120);
+  assert.deepEqual(loadLearningState(saved).discovered, [1, 8]);
+});
+
+test("malformed current-version core data is archived while optional-field migrations stay valid", () => {
+  for (const malformed of [
+    { version: 2, discovered: "broken", xp: 50 },
+    { version: 2, xp: 50 },
+    { version: 2, discovered: [8], xp: "broken" },
+    { version: 2, discovered: [8], xp: 50, favorites: "broken" },
+    { version: 2, discovered: [8], xp: 50, mastery: { 8: "broken" } },
+  ]) {
+    const original = JSON.stringify(malformed);
+    const saved = storage({ [LEARNING_STORAGE_KEY]: original });
+    assert.equal(saveLearningState(loadLearningState(saved), saved), true);
+    assert.equal(readProgressRecovery(saved), original);
+  }
+  const saved = storage({
+    [LEARNING_STORAGE_KEY]: JSON.stringify({ version: 2, discovered: [8], xp: 50 }),
+  });
+  assert.equal(saveLearningState(loadLearningState(saved), saved), true);
+  assert.equal(readProgressRecovery(saved), null);
+  assert.deepEqual(loadLearningState(saved).discovered, [8]);
 });

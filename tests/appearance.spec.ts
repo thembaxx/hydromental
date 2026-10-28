@@ -15,7 +15,7 @@ test("Noir persists through reloads and keeps dialogs and reference reading acce
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "noir");
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(44, 45, 49)");
-  await page.getByRole("button", { name: "Element details", exact: true }).click();
+  await page.getByRole("button", { name: /^Element details:/ }).click();
   await expect(page.getByRole("dialog")).toContainText("Oxygen");
   expect(
     (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,

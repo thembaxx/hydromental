@@ -22,7 +22,7 @@ function makeQuestion(state: LearningState, mode: QuizMode): Question {
   const due = mode === "review" ? getDueElements(state) : [];
   const pool = due.length
     ? due
-    : state.discovered.length >= 6
+    : state.discovered.length > 0
       ? state.discovered
       : elements.map((element) => element.z);
   const element =

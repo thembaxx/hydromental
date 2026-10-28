@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 test("the full atom viewer remains usable by touch in portrait and landscape", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/elements/oxygen");
-  await page.getByRole("button", { name: "View Oxygen in fullscreen", exact: true }).tap();
+  await page.getByRole("button", { name: "Expand Oxygen atom in fullscreen", exact: true }).tap();
   const dialog = page.getByRole("dialog", { name: "Oxygen fullscreen atom", exact: true });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Zoom atom in", exact: true }).tap();

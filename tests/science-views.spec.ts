@@ -6,7 +6,7 @@ test("cards, detail sheets and public reference pages show the same attributed l
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await expect(page.locator(".element-number")).toContainText("[6.938, 6.997]");
   await expect(page.locator(".element-number")).not.toContainText(" u");
-  await page.getByRole("button", { name: "Element details", exact: true }).click();
+  await page.getByRole("button", { name: /^Element details:/ }).click();
   await expect(page.locator(".property-list")).toContainText("CIAAW standard atomic weights");
   await expect(page.locator(".property-list")).toContainText("[6.938, 6.997]");
   await page.getByText(/Explore \d+ isotopes of Li/).click();

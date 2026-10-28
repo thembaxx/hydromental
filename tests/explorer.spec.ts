@@ -119,6 +119,7 @@ test("quiz flip preserves the prototype's perspective, easing and opacity", asyn
 
 test("3D scene, search, gestures, navigation, details, themes and persistence", async ({
   page,
+  baseURL,
 }, info) => {
   // This workflow combines software WebGL, several sheets, gestures and a storage reload.
   test.setTimeout(60_000);
@@ -129,7 +130,7 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
     if (message.type() === "error") errors.push(message.text());
   });
   page.on("request", (request) => {
-    if (!request.url().startsWith("http://127.0.0.1:3000/")) external.push(request.url());
+    if (!request.url().startsWith(`${baseURL}/`)) external.push(request.url());
   });
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
@@ -142,7 +143,7 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
   await page.screenshot({ path: `/tmp/elements-next-${info.project.name}.png` });
   await search(page, "Iron");
   await expect(page.locator("#in")).toContainText("Iron");
-  await expect(page.locator("#pr")).toContainText("130 XP");
+  await expect(page.locator("#pr")).toContainText("10 XP");
   await page.keyboard.press("ArrowRight");
   await expect(page.locator("#in")).toContainText("Cobalt");
   const box = (await page.locator("#app").boundingBox())!;
@@ -170,7 +171,7 @@ test("3D scene, search, gestures, navigation, details, themes and persistence", 
   await page.locator("#ab").click();
   await expect(page.locator("#ab")).toHaveAttribute("aria-pressed", "true");
   await page.reload();
-  await expect(page.locator("#pr")).toContainText("150 XP");
+  await expect(page.locator("#pr")).toContainText("30 XP");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dusk");
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("el")!).f.includes(25))).toBe(
     true,
@@ -195,14 +196,14 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
   await page.locator("#gb").click();
   await expect(page.locator("#tb .c")).toHaveCount(118);
-  await page.locator('#tb [aria-label="Gold"]').click();
+  await page.locator("#tb").getByRole("button", { name: /Gold$/ }).click();
   await expect(page.locator("#in")).toContainText("Gold");
-  await expect(page.locator("#pr")).toContainText("130 XP");
+  await expect(page.locator("#pr")).toContainText("10 XP");
   await page.locator("#gb").click();
   await page.locator("#qb").click();
   const firstCorrectZ = await answerQuiz(page);
   await expect(page.locator("#qs")).toHaveText("Streak 1");
-  await expect(page.locator("#pr")).toContainText("135 XP");
+  await expect(page.locator("#pr")).toContainText("15 XP");
   await page.getByRole("dialog").getByRole("button", { name: "Close", exact: true }).click();
   await page.waitForTimeout(1200);
   await expect(page.locator("#qz")).toHaveCount(0);
@@ -212,7 +213,7 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   await expect(page.locator("#qs")).toHaveText("Streak 0");
   await expect(page.locator("#qa .no")).toHaveCount(1);
   await expect(page.locator("#qa .ok")).toHaveCount(1);
-  await expect(page.locator("#pr")).toContainText("135 XP");
+  await expect(page.locator("#pr")).toContainText("15 XP");
   await expect(page.locator(".quiz-explanation")).toBeVisible();
   await page.getByRole("button", { name: "Next question", exact: true }).click();
   await expect(page.locator("#qa button").first()).toBeEnabled();
@@ -223,7 +224,7 @@ test("all 118 table cells, discovery, quiz scoring and closing pending questions
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true", { timeout: 15_000 });
   await expect(page.locator("#pr")).toContainText(
-    `${secondCorrectZ === firstCorrectZ ? 135 : 140} XP`,
+    `${secondCorrectZ === firstCorrectZ ? 15 : 20} XP`,
   );
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("el")!).s)).toBe(1);
 });

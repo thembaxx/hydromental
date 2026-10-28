@@ -37,7 +37,7 @@ test("no measurement SDK loads before consent, URL fields are stripped and withd
         url: location.href,
       }),
     ),
-  ).toEqual({ type: "pageview", url: "http://127.0.0.1:3000/privacy" });
+  ).toEqual({ type: "pageview", url: new URL("/privacy", page.url()).href });
   await choice.uncheck();
   expect(
     await page.evaluate(() =>
@@ -97,6 +97,6 @@ test("a consented discovery reaches the analytics boundary with public allowlist
     .toContainEqual({
       name: "element_discovered",
       data: { element: 79 },
-      url: "http://127.0.0.1:3000/",
+      url: new URL("/", page.url()).href,
     });
 });

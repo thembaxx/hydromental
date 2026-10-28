@@ -31,6 +31,7 @@ import {
   initialLearningState,
   loadLearningState,
   recordAnswer,
+  readProgressRecovery,
   saveLearningState,
   toggleFavorite,
   type LearningSettings,
@@ -118,6 +119,7 @@ export default function ElementsExplorer() {
   const [hydrated, setHydrated] = useState(false);
   const [welcome, setWelcome] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
+  const [recoveryAvailable, setRecoveryAvailable] = useState(false);
   const [sheet, setSheet, close] = usePanelNavigation(panels, workspace);
   const [libraryQuery, setLibraryQuery] = useState("");
   const [libraryCategory, setLibraryCategory] = useState<Category | "all">("all");
@@ -170,6 +172,14 @@ export default function ElementsExplorer() {
     missions = getDailyMissions(learning),
     due = getDueElements(learning);
 
+  const openDetails = useCallback(() => {
+    setLearning((previous) => ({
+      ...discoverElement(previous, element.z),
+      onboardingDismissed: true,
+    }));
+    setSheet("details");
+  }, [element.z, setSheet]);
+
   /* oxlint-disable react/set-state-in-effect -- Restore external device storage and URL selection after server hydration. */
   useEffect(() => {
     const requestedInvestigation = investigationFromSearch(window.location.search);
@@ -185,6 +195,7 @@ export default function ElementsExplorer() {
       window.dispatchEvent(new Event("elementals:panel-navigation"));
     }
     const saved = loadLearningState();
+    setRecoveryAvailable(Boolean(readProgressRecovery()));
     const requested = new URLSearchParams(window.location.search)
       .get("element")
       ?.trim()
@@ -209,6 +220,15 @@ export default function ElementsExplorer() {
     };
   }, []);
   useEffect(() => {
+    // Details can also be reached through workspace tabs, browser history or a shared URL.
+    if (!hydrated || sheet !== "details") return;
+    setLearning((previous) =>
+      previous.discovered.includes(element.z)
+        ? previous
+        : { ...discoverElement(previous, element.z), onboardingDismissed: true },
+    );
+  }, [hydrated, sheet, element.z]);
+  useEffect(() => {
     if (hydrated) setStorageAvailable(saveLearningState(learning));
   }, [learning, hydrated]);
   /* oxlint-enable react/set-state-in-effect */
@@ -231,10 +251,10 @@ export default function ElementsExplorer() {
       if (hit.kind === "nucleus") {
         document.getElementById("in")?.focus({ preventScroll: true });
         setInspection(null);
-        setSheet("details");
+        openDetails();
       } else setInspection(hit);
     };
-  }, [learning.settings, zoom, sheet, setSheet]);
+  }, [learning.settings, zoom, sheet, openDetails]);
   useEffect(() => {
     const restoreElement = () => {
       const requestedInvestigation = investigationFromSearch(window.location.search);
@@ -622,14 +642,39 @@ export default function ElementsExplorer() {
           <p className="intro-note">
             An interactive playground for the endlessly curious.
             <br />
-            Touch. Explore. See the world a little differently.
+            Explore an element, read its properties, then try a learning challenge.
           </p>
         </div>
         <div className="atom-column">
           <div id="pr" className="n">
             {found.size} / {elements.length} · {learning.xp} XP
             <span className="save-indicator">
-              {storageAvailable ? "Saved on this device" : "Session only · Export to keep progress"}
+              {!hydrated ? (
+                "Loading your journal…"
+              ) : (
+                <>
+                  {recoveryAvailable && (
+                    <Button
+                      variant="unstyled"
+                      className="text-button"
+                      onClick={() => setSheet("settings")}
+                    >
+                      Earlier save needs review · Open settings
+                    </Button>
+                  )}
+                  {storageAvailable ? (
+                    "Saved on this device"
+                  ) : (
+                    <Button
+                      variant="unstyled"
+                      className="text-button"
+                      onClick={() => setSheet("learning")}
+                    >
+                      Session only · Export to keep progress
+                    </Button>
+                  )}
+                </>
+              )}
             </span>
           </div>
           <div
@@ -710,7 +755,11 @@ export default function ElementsExplorer() {
             </div>
             {!learning.onboardingDismissed && (
               <div className="onboarding-card">
-                <span>Drag the atom. Scrub to meet a new element.</span>
+                <span>
+                  {learning.discovered.length === 0
+                    ? "Your journal starts at zero. Explore an element to make your first discovery."
+                    : "Drag the atom. Scrub to meet a new element."}
+                </span>
                 <Button
                   variant="unstyled"
                   className="text-button"
@@ -765,9 +814,9 @@ export default function ElementsExplorer() {
                   id="in"
                   className="element-identity"
                   data-long-name={element.n.length > 11}
-                  aria-label="Element details"
-                  onClick={() => setSheet("details")}
+                  onClick={openDetails}
                 >
+                  <span className="sr-only">Element details: </span>
                   <span className="element-number n">
                     {element.s} · {element.m}
                     {element.massUnit ? ` ${element.massUnit}` : ""}
@@ -783,11 +832,7 @@ export default function ElementsExplorer() {
                 </Button>
                 <p className="element-story">{science.story}</p>
                 <div className="element-actions">
-                  <Button
-                    variant="unstyled"
-                    className="explore-element"
-                    onClick={() => setSheet("details")}
-                  >
+                  <Button variant="unstyled" className="explore-element" onClick={openDetails}>
                     Explore {element.n.toLowerCase()} <Icon name="learn" size={17} />
                   </Button>
                   <Button
@@ -1008,11 +1053,7 @@ export default function ElementsExplorer() {
               <Icon name="spark" />
               <p>{science.fact}</p>
             </div>
-            <Button
-              variant="unstyled"
-              className="action-button"
-              onClick={() => setSheet("details")}
-            >
+            <Button variant="unstyled" className="action-button" onClick={openDetails}>
               Go a little deeper <Icon name="next" />
             </Button>
             <Link className="text-link" href={`/elements/${elementSlug(element)}`}>
@@ -1061,6 +1102,7 @@ export default function ElementsExplorer() {
           <Link href="/elements">
             Science & sources <Icon name="next" size={14} />
           </Link>
+          <Link href="/about">About, help & project notes</Link>
         </footer>
       </main>
       <div id="ts" className={`toast ${toast ? "on" : ""}`} role="status" aria-live="polite">
@@ -1116,6 +1158,7 @@ export default function ElementsExplorer() {
                 label: "Story & science",
                 content: (
                   <ElementDetails
+                    onPractice={() => openQuiz("standard")}
                     embedded
                     element={element}
                     close={close}

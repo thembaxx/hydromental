@@ -9,7 +9,10 @@ test("fullscreen preserves atom controls, fills the viewport, and restores focus
   await expect(page.locator(".atom-study-renderer canvas")).toBeVisible();
   await page.getByRole("button", { name: "Zoom atom in", exact: true }).click();
   await expect(page.locator(".atom-study output")).toHaveText("115%");
-  const opener = page.getByRole("button", { name: "View Oxygen in fullscreen", exact: true });
+  const opener = page.getByRole("button", {
+    name: "Expand Oxygen atom in fullscreen",
+    exact: true,
+  });
   await opener.click();
   const dialog = page.getByRole("dialog", { name: "Oxygen fullscreen atom", exact: true });
   await expect(dialog).toBeVisible();
@@ -60,7 +63,7 @@ test("two-finger pinch zooms the full atom without an accidental tap", async ({
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/elements/oxygen");
-  await page.getByRole("button", { name: "View Oxygen in fullscreen", exact: true }).click();
+  await page.getByRole("button", { name: "Expand Oxygen atom in fullscreen", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Oxygen fullscreen atom", exact: true });
   const model = dialog.getByRole("application");
   await expect(model.locator("canvas")).toBeVisible();
@@ -109,7 +112,7 @@ test("the periodic table keeps the current cell in view and supports readable zo
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/?panel=table");
   const table = page.locator("#tb");
-  const oxygen = table.getByRole("button", { name: "Oxygen", exact: true });
+  const oxygen = table.getByRole("button", { name: /Oxygen$/ });
   await expect(oxygen).toHaveAttribute("aria-pressed", "true");
   await expect
     .poll(() =>
@@ -136,7 +139,7 @@ test("the periodic table keeps the current cell in view and supports readable zo
   await expect.poll(() => table.evaluate((node) => node.scrollLeft)).toBe(0);
   await oxygen.focus();
   await oxygen.press("End");
-  await expect(table.getByRole("button", { name: "Oganesson", exact: true })).toBeFocused();
+  await expect(table.getByRole("button", { name: /Oganesson$/ })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page.locator("#in h1")).toHaveText("Oganesson");
@@ -146,7 +149,7 @@ test("the fullscreen atom and redesigned lab pass automated WCAG checks", async 
   test.setTimeout(60_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/elements/oxygen");
-  await page.getByRole("button", { name: "View Oxygen in fullscreen", exact: true }).click();
+  await page.getByRole("button", { name: "Expand Oxygen atom in fullscreen", exact: true }).click();
   for (const destination of ["atom", "lab"] as const) {
     if (destination === "lab") await page.goto("/playground");
     await page.evaluate(() => document.fonts.ready);

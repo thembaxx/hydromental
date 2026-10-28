@@ -129,7 +129,6 @@ export function ElementLibrary({
                     className={`search-result${element.z === active?.z ? " active" : ""}`}
                     onPointerEnter={() => setActiveIndex(index)}
                     onClick={() => choose(element.z)}
-                    aria-label={`Explore ${element.n}, atomic number ${element.z}`}
                   >
                     <span
                       className="search-symbol"

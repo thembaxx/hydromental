@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import type { LearningState } from "@/lib/learning";
+import { ProgressDataControls } from "@/components/progress-data-controls";
 import { MeasurementPreferences } from "@/components/measurement";
 
 type Settings = LearningState["settings"];
@@ -125,6 +126,16 @@ export function SettingsPanel({
             Replay introduction <Icon name="next" />
           </Link>
         </Button>
+      </section>
+      <ProgressDataControls />
+      <section className="panel-section">
+        <h3 className="panel-title">Help & project notes</h3>
+        <p className="panel-copy">
+          Get started, recover a backup, read model limitations or report a problem.
+        </p>
+        <Link className="action-button" href="/about">
+          About Elementals & help
+        </Link>
       </section>
       <MeasurementPreferences />
     </div>

@@ -161,7 +161,6 @@ export function PeriodicTable({
             data-match={matches ? matches.has(element.z) : true}
             disabled={matches ? !matches.has(element.z) : false}
             data-i={i}
-            aria-label={element.n}
             aria-pressed={i === current}
             tabIndex={
               i ===
