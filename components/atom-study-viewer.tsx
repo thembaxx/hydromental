@@ -116,7 +116,7 @@ function Viewport({
       <span className="atom-study-corner" aria-hidden="true">
         {String(element.z).padStart(3, "0")} / {element.s}
       </span>
-      <span className="atom-study-caption" id={hint} aria-live="polite" aria-atomic="true">
+      <span className="atom-study-caption" id={hint}>
         {focusedShell
           ? `Shell ${focusedShell.number}: ${focusedShell.electrons} electron${focusedShell.electrons === 1 ? "" : "s"} · Drag to orbit`
           : "Drag to orbit"}{" "}
