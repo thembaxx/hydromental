@@ -5,6 +5,7 @@ import {
   advanceSpring,
   clampZoom,
   createModelMotion,
+  getShellFocus,
   nucleusLayout,
   rotateModel,
   springValue,
@@ -51,6 +52,15 @@ test("reduced motion and pause stop inertia and automatic rotation while allowin
   assert.equal(model.vx + model.vy, 0);
   assert.equal(clampZoom(0.01), 0.65);
   assert.equal(clampZoom(100), 1.85);
+});
+
+test("one-based shell focus reports accurate counts without inventing invalid selections", () => {
+  const shells = [2, 8, 1];
+  assert.deepEqual(getShellFocus(shells, 1), { number: 1, electrons: 2 });
+  assert.deepEqual(getShellFocus(shells, 3), { number: 3, electrons: 1 });
+  for (const invalid of [null, 0, 4, 1.5, -1, Number.NaN]) {
+    assert.equal(getShellFocus(shells, invalid), null);
+  }
 });
 
 test("all supported nuclei preserve the exact proton and representative neutron populations", () => {
