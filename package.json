@@ -60,7 +60,7 @@
     "semantic-release": "25.0.9",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "vercel": "65.0.0"
+    "vercel": "65.1.0"
   },
   "engines": {
     "node": ">=22.18.0",
