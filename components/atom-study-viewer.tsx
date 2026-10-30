@@ -21,7 +21,13 @@ import { Icon } from "@/components/ui/icon";
 import { categories, type Element } from "@/lib/elements";
 import { getScience } from "@/lib/science";
 import { representativeMassNumber } from "@/lib/elemental-stage";
-import { clampZoom, createModelMotion, getShellFocus, rotateModel, type ModelMotion } from "@/lib/model-motion";
+import {
+  clampZoom,
+  createModelMotion,
+  getShellFocus,
+  rotateModel,
+  type ModelMotion,
+} from "@/lib/model-motion";
 import { useModelGestures } from "@/lib/use-model-gestures";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 import { ElementalSoundEngine } from "@/lib/sound-engine";
@@ -113,7 +119,8 @@ function Viewport({
       <span className="atom-study-caption" id={hint} aria-live="polite" aria-atomic="true">
         {focusedShell
           ? `Shell ${focusedShell.number}: ${focusedShell.electrons} electron${focusedShell.electrons === 1 ? "" : "s"} · Drag to orbit`
-          : "Drag to orbit"} · Pinch or scroll to zoom
+          : "Drag to orbit"}{" "}
+        · Pinch or scroll to zoom
         <span className="sr-only">
           . Arrow keys rotate, plus and minus zoom, Enter excites the atom.
         </span>
