@@ -47,7 +47,9 @@ export function getShellFocus(shells: readonly number[], selectedShell: number |
     !Number.isInteger(selectedShell) ||
     selectedShell < 1 ||
     selectedShell > shells.length
-  ) return null;
+  ) {
+    return null;
+  }
   return { number: selectedShell, electrons: shells[selectedShell - 1] };
 }
 
