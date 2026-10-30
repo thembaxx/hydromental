@@ -40,6 +40,19 @@ export function createModelMotion() {
 export type ModelMotion = ReturnType<typeof createModelMotion>;
 export const clampZoom = (zoom: number) => Math.max(0.65, Math.min(1.85, zoom));
 
+/** Shell numbers are one-based in the UI. Invalid or unselected shells stay unannounced. */
+export function getShellFocus(shells: readonly number[], selectedShell: number | null) {
+  if (
+    selectedShell === null ||
+    !Number.isInteger(selectedShell) ||
+    selectedShell < 1 ||
+    selectedShell > shells.length
+  ) {
+    return null;
+  }
+  return { number: selectedShell, electrons: shells[selectedShell - 1] };
+}
+
 export function rotateModel(state: ModelMotion, dx: number, dy: number, seconds = 0.016) {
   state.x = Math.max(-1.35, Math.min(1.35, state.x + dy * 0.007));
   state.y += dx * 0.007;

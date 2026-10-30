@@ -21,7 +21,13 @@ import { Icon } from "@/components/ui/icon";
 import { categories, type Element } from "@/lib/elements";
 import { getScience } from "@/lib/science";
 import { representativeMassNumber } from "@/lib/elemental-stage";
-import { clampZoom, createModelMotion, rotateModel, type ModelMotion } from "@/lib/model-motion";
+import {
+  clampZoom,
+  createModelMotion,
+  getShellFocus,
+  rotateModel,
+  type ModelMotion,
+} from "@/lib/model-motion";
 import { useModelGestures } from "@/lib/use-model-gestures";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 import { ElementalSoundEngine } from "@/lib/sound-engine";
@@ -62,6 +68,7 @@ function Viewport({
   const host = useRef<HTMLDivElement>(null);
   const hint = useId();
   const science = getScience(element.z);
+  const focusedShell = getShellFocus(science.shells, selectedShell);
   useModelGestures(host, model, { invalidate, onZoom, onTap: onExcite, still });
   return (
     <div
@@ -110,7 +117,10 @@ function Viewport({
         {String(element.z).padStart(3, "0")} / {element.s}
       </span>
       <span className="atom-study-caption" id={hint}>
-        Drag to orbit · Pinch or scroll to zoom
+        {focusedShell
+          ? `Shell ${focusedShell.number}: ${focusedShell.electrons} electron${focusedShell.electrons === 1 ? "" : "s"} · Drag to orbit`
+          : "Drag to orbit"}{" "}
+        · Pinch or scroll to zoom
         <span className="sr-only">
           . Arrow keys rotate, plus and minus zoom, Enter excites the atom.
         </span>

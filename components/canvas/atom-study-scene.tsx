@@ -86,6 +86,12 @@ function Shell({
             opacity={selected === false ? 0.28 : 0.65}
           />
         </mesh>
+        {selected === true && (
+          <mesh>
+            <torusGeometry args={[radius, 0.029, 8, 96]} />
+            <meshBasicMaterial color={color} transparent opacity={0.23} depthWrite={false} />
+          </mesh>
+        )}
         <instancedMesh ref={electrons} args={[undefined, undefined, count]} frustumCulled={false}>
           <sphereGeometry args={[selected ? 0.067 : 0.048, 16, 12]} />
           <meshPhysicalMaterial
