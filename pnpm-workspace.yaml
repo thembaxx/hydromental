@@ -10,6 +10,9 @@ overrides:
   smol-toml: 1.9.1
   undici@6: 6.29.1
   undici@7: 7.30.1
+  # All locked Vercel CLI copies must use the advisory-patched Zod release.
+  # The existing zod@4 override did not cover Vercel's zod@3 requirements.
+  zod@3: 4.6.6
   zod@4: 4.6.6
   fast-uri@3: 3.1.9
   # These two CLI clients pin the unsupported 5.x line. Their fetch/Agent APIs

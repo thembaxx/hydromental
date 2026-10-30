@@ -4,7 +4,7 @@ import { createServer } from "node:http";
 import { once } from "node:events";
 import { execFile, execFileSync } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { readAuthenticatedPage } from "../scripts/check-deployment.mjs";
@@ -103,4 +103,10 @@ test("the pinned CLI executes and our staging checker never invokes login withou
     if (previous === undefined) delete process.env.VERCEL_TOKEN;
     else process.env.VERCEL_TOKEN = previous;
   }
+});
+
+test("the Vercel CLI lock graph contains only patched Zod copies", () => {
+  const lock = readFileSync(new URL("../pnpm-lock.yaml", import.meta.url), "utf8");
+  assert.match(lock, /^  zod@4\.6\.6:$/m);
+  assert.doesNotMatch(lock, /^  zod@(?:[0123]\.|4\.[0-5]\.|4\.6\.[0-5](?:\D|$))/m);
 });
