@@ -101,6 +101,10 @@ function Shell({
             roughness={0.16}
             metalness={0.2}
             clearcoat={1}
+            iridescence={selected === false ? 0 : 0.32}
+            iridescenceIOR={1.3}
+            iridescenceThicknessMinimum={90}
+            iridescenceThicknessMaximum={210}
           />
         </instancedMesh>
       </group>
@@ -182,6 +186,10 @@ function StudyAtom({
             metalness={0.16}
             clearcoat={1}
             clearcoatRoughness={0.12}
+            iridescence={0.18}
+            iridescenceIOR={1.4}
+            iridescenceThicknessMinimum={110}
+            iridescenceThicknessMaximum={240}
           />
         </instancedMesh>
         {shells.map((count, index) => (
