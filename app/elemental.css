@@ -123,9 +123,11 @@
   color: var(--exp-ink);
   border-radius: 50%;
 }
-.hydro-experience .icon-button:hover,
-.hydro-experience .tool-button:hover {
-  background: var(--exp-border);
+@media (hover: hover) and (pointer: fine) {
+  .hydro-experience .icon-button:hover,
+  .hydro-experience .tool-button:hover {
+    background: var(--exp-border);
+  }
 }
 .hydro-experience .header-actions {
   gap: 10px;
@@ -298,8 +300,10 @@
   opacity: 0.4;
   cursor: default;
 }
-.elemental-control-dock button:hover:not(:disabled) {
-  background: rgb(255 255 255 / 10%);
+@media (hover: hover) and (pointer: fine) {
+  .elemental-control-dock button:hover:not(:disabled) {
+    background: rgb(255 255 255 / 10%);
+  }
 }
 .elemental-mode-indicator {
   position: absolute;
@@ -662,9 +666,11 @@
     transform 0.25s,
     filter 0.25s;
 }
-.explore-element:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.08);
+@media (hover: hover) and (pointer: fine) {
+  .explore-element:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
 }
 .element-next {
   display: grid;
@@ -676,8 +682,10 @@
   border-radius: 50%;
   cursor: pointer;
 }
-.element-next:hover {
-  background: var(--exp-border);
+@media (hover: hover) and (pointer: fine) {
+  .element-next:hover {
+    background: var(--exp-border);
+  }
 }
 .element-art-note {
   font-size: 9px;
@@ -823,8 +831,10 @@
   background: color-mix(in srgb, var(--aura-color) 5%, var(--exp-bg));
   border-color: color-mix(in srgb, var(--aura-color) 45%, transparent);
 }
-.aura-card:hover {
-  background: color-mix(in srgb, var(--aura-color) 8%, var(--exp-bg));
+@media (hover: hover) and (pointer: fine) {
+  .aura-card:hover {
+    background: color-mix(in srgb, var(--aura-color) 8%, var(--exp-bg));
+  }
 }
 .aura-card > img {
   object-fit: contain;
@@ -835,8 +845,10 @@
   filter: saturate(0.7);
   pointer-events: none;
 }
-.aura-card:hover > img {
-  transform: scale(1.1) rotate(-8deg);
+@media (hover: hover) and (pointer: fine) {
+  .aura-card:hover > img {
+    transform: scale(1.1) rotate(-8deg);
+  }
 }
 .aura-card-copy {
   display: flex;
@@ -1589,8 +1601,10 @@
   }
 }
 /* Keep primary mobile controls comfortably tappable. */
-.hydro-experience .element-identity:hover {
-  background: transparent;
+@media (hover: hover) and (pointer: fine) {
+  .hydro-experience .element-identity:hover {
+    background: transparent;
+  }
 }
 .hydro-experience .element-story {
   font-size: 14px;

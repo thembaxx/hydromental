@@ -669,9 +669,11 @@ small {
     background 0.16s;
   flex-shrink: 0;
 }
-.icon-button:hover,
-.tool-button:hover {
-  background: var(--sel);
+@media (hover: hover) and (pointer: fine) {
+  .icon-button:hover,
+  .tool-button:hover {
+    background: var(--sel);
+  }
 }
 .icon-button:active,
 .tool-button:active {
@@ -862,8 +864,10 @@ small {
   border-radius: 10px;
   padding: 6px;
 }
-.family-link:hover {
-  background: var(--chip);
+@media (hover: hover) and (pointer: fine) {
+  .family-link:hover {
+    background: var(--chip);
+  }
 }
 .family-link > span {
   width: 9px;
@@ -1189,8 +1193,10 @@ small {
   padding: 8px 4px;
   text-align: center;
 }
-.element-identity:hover {
-  background: color-mix(in srgb, var(--dw) 60%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .element-identity:hover {
+    background: color-mix(in srgb, var(--dw) 60%, transparent);
+  }
 }
 .element-number {
   font-size: 13px;
@@ -1365,9 +1371,15 @@ small {
   color: var(--mut);
   text-decoration: none;
 }
-.explorer-nav button:is(:hover, [data-active="true"]),
-.explorer-nav .dock-link:is(:hover, [aria-current="page"]) {
+.explorer-nav button[data-active="true"],
+.explorer-nav .dock-link[aria-current="page"] {
   color: var(--ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .explorer-nav button:hover,
+  .explorer-nav .dock-link:hover {
+    color: var(--ink);
+  }
 }
 .dock-selection {
   position: absolute;
@@ -1455,8 +1467,10 @@ small {
     background 0.15s,
     transform 0.2s;
 }
-.action-button:hover {
-  background: var(--sel);
+@media (hover: hover) and (pointer: fine) {
+  .action-button:hover {
+    background: var(--sel);
+  }
 }
 .action-button:active {
   transform: scale(0.97);
@@ -2135,10 +2149,15 @@ input[type="file"].form-input {
   padding: 10px;
   text-align: left;
 }
-.search-result[aria-selected="true"],
-.search-result:hover {
+.search-result[aria-selected="true"] {
   background: var(--accent-soft);
   border-color: var(--line);
+}
+@media (hover: hover) and (pointer: fine) {
+  .search-result:hover {
+    background: var(--accent-soft);
+    border-color: var(--line);
+  }
 }
 .search-symbol {
   flex-shrink: 0;
@@ -2602,9 +2621,11 @@ input[type="file"].form-input {
   text-decoration: none;
   transition: transform 0.2s;
 }
-.reference-element-link:hover {
-  transform: translateY(-3px);
-  background: var(--accent-soft);
+@media (hover: hover) and (pointer: fine) {
+  .reference-element-link:hover {
+    transform: translateY(-3px);
+    background: var(--accent-soft);
+  }
 }
 .reference-number {
   color: var(--mut);
@@ -3798,8 +3819,10 @@ input[type="file"].form-input {
     border-color 0.22s ease,
     box-shadow 0.22s ease;
 }
-.element-card:hover {
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .element-card:hover {
+    transform: translateY(-2px);
+  }
 }
 .element-card:active {
   transform: scale(0.985);
@@ -3905,9 +3928,13 @@ input[type="file"].form-input {
     animation: none;
     transition: none;
   }
-  .element-card:hover,
   .element-card:active {
     transform: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .element-card:hover {
+      transform: none;
+    }
   }
 }
 .family-story {

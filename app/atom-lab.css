@@ -32,9 +32,11 @@
 .atom-study-header button {
   font-size: 12px;
 }
-.atom-study-header button:hover,
-.atom-study-tools button:hover {
-  background: var(--chip);
+@media (hover: hover) and (pointer: fine) {
+  .atom-study-header button:hover,
+  .atom-study-tools button:hover {
+    background: var(--chip);
+  }
 }
 .atom-study-header h2 {
   font-size: clamp(22px, 4vw, 34px);
@@ -200,9 +202,11 @@
 .atom-study-expanded .atom-study-tools {
   color: #edf3eb;
 }
-.atom-study-expanded .atom-study-tools button:hover,
-.atom-study-expanded .atom-study-header button:hover {
-  background: #233537;
+@media (hover: hover) and (pointer: fine) {
+  .atom-study-expanded .atom-study-tools button:hover,
+  .atom-study-expanded .atom-study-header button:hover {
+    background: #233537;
+  }
 }
 .atom-study-expanded .atom-study-tools button[aria-pressed="true"] {
   background: #2b4545;
@@ -737,7 +741,9 @@
   .game-ingredient:active {
     transform: scale(0.93);
   }
-  #tb .c:hover {
-    transform: translateY(-2px);
+  @media (hover: hover) and (pointer: fine) {
+    #tb .c:hover {
+      transform: translateY(-2px);
+    }
   }
 }
