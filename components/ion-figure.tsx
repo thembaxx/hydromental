@@ -102,7 +102,7 @@ export function IonFigure() {
         {prediction !== null && (
           <>
             <section aria-label="Experiment" className={styles.step}>
-              <p className={styles.eyebrow}>2 · Try</p>
+              <p className={styles.eyebrow}>2 · Try · Add one electron</p>
               <div className={styles.controls}>
                 <label>
                   Element
@@ -191,7 +191,7 @@ export function IonFigure() {
               <button
                 type="button"
                 className={styles.primary}
-                disabled={difference === 0}
+                disabled={difference !== 1}
                 onClick={() => setRevealed(true)}
               >
                 Explain the result
