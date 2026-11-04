@@ -29,6 +29,8 @@ test("ion experiment supports prediction, keyboard controls and transfer", async
   await expect(page.getByRole("region", { name: "Explain" })).toBeVisible();
   await expect(page.getByText("Your prediction matched.")).toBeVisible();
   const transfer = page.getByRole("group", { name: "Apply the ion rule" });
+  await transfer.getByRole("button", { name: "−1" }).click();
+  await expect(page.getByText(/Review the charge rule above/)).toBeVisible();
   await transfer.getByRole("button", { name: "+1" }).click();
   await expect(page.getByText(/Correct. Oxygen has one more proton/)).toBeVisible();
 
