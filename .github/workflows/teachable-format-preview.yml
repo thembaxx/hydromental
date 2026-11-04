@@ -17,8 +17,6 @@ jobs:
         with:
           node-version: 24
       - uses: pnpm/action-setup@v4
-        with:
-          version: 12
       - run: pnpm install --frozen-lockfile
       - name: Format and emit changed file contents
         run: |
