@@ -6,7 +6,7 @@ import { Canvas } from "@react-three/fiber";
 import { EXAMPLE_ELEMENTS, ionCharge, simpleShells, chargeText } from "@/lib/ion-figure";
 import styles from "./ion-figure.module.css";
 
-function ShellModel({ protons, electrons, tilt }: { protons: number; electrons: number; tilt: number }) {
+function ShellModel({ electrons, tilt }: { electrons: number; tilt: number }) {
   const counts = simpleShells(electrons);
   return (
     <group rotation={[0.35, (tilt * Math.PI) / 180, 0.18]}>
@@ -98,7 +98,7 @@ export function IonFigure() {
                 <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ position: [0, 0, 7.5], fov: 45 }} gl={{ alpha: true, antialias: true }}>
                   <ambientLight intensity={1.5} />
                   <pointLight position={[3, 4, 5]} intensity={50} />
-                  <ShellModel protons={element.protons} electrons={electrons} tilt={tilt} />
+                  <ShellModel electrons={electrons} tilt={tilt} />
                 </Canvas>
               </div>
               <div className={styles.readout} aria-live="polite">
