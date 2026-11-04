@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - feature/teachable-figure-ions
+  pull_request:
+    branches:
+      - main
 jobs:
   preview:
     runs-on: ubuntu-latest
