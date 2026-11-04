@@ -7,7 +7,10 @@ test("ion experiment supports prediction, keyboard controls and transfer", async
   await page.goto("/lab/ions");
 
   await expect(page.getByRole("heading", { name: "What makes an ion?" })).toBeVisible();
-  await page.getByRole("group", { name: "Predict ion charge" }).getByRole("button", { name: "Negative" }).click();
+
+  const predict = page.getByRole("group", { name: "Predict ion charge" });
+  await predict.getByRole("button", { name: "Negative" }).click();
+
   const explain = page.getByRole("button", { name: "Explain the result" });
   await expect(explain).toBeDisabled();
 
@@ -16,14 +19,19 @@ test("ion experiment supports prediction, keyboard controls and transfer", async
   await electrons.focus();
   await electrons.press("ArrowRight");
   await expect(electrons).toHaveValue("1");
-  await expect(page.getByRole("region", { name: "Experiment" }).getByText("4 electrons")).toBeVisible();
-  await expect(page.getByRole("img", { name: /Lithium with 3 protons and 4 electrons/ })).toBeVisible();
+
+  const experiment = page.getByRole("region", { name: "Experiment" });
+  await expect(experiment.getByText("4 electrons")).toBeVisible();
+  const model = page.getByRole("img", { name: /Lithium with 3 protons and 4 electrons/ });
+  await expect(model).toBeVisible();
   await explain.click();
 
   await expect(page.getByRole("region", { name: "Explain" })).toBeVisible();
   await expect(page.getByText("Your prediction matched.")).toBeVisible();
-  await page.getByRole("group", { name: "Apply the ion rule" }).getByRole("button", { name: "+1" }).click();
+  const transfer = page.getByRole("group", { name: "Apply the ion rule" });
+  await transfer.getByRole("button", { name: "+1" }).click();
   await expect(page.getByText(/Correct. Oxygen has one more proton/)).toBeVisible();
+
   await page.getByRole("button", { name: "Reset experiment" }).click();
   await expect(page.getByRole("region", { name: "Experiment" })).toHaveCount(0);
 });
