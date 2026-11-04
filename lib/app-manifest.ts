@@ -10,6 +10,7 @@ export function appManifest(theme: SurfaceTheme = "day"): MetadataRoute.Manifest
     start_url: "/",
     scope: "/",
     display: "standalone",
+    display_override: ["fullscreen", "standalone", "minimal-ui"],
     background_color: color,
     theme_color: color,
     lang: "en",
