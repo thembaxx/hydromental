@@ -79,7 +79,9 @@ export function LearningHub({
       </div>
       <section className="panel-section">
         <h3 className="panel-title">Ion charge lab</h3>
-        <Link className="action-button" href="/lab/ions">Open ion experiment</Link>
+        <Link className="action-button" href="/lab/ions">
+          Open ion experiment
+        </Link>
       </section>
       <section className="panel-section">
         <h3 className="panel-title">Your science playground</h3>

@@ -17,5 +17,9 @@ export function simpleShells(electrons: number): number[] {
   return [Math.min(2, electrons), Math.min(8, Math.max(0, electrons - 2))];
 }
 export function chargeText(charge: number): string {
-  return charge === 0 ? "Neutral" : charge > 0 ? "+" + charge + " positive" : Math.abs(charge) + " negative";
+  return charge === 0
+    ? "Neutral"
+    : charge > 0
+      ? "+" + charge + " positive"
+      : Math.abs(charge) + " negative";
 }

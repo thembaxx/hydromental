@@ -3,7 +3,8 @@ import { IonFigure } from "@/components/ion-figure";
 
 export const metadata: Metadata = {
   title: "Ions · Interactive science experiment",
-  description: "Predict ion charge, add or remove electrons in a 3D teaching model, and explain what changes.",
+  description:
+    "Predict ion charge, add or remove electrons in a 3D teaching model, and explain what changes.",
   alternates: { canonical: "/lab/ions" },
 };
 
