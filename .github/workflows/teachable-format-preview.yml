@@ -1,0 +1,28 @@
+name: Temporary teachable-figure format preview
+on:
+  push:
+    branches:
+      - feature/teachable-figure-ions
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - run: pnpm install --frozen-lockfile
+      - name: Format and emit changed file contents
+        run: |
+          ./node_modules/.bin/oxfmt --write components/ion-figure.tsx components/ion-figure.module.css components/learning-hub.tsx lib/ion-figure.ts app/lab/ions/page.tsx tests/ion-figure.test.mjs
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for name in ["components/ion-figure.tsx","components/ion-figure.module.css","components/learning-hub.tsx","lib/ion-figure.ts","app/lab/ions/page.tsx","tests/ion-figure.test.mjs"]:
+              print("FMT_RESULT|" + name + "|" + json.dumps(Path(name).read_text(), ensure_ascii=True))
+          PY
