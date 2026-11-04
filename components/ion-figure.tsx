@@ -218,7 +218,7 @@ export function IonFigure() {
                       type="button"
                       className={styles.choice}
                       aria-pressed={transfer === answer}
-                      disabled={transfer !== null}
+                      disabled={transfer === "positive"}
                       onClick={() => setTransfer(answer)}
                     >
                       {answer === "positive" ? "+1" : "−1"}
