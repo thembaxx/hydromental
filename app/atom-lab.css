@@ -747,3 +747,72 @@
     }
   }
 }
+
+/* Phase 2: specimen presentation stays informative and readable over 3D. */
+.atom-study-viewport::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, transparent 43%, rgb(3 13 17 / 22%) 100%);
+  z-index: 1;
+}
+.atom-study-corner,
+.atom-study-shell-tag,
+.atom-study-caption {
+  z-index: 2;
+}
+.atom-study-corner,
+.atom-study-shell-tag {
+  color: #e4f0eb;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 45%);
+}
+.atom-study-shell-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  max-width: 48%;
+  padding: 7px 11px;
+  border: 1px solid rgb(184 218 208 / 24%);
+  border-radius: 999px;
+  background: rgb(12 32 34 / 60%);
+  color: #e4f0eb;
+  pointer-events: none;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+.atom-study-caption {
+  bottom: 0;
+  inset-inline: 0;
+  padding: 32px 16px max(14px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, rgb(4 21 23 / 70%));
+  color: #e4f0eb;
+  font-size: 12px;
+  line-height: 1.55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .atom-study-renderer canvas {
+    animation: atom-study-appear 400ms ease-out both;
+  }
+}
+@keyframes atom-study-appear {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 440px) {
+  .atom-study-shell-tag {
+    top: 10px;
+    right: 10px;
+    font-size: 11px;
+  }
+  .atom-study-caption {
+    font-size: 11px;
+    padding-inline: 12px;
+  }
+}
