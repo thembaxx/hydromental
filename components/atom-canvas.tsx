@@ -23,18 +23,31 @@ export function AtomCanvas({
   const scene = useRef<AtomSceneApi | null>(null);
   const initialElement = useRef(element);
   const unavailableCallback = useRef(onUnavailable);
+  const latestElement = useRef(element);
+  const latestSuspended = useRef(suspended);
   const [unavailable, setUnavailable] = useState(false);
   useEffect(() => {
     unavailableCallback.current = onUnavailable;
-  }, [onUnavailable]);
+    latestElement.current = element;
+    latestSuspended.current = suspended;
+  }, [onUnavailable, element, suspended]);
   useEffect(() => {
     const target = canvas.current!;
     const unavailable = () => {
       setUnavailable(true);
       unavailableCallback.current?.();
     };
-    const restored = () => setUnavailable(false);
-    target.addEventListener("webglcontextlost", unavailable);
+    const lost = (event: Event) => {
+      // WebGL restoration is disabled by default unless the app cancels loss.
+      event.preventDefault();
+      unavailable();
+    };
+    const restored = () => {
+      scene.current?.setElement(latestElement.current);
+      scene.current?.setSuspended(latestSuspended.current);
+      setUnavailable(false);
+    };
+    target.addEventListener("webglcontextlost", lost);
     target.addEventListener("webglcontextrestored", restored);
     try {
       scene.current = createAtomScene(target, controls.current, initialElement.current);
@@ -44,7 +57,7 @@ export function AtomCanvas({
       unavailable();
     }
     return () => {
-      target.removeEventListener("webglcontextlost", unavailable);
+      target.removeEventListener("webglcontextlost", lost);
       target.removeEventListener("webglcontextrestored", restored);
       scene.current?.dispose();
       scene.current = null;
