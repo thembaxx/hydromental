@@ -1,7 +1,7 @@
 "use client";
 
 /* oxlint-disable react/immutability -- Three.js shader uniforms are mutated on render frames. */
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { ModelMotion } from "@/lib/model-motion";
@@ -47,7 +47,7 @@ export default function IllustrativeElectronCloud({
   shells: readonly number[];
   selectedShell: number | null;
   color: string;
-  motion: React.RefObject<ModelMotion>;
+  motion: RefObject<ModelMotion>;
   still: boolean;
 }) {
   const material = useRef<THREE.ShaderMaterial>(null);
