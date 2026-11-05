@@ -835,3 +835,24 @@
     overscroll-behavior-y: contain;
   }
 }
+
+/* On 320px devices the specimen title and isotope metadata must wrap rather than clip. */
+@media (max-width: 440px) {
+  .atom-study-header {
+    flex-wrap: wrap;
+  }
+  .atom-study-header h2 {
+    min-width: 0;
+    font-size: clamp(20px, 6vw, 26px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .atom-study-header h2 span {
+    display: inline-block;
+    margin-left: 6px;
+  }
+  .atom-study-tools output {
+    font-size: 12px;
+    min-width: 40px;
+  }
+}
