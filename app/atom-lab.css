@@ -747,3 +747,38 @@
     }
   }
 }
+
+/* Phase 2: polished specimen viewer and clearer controls. */
+.atom-study {
+  box-shadow: 0 16px 44px rgb(10 28 27 / 12%);
+}
+.atom-study-viewport {
+  box-shadow: inset 0 -36px 54px rgb(4 12 14 / 28%);
+}
+.atom-study-caption {
+  padding: 6px 12px;
+  color: #e5f3ef;
+  font-size: 12px;
+}
+.atom-study-tools button:focus-visible,
+.atom-study-header button:focus-visible {
+  outline: 3px solid var(--study-color);
+  outline-offset: 2px;
+}
+.atom-study-tools button[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 1px var(--study-color);
+}
+@media (max-width: 640px) {
+  .atom-study-header {
+    gap: 10px;
+    padding-inline: 12px;
+  }
+  .atom-study-tools {
+    gap: 6px;
+    padding: 12px 8px;
+  }
+  .atom-study-tools button {
+    min-width: 46px;
+    min-height: 46px;
+  }
+}
