@@ -61,7 +61,7 @@ export default function IllustrativeElectronCloud({
       const y = 1 - 2 * ((i + 0.5) / count);
       const r = Math.sqrt(Math.max(0, 1 - y * y));
       const angle = i * golden;
-      const radius = 1.02 + shell * 0.31 + (Math.sin(i * 21.76) * 0.075);
+      const radius = 1.02 + shell * 0.31 + Math.sin(i * 21.76) * 0.075;
       positions[i * 3] = Math.cos(angle) * r * radius;
       positions[i * 3 + 1] = y * radius;
       positions[i * 3 + 2] = Math.sin(angle) * r * radius;
@@ -69,11 +69,14 @@ export default function IllustrativeElectronCloud({
     }
     return { positions, phases };
   }, [count, shells.length]);
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uColor: { value: new THREE.Color(color) },
-    uOpacity: { value: 0.18 },
-  }), [color]);
+  const uniforms = useMemo(
+    () => ({
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color(color) },
+      uOpacity: { value: 0.18 },
+    }),
+    [color],
+  );
   useFrame(() => {
     if (!material.current) return;
     material.current.uniforms.uTime.value = still ? 0 : motion.current.time;
