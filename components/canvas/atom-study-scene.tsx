@@ -193,7 +193,13 @@ function StudyAtom({
             iridescenceThicknessMaximum={240}
           />
         </instancedMesh>
-        <IllustrativeElectronCloud shells={shells} color={color} selectedShell={selectedShell} motion={motion} still={still} />
+        <IllustrativeElectronCloud
+          shells={shells}
+          color={color}
+          selectedShell={selectedShell}
+          motion={motion}
+          still={still}
+        />
         {shells.map((count, index) => (
           <Shell
             key={index}
