@@ -58,7 +58,8 @@
 .hydro-experience .site-header {
   max-width: 1440px;
   margin: auto;
-  padding: 28px 56px;
+  /* A translucent iOS PWA status bar occupies the safe-area inset. */
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 56px 28px;
   border-bottom: 1px solid var(--exp-border);
   gap: 32px;
 }
@@ -1118,7 +1119,7 @@
 }
 @media (max-width: 1199px) {
   .hydro-experience .site-header {
-    padding: 24px 32px;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 32px 24px;
   }
   .hydro-experience .explorer-layout {
     padding: 0 32px;
@@ -1181,7 +1182,7 @@
 }
 @media (max-width: 899px) {
   .hydro-experience .site-header {
-    padding: 20px 24px;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 24px 20px;
     max-width: none;
   }
   .hydro-experience .explorer-layout {
@@ -1285,7 +1286,7 @@
 }
 @media (max-width: 599px) {
   .hydro-experience .site-header {
-    padding: 16px 20px;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 16px;
     gap: 12px;
   }
   .hydro-experience .brand-link strong {
@@ -1328,7 +1329,9 @@
     display: none;
   }
   .hydro-experience #app {
-    min-height: 600px;
+    /* Let the readable content determine stage height, including long element names. */
+    min-height: 0;
+    height: auto;
     border-radius: 14px;
     touch-action: pan-y;
   }
@@ -1375,53 +1378,54 @@
     height: 16px;
   }
   .hydro-experience .stage-lower {
-    left: 20px;
-    right: 20px;
-    top: 370px;
+    /* Re-enter document flow after the 3D viewport: nothing clips against #app. */
+    position: relative;
+    inset: auto;
     width: auto;
-    bottom: auto;
     display: block;
+    margin: 408px 20px 92px;
   }
   .hydro-experience .element-footer {
     position: relative;
   }
   .element-kicker {
-    font-size: 7px;
-    margin: 0 0 8px;
+    font-size: 10px;
+    letter-spacing: 1.1px;
+    line-height: 1.5;
+    margin: 0 0 12px;
     max-width: none;
   }
   .hydro-experience .element-identity h1 {
-    font-size: 46px;
+    font-size: clamp(38px, 11.5vw, 46px);
     letter-spacing: -2px;
-    margin: 0 0 4px;
-    line-height: 1.1;
+    margin: 0 0 6px;
+    line-height: 1.12;
   }
   .hydro-experience .element-identity[data-long-name="true"] h1 {
     font-size: 40px;
   }
   .hydro-experience .element-number {
-    font-size: 8px;
+    font-size: 11px;
     letter-spacing: 0.8px;
-    margin: 0 0 3px;
+    margin: 0 0 5px;
   }
   .hydro-experience .element-identity small {
-    font-size: 9px;
+    font-size: 11px;
+    line-height: 1.45;
   }
   .element-story {
-    max-width: 90%;
-    font-size: 10px;
+    max-width: 100%;
+    font-size: 12px;
     line-height: 1.65;
-    margin: 12px 0 16px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    margin: 16px 0 20px;
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
   .element-actions {
-    position: absolute;
-    right: 0;
-    top: 18px;
-    gap: 6px;
+    position: static;
+    gap: 12px;
+    margin-top: 16px;
   }
   .element-actions .explore-element {
     font-size: 0;
@@ -1471,8 +1475,8 @@
   .hydro-experience .onboarding-card {
     right: 16px;
     left: 16px;
-    bottom: 236px;
-    top: auto;
+    bottom: auto;
+    top: 322px;
     justify-content: center;
     font-size: 8px;
     padding: 5px 8px;
@@ -1617,8 +1621,7 @@
     min-height: 44px;
   }
   .hydro-experience .element-actions {
-    top: -12px;
-    gap: 8px;
+    gap: 12px;
   }
   .hydro-experience .element-actions .explore-element {
     width: 44px;
@@ -1632,8 +1635,8 @@
     min-height: 44px;
   }
   .hydro-experience .element-story {
-    font-size: 12px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.65;
   }
   .hydro-experience .stage-topline .icon-button {
     width: 44px;
