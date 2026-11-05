@@ -15,6 +15,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { advanceModelMotion, nucleusLayout, type ModelMotion } from "@/lib/model-motion";
+import IllustrativeElectronCloud from "./illustrative-electron-cloud";
 
 interface Props {
   atomicNumber: number;
@@ -192,6 +193,13 @@ function StudyAtom({
             iridescenceThicknessMaximum={240}
           />
         </instancedMesh>
+        <IllustrativeElectronCloud
+          shells={shells}
+          color={color}
+          selectedShell={selectedShell}
+          motion={motion}
+          still={still}
+        />
         {shells.map((count, index) => (
           <Shell
             key={index}
