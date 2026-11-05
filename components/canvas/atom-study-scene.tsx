@@ -128,17 +128,29 @@ function StudyAtom({
   const core = useRef<THREE.InstancedMesh>(null);
   const layout = useMemo(() => nucleusLayout(atomicNumber, massNumber), [atomicNumber, massNumber]);
   useEffect(() => {
+    const context = gl.getContext();
+    const debug = context.getExtension("WEBGL_debug_renderer_info");
+    const renderer = String(
+      context.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : context.RENDERER),
+    );
+    if (/swiftshader|llvmpipe|softpipe|software rasterizer/i.test(renderer)) return;
+    const previous = scene.environment;
+    const previousIntensity = scene.environmentIntensity;
     const generator = new THREE.PMREMGenerator(gl);
     const room = new RoomEnvironment();
     const environment = generator.fromScene(room, 0.04);
     scene.environment = environment.texture;
+    scene.environmentIntensity = 0.76;
     room.dispose();
     generator.dispose();
+    invalidate();
     return () => {
-      scene.environment = null;
+      scene.environment = previous;
+      scene.environmentIntensity = previousIntensity;
       environment.dispose();
+      invalidate();
     };
-  }, [gl, scene]);
+  }, [gl, scene, invalidate]);
   useLayoutEffect(() => {
     const mesh = core.current;
     if (!mesh) return;
