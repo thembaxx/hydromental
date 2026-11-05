@@ -73,7 +73,7 @@ export default function IllustrativeElectronCloud({
     uTime: { value: 0 },
     uColor: { value: new THREE.Color(color) },
     uOpacity: { value: 0.18 },
-  }), []);
+  }), [color]);
   useFrame(() => {
     if (!material.current) return;
     material.current.uniforms.uTime.value = still ? 0 : motion.current.time;
