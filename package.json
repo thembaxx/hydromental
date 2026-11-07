@@ -9,7 +9,7 @@
     "lint": "oxlint --deny-warnings",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --write .",
-    "format:check": "oxfmt --write lib/atom-inspection-timeline.ts && git diff -- lib/atom-inspection-timeline.ts && oxfmt --check .",
+    "format:check": "oxfmt --check .",
     "typecheck": "tsc --noEmit",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck",
     "test:e2e": "playwright test",
