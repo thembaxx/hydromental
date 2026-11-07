@@ -72,7 +72,8 @@ function Shell({
     if (shell.current) shell.current.position.z = inspection?.offset ?? 0;
     if (ring.current)
       ring.current.scale.setScalar(
-        (inspection?.radiusScale ?? 1) * (1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08),
+        (inspection?.radiusScale ?? 1) *
+          (1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08),
       );
     if (!electrons.current) return;
     const angle = (state.time * (index % 2 ? -0.32 : 0.4)) / (1 + index * 0.32);
