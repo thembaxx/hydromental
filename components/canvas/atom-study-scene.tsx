@@ -51,6 +51,7 @@ function Shell({
   selected,
   motion,
   inspectionProgress,
+  shellCount,
 }: {
   index: number;
   count: number;
@@ -58,6 +59,7 @@ function Shell({
   selected: boolean | null;
   motion: RefObject<ModelMotion>;
   inspectionProgress: number;
+  shellCount: number;
 }) {
   const shell = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
@@ -66,7 +68,7 @@ function Shell({
   const radius = 1.02 + index * 0.31;
   useFrame(() => {
     const state = motion.current;
-    const inspection = sampleAtomInspection(inspectionProgress, index + 1).shells[index];
+    const inspection = sampleAtomInspection(inspectionProgress, shellCount).shells[index];
     if (shell.current) shell.current.position.z = inspection?.offset ?? 0;
     if (ring.current)
       ring.current.scale.setScalar(
@@ -231,6 +233,7 @@ function StudyAtom({
             selected={selectedShell === null ? null : selectedShell === index + 1}
             motion={motion}
             inspectionProgress={inspectionProgress}
+            shellCount={shells.length}
           />
         ))}
       </group>
