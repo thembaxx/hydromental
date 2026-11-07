@@ -16,6 +16,10 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { advanceModelMotion, nucleusLayout, type ModelMotion } from "@/lib/model-motion";
 import IllustrativeElectronCloud from "./illustrative-electron-cloud";
+import {
+  sampleAtomInspection,
+  type AtomInspectionFrame,
+} from "@/lib/atom-inspection-timeline";
 
 interface Props {
   atomicNumber: number;
@@ -26,6 +30,8 @@ interface Props {
   motion: RefObject<ModelMotion>;
   still: boolean;
   onReady: (invalidate: () => void) => void;
+  /** Deterministic educational teardown scrub from assembled (0) to nucleus exposed (1). */
+  inspectionProgress?: number;
 }
 
 class SceneBoundary extends Component<
@@ -41,29 +47,50 @@ class SceneBoundary extends Component<
   }
 }
 
+/** Renders one electron shell and applies its deterministic inspection transforms. */
 function Shell({
   index,
   count,
   color,
   selected,
   motion,
+  inspectionFrame,
 }: {
   index: number;
   count: number;
   color: string;
   selected: boolean | null;
   motion: RefObject<ModelMotion>;
+  inspectionFrame: AtomInspectionFrame;
 }) {
+  const shell = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
+  const ringMaterial = useRef<THREE.MeshStandardMaterial>(null);
+  const selectedHaloMaterial = useRef<THREE.MeshBasicMaterial>(null);
+  const electronMaterial = useRef<THREE.MeshPhysicalMaterial>(null);
   const electrons = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const radius = 1.02 + index * 0.31;
   useFrame(() => {
     const state = motion.current;
+    const inspection = inspectionFrame.shells[index];
+    if (shell.current) shell.current.position.z = inspection?.offset ?? 0;
     if (ring.current)
       ring.current.scale.setScalar(
-        1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08,
+        (inspection?.radiusScale ?? 1) *
+          (1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08),
       );
+    if (ringMaterial.current)
+      ringMaterial.current.opacity =
+        (selected === false ? 0.28 : 0.65) *
+        inspectionFrame.shellOpacity *
+        (inspection?.opacity ?? 1);
+    if (selectedHaloMaterial.current)
+      selectedHaloMaterial.current.opacity =
+        0.23 * inspectionFrame.shellOpacity * (inspection?.opacity ?? 1);
+    if (electronMaterial.current)
+      electronMaterial.current.opacity =
+        inspectionFrame.shellOpacity * (inspection?.opacity ?? 1);
     if (!electrons.current) return;
     const angle = (state.time * (index % 2 ? -0.32 : 0.4)) / (1 + index * 0.32);
     for (let i = 0; i < count; i++) {
@@ -75,11 +102,12 @@ function Shell({
     electrons.current.instanceMatrix.needsUpdate = true;
   });
   return (
-    <group rotation={[0.48 + index * 0.29, -0.4 + index * 0.76, index * 0.12]}>
+    <group ref={shell} rotation={[0.48 + index * 0.29, -0.4 + index * 0.76, index * 0.12]}>
       <group ref={ring}>
         <mesh>
           <torusGeometry args={[radius, selected ? 0.012 : 0.006, 8, 128]} />
           <meshStandardMaterial
+            ref={ringMaterial}
             color={selected === false ? "#48575d" : color}
             metalness={0.45}
             roughness={0.28}
@@ -90,12 +118,21 @@ function Shell({
         {selected === true && (
           <mesh>
             <torusGeometry args={[radius, 0.029, 8, 96]} />
-            <meshBasicMaterial color={color} transparent opacity={0.23} depthWrite={false} />
+            <meshBasicMaterial
+              ref={selectedHaloMaterial}
+              color={color}
+              transparent
+              opacity={0.23}
+              depthWrite={false}
+            />
           </mesh>
         )}
         <instancedMesh ref={electrons} args={[undefined, undefined, count]} frustumCulled={false}>
           <sphereGeometry args={[selected ? 0.067 : 0.048, 16, 12]} />
           <meshPhysicalMaterial
+            ref={electronMaterial}
+            transparent
+            depthWrite={false}
             color={selected === false ? "#78858a" : "#effff9"}
             emissive={color}
             emissiveIntensity={selected === false ? 0.05 : 0.5}
@@ -113,6 +150,7 @@ function Shell({
   );
 }
 
+/** Composes the nucleus, electron shells, and teaching-model motion for one element. */
 function StudyAtom({
   atomicNumber,
   massNumber,
@@ -122,11 +160,16 @@ function StudyAtom({
   motion,
   still,
   onReady,
+  inspectionProgress = 0,
 }: Props) {
   const { viewport, gl, scene, invalidate } = useThree();
   const body = useRef<THREE.Group>(null);
   const core = useRef<THREE.InstancedMesh>(null);
   const layout = useMemo(() => nucleusLayout(atomicNumber, massNumber), [atomicNumber, massNumber]);
+  const inspectionFrame = useMemo(
+    () => sampleAtomInspection(inspectionProgress, shells.length),
+    [inspectionProgress, shells.length],
+  );
   useEffect(() => {
     const context = gl.getContext();
     const debug = context.getExtension("WEBGL_debug_renderer_info");
@@ -182,7 +225,7 @@ function StudyAtom({
     body.current.rotation.set(state.x, state.y, 0);
     if (core.current) {
       core.current.rotation.set(state.time * 0.035, -state.time * 0.06, 0);
-      core.current.scale.setScalar(1 + state.pulse.value * 0.1);
+      core.current.scale.setScalar(inspectionFrame.nucleusSpread * (1 + state.pulse.value * 0.1));
     }
   });
   return (
@@ -211,6 +254,7 @@ function StudyAtom({
           selectedShell={selectedShell}
           motion={motion}
           still={still}
+          inspectionFrame={inspectionFrame}
         />
         {shells.map((count, index) => (
           <Shell
@@ -220,6 +264,7 @@ function StudyAtom({
             color={color}
             selected={selectedShell === null ? null : selectedShell === index + 1}
             motion={motion}
+            inspectionFrame={inspectionFrame}
           />
         ))}
       </group>
@@ -227,6 +272,7 @@ function StudyAtom({
   );
 }
 
+/** Suspends rendering for hidden viewports and recovers from WebGL context loss. */
 function RenderActivity({
   still,
   visible,
@@ -267,6 +313,7 @@ function RenderActivity({
   return null;
 }
 
+/** Hosts the atom WebGL scene with lifecycle and non-WebGL fallback handling. */
 export default function AtomStudyScene(props: Props) {
   const host = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);

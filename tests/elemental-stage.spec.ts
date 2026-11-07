@@ -20,6 +20,13 @@ test("modes, scrubber boundaries, sound and keyboard shortcuts stay synchronized
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("#app")).toHaveAttribute("data-ready", "true");
+  const teardown = page.getByRole("slider", { name: "Atom teardown progress" });
+  await expect(teardown).toBeVisible();
+  await teardown.focus();
+  await teardown.press("End");
+  await expect(page.getByText("nucleus exposed")).toBeVisible();
+  await teardown.press("Home");
+  await expect(page.getByText("assembled atom")).toBeVisible();
   const slider = page.getByRole("slider", { name: "Element atomic number scrubber" });
   await slider.focus();
   await slider.press("End");

@@ -31,6 +31,7 @@ import {
 import { useModelGestures } from "@/lib/use-model-gestures";
 import { useReducedMotionPreference } from "@/lib/use-reduced-motion";
 import { ElementalSoundEngine } from "@/lib/sound-engine";
+import { atomInspectionLabel } from "@/lib/atom-inspection-timeline";
 
 const AtomStudyScene = dynamic(() => import("@/components/canvas/atom-study-scene"), {
   ssr: false,
@@ -41,11 +42,13 @@ const AtomStudyScene = dynamic(() => import("@/components/canvas/atom-study-scen
   ),
 });
 
+/** Subscribes to fullscreen changes and returns the matching cleanup callback. */
 function subscribeFullscreen(notify: () => void) {
   document.addEventListener("fullscreenchange", notify);
   return () => document.removeEventListener("fullscreenchange", notify);
 }
 
+/** Renders the selected element's interactive 3D viewport and accessible guidance. */
 function Viewport({
   element,
   selectedShell,
@@ -55,6 +58,7 @@ function Viewport({
   onReady,
   onZoom,
   onExcite,
+  inspectionProgress,
 }: {
   element: Element;
   selectedShell: number | null;
@@ -64,6 +68,7 @@ function Viewport({
   onReady: (callback: () => void) => void;
   onZoom: (zoom: number) => void;
   onExcite: () => void;
+  inspectionProgress: number;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const hint = useId();
@@ -112,6 +117,7 @@ function Viewport({
         motion={model}
         still={still}
         onReady={onReady}
+        inspectionProgress={inspectionProgress}
       />
       <span className="atom-study-corner" aria-hidden="true">
         {String(element.z).padStart(3, "0")} / {element.s}
@@ -134,6 +140,7 @@ function Viewport({
   );
 }
 
+/** Provides the atom viewer, inspection timeline, and accessible interaction controls. */
 export function AtomStudyViewer({
   element,
   selectedShell = null,
@@ -148,6 +155,7 @@ export function AtomStudyViewer({
   const [fullscreen, setFullscreen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [spread, setSpread] = useState(false);
+  const [inspectionProgress, setInspectionProgress] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [muted, setMuted] = useState(true);
   const [notice, setNotice] = useState("");
@@ -194,6 +202,7 @@ export function AtomStudyViewer({
     Object.assign(model.current, createModelMotion());
     setZoom(1);
     setSpread(false);
+    setInspectionProgress(0);
     invalidate();
   };
   const viewport = (
@@ -206,6 +215,7 @@ export function AtomStudyViewer({
       onReady={onReady}
       onZoom={changeZoom}
       onExcite={excite}
+      inspectionProgress={inspectionProgress}
     />
   );
   const toolbar = (
@@ -237,6 +247,22 @@ export function AtomStudyViewer({
       >
         <Icon name="spread" />
       </Button>
+      <label className="atom-study-inspection-control">
+        <span>Inspect atom</span>
+        <input
+          aria-label="Atom teardown progress"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={inspectionProgress}
+          onChange={(event) => {
+            setInspectionProgress(Number(event.target.value));
+            invalidate();
+          }}
+        />
+        <output>{atomInspectionLabel(inspectionProgress)}</output>
+      </label>
       <span className="atom-study-divider" />
       <Button
         variant="unstyled"

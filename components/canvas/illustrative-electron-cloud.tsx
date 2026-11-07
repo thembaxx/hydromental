@@ -5,6 +5,7 @@ import { useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { ModelMotion } from "@/lib/model-motion";
+import type { AtomInspectionFrame } from "@/lib/atom-inspection-timeline";
 
 // Illustrative cloud, not a quantum-mechanical orbital density or an electron trajectory.
 // Retains the existing Bohr-shell teaching model rather than silently changing its meaning.
@@ -37,18 +38,21 @@ const fragmentShader = `
   }
 `;
 
+/** Renders an illustrative electron cloud that recedes during atom inspection. */
 export default function IllustrativeElectronCloud({
   shells,
   selectedShell,
   color,
   motion,
   still,
+  inspectionFrame,
 }: {
   shells: readonly number[];
   selectedShell: number | null;
   color: string;
   motion: RefObject<ModelMotion>;
   still: boolean;
+  inspectionFrame: AtomInspectionFrame;
 }) {
   const material = useRef<THREE.ShaderMaterial>(null);
   const count = Math.min(280, Math.max(60, shells.length * 56));
@@ -81,7 +85,8 @@ export default function IllustrativeElectronCloud({
     if (!material.current) return;
     material.current.uniforms.uTime.value = still ? 0 : motion.current.time;
     material.current.uniforms.uColor.value.set(color);
-    material.current.uniforms.uOpacity.value = selectedShell === null ? 0.19 : 0.1;
+    material.current.uniforms.uOpacity.value =
+      (selectedShell === null ? 0.19 : 0.1) * inspectionFrame.cloudOpacity;
   });
   return (
     <points frustumCulled={false} raycast={() => {}}>
