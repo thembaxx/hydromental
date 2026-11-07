@@ -70,7 +70,8 @@ function Shell({
   const radius = 1.02 + index * 0.31;
   useFrame(() => {
     const state = motion.current;
-    const inspection = sampleAtomInspection(inspectionProgress, shellCount).shells[index];
+    const inspectionFrame = sampleAtomInspection(inspectionProgress, shellCount);
+    const inspection = inspectionFrame.shells[index];
     if (shell.current) shell.current.position.z = inspection?.offset ?? 0;
     if (ring.current)
       ring.current.scale.setScalar(
@@ -79,11 +80,12 @@ function Shell({
       );
     if (ringMaterial.current)
       ringMaterial.current.opacity =
-        (selected === false ? 0.28 : 0.65) * (inspection?.opacity ?? 1);
+        (selected === false ? 0.28 : 0.65) *
+        inspectionFrame.shellOpacity *
+        (inspection?.opacity ?? 1);
     if (electronMaterial.current)
-      electronMaterial.current.opacity = (inspection?.opacity ?? 1) * inspectionProgress >= 0
-        ? inspection?.opacity ?? 1
-        : 1;
+      electronMaterial.current.opacity =
+        inspectionFrame.shellOpacity * (inspection?.opacity ?? 1);
     if (!electrons.current) return;
     const angle = (state.time * (index % 2 ? -0.32 : 0.4)) / (1 + index * 0.32);
     for (let i = 0; i < count; i++) {
