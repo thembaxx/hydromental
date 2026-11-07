@@ -37,6 +37,7 @@ const fragmentShader = `
   }
 `;
 
+/** Renders an illustrative electron cloud that recedes during atom inspection. */
 export default function IllustrativeElectronCloud({
   shells,
   selectedShell,
