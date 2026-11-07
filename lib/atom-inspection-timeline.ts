@@ -2,19 +2,28 @@ export interface AtomInspectionFrame {
   progress: number;
   nucleusSpread: number;
   shellOpacity: number;
-  shells: Array<{ index: number; radiusScale: number; offset: number; opacity: number }>;
+  shells: Array<{
+    index: number;
+    radiusScale: number;
+    offset: number;
+    opacity: number;
+  }>;
 }
 
 /**
  * Pure timeline sampler for educational atom teardown. It is deterministic:
  * the same progress and shell count always produce the same inspection frame.
- * It intentionally visualises a teaching model, not literal orbital trajectories.
+ * It intentionally visualises a teaching model, not literal orbital
+ * trajectories.
  */
 export function sampleAtomInspection(
   progress: number,
   shellCount: number,
 ): AtomInspectionFrame {
-  const amount = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
+  const amount = Math.max(
+    0,
+    Math.min(1, Number.isFinite(progress) ? progress : 0),
+  );
   const count = Math.max(
     0,
     Math.min(7, Math.floor(Number.isFinite(shellCount) ? shellCount : 0)),
