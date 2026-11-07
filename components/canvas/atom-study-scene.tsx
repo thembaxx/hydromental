@@ -63,6 +63,8 @@ function Shell({
 }) {
   const shell = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
+  const ringMaterial = useRef<THREE.MeshStandardMaterial>(null);
+  const electronMaterial = useRef<THREE.MeshPhysicalMaterial>(null);
   const electrons = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const radius = 1.02 + index * 0.31;
@@ -75,6 +77,13 @@ function Shell({
         (inspection?.radiusScale ?? 1) *
           (1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08),
       );
+    if (ringMaterial.current)
+      ringMaterial.current.opacity =
+        (selected === false ? 0.28 : 0.65) * (inspection?.opacity ?? 1);
+    if (electronMaterial.current)
+      electronMaterial.current.opacity = (inspection?.opacity ?? 1) * inspectionProgress >= 0
+        ? inspection?.opacity ?? 1
+        : 1;
     if (!electrons.current) return;
     const angle = (state.time * (index % 2 ? -0.32 : 0.4)) / (1 + index * 0.32);
     for (let i = 0; i < count; i++) {
@@ -91,6 +100,7 @@ function Shell({
         <mesh>
           <torusGeometry args={[radius, selected ? 0.012 : 0.006, 8, 128]} />
           <meshStandardMaterial
+            ref={ringMaterial}
             color={selected === false ? "#48575d" : color}
             metalness={0.45}
             roughness={0.28}
@@ -107,6 +117,9 @@ function Shell({
         <instancedMesh ref={electrons} args={[undefined, undefined, count]} frustumCulled={false}>
           <sphereGeometry args={[selected ? 0.067 : 0.048, 16, 12]} />
           <meshPhysicalMaterial
+            ref={electronMaterial}
+            transparent
+            depthWrite={false}
             color={selected === false ? "#78858a" : "#effff9"}
             emissive={color}
             emissiveIntensity={selected === false ? 0.05 : 0.5}
