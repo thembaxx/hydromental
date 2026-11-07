@@ -2,6 +2,7 @@ export interface AtomInspectionFrame {
   progress: number;
   nucleusSpread: number;
   shellOpacity: number;
+  cloudOpacity: number;
   shells: Array<{
     index: number;
     radiusScale: number;
@@ -32,7 +33,8 @@ export function sampleAtomInspection(
   return {
     progress: amount,
     nucleusSpread: 1 + eased * 1.9,
-    shellOpacity: 1 - eased * 0.12,
+    shellOpacity: 1 - eased * 0.82,
+    cloudOpacity: 1 - eased,
     shells: Array.from({ length: count }, (_, index) => {
       const normalized = count <= 1 ? 0 : index / (count - 1);
       return {
