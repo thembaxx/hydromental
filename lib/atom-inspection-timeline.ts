@@ -47,7 +47,10 @@ export function sampleAtomInspection(
 
 /** Maps a UI scrub position to a named educational sequence. */
 export function atomInspectionLabel(progress: number): string {
-  const amount = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
+  const amount = Math.max(
+    0,
+    Math.min(1, Number.isFinite(progress) ? progress : 0),
+  );
   if (amount < 0.2) return 'assembled atom';
   if (amount < 0.48) return 'electron shells separated';
   if (amount < 0.78) return 'electron clouds isolated';
