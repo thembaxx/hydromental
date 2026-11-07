@@ -50,22 +50,27 @@ function Shell({
   color,
   selected,
   motion,
+  inspectionProgress,
 }: {
   index: number;
   count: number;
   color: string;
   selected: boolean | null;
   motion: RefObject<ModelMotion>;
+  inspectionProgress: number;
 }) {
+  const shell = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
   const electrons = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const radius = 1.02 + index * 0.31;
   useFrame(() => {
     const state = motion.current;
+    const inspection = sampleAtomInspection(inspectionProgress, index + 1).shells[index];
+    if (shell.current) shell.current.position.z = inspection?.offset ?? 0;
     if (ring.current)
       ring.current.scale.setScalar(
-        1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08,
+        (inspection?.radiusScale ?? 1) * (1 + state.spread.value * (0.14 + index * 0.035) + state.pulse.value * 0.08),
       );
     if (!electrons.current) return;
     const angle = (state.time * (index % 2 ? -0.32 : 0.4)) / (1 + index * 0.32);
@@ -78,7 +83,7 @@ function Shell({
     electrons.current.instanceMatrix.needsUpdate = true;
   });
   return (
-    <group rotation={[0.48 + index * 0.29, -0.4 + index * 0.76, index * 0.12]}>
+    <group ref={shell} rotation={[0.48 + index * 0.29, -0.4 + index * 0.76, index * 0.12]}>
       <group ref={ring}>
         <mesh>
           <torusGeometry args={[radius, selected ? 0.012 : 0.006, 8, 128]} />
@@ -225,6 +230,7 @@ function StudyAtom({
             color={color}
             selected={selectedShell === null ? null : selectedShell === index + 1}
             motion={motion}
+            inspectionProgress={inspectionProgress}
           />
         ))}
       </group>
