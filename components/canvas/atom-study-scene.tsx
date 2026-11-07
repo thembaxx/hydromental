@@ -16,6 +16,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { advanceModelMotion, nucleusLayout, type ModelMotion } from "@/lib/model-motion";
 import IllustrativeElectronCloud from "./illustrative-electron-cloud";
+import { sampleAtomInspection } from "@/lib/atom-inspection-timeline";
 
 interface Props {
   atomicNumber: number;
@@ -26,6 +27,8 @@ interface Props {
   motion: RefObject<ModelMotion>;
   still: boolean;
   onReady: (invalidate: () => void) => void;
+  /** Deterministic educational teardown scrub from assembled (0) to nucleus exposed (1). */
+  inspectionProgress?: number;
 }
 
 class SceneBoundary extends Component<
@@ -122,6 +125,7 @@ function StudyAtom({
   motion,
   still,
   onReady,
+  inspectionProgress = 0,
 }: Props) {
   const { viewport, gl, scene, invalidate } = useThree();
   const body = useRef<THREE.Group>(null);
@@ -176,13 +180,14 @@ function StudyAtom({
     advanceModelMotion(motion.current, delta, still);
     if (!body.current) return;
     const state = motion.current;
+    const inspection = sampleAtomInspection(inspectionProgress, shells.length);
     const radius = 1.15 + (shells.length - 1) * 0.31;
     const fit = (Math.min(viewport.width, viewport.height) * 0.32) / radius;
     body.current.scale.setScalar(fit * state.zoom.value * (1 + state.pulse.value * 0.035));
     body.current.rotation.set(state.x, state.y, 0);
     if (core.current) {
       core.current.rotation.set(state.time * 0.035, -state.time * 0.06, 0);
-      core.current.scale.setScalar(1 + state.pulse.value * 0.1);
+      core.current.scale.setScalar(inspection.nucleusSpread * (1 + state.pulse.value * 0.1));
     }
   });
   return (
