@@ -44,6 +44,7 @@ class SceneBoundary extends Component<
   }
 }
 
+/** Renders one electron shell and applies its deterministic inspection transforms. */
 function Shell({
   index,
   count,
@@ -139,6 +140,7 @@ function Shell({
   );
 }
 
+/** Composes the nucleus, electron shells, and teaching-model motion for one element. */
 function StudyAtom({
   atomicNumber,
   massNumber,
@@ -258,6 +260,7 @@ function StudyAtom({
   );
 }
 
+/** Suspends rendering for hidden viewports and recovers from WebGL context loss. */
 function RenderActivity({
   still,
   visible,
@@ -298,6 +301,7 @@ function RenderActivity({
   return null;
 }
 
+/** Hosts the atom WebGL scene with lifecycle and non-WebGL fallback handling. */
 export default function AtomStudyScene(props: Props) {
   const host = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
