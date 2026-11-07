@@ -66,6 +66,7 @@ function Shell({
   const shell = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
   const ringMaterial = useRef<THREE.MeshStandardMaterial>(null);
+  const selectedHaloMaterial = useRef<THREE.MeshBasicMaterial>(null);
   const electronMaterial = useRef<THREE.MeshPhysicalMaterial>(null);
   const electrons = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -84,6 +85,9 @@ function Shell({
         (selected === false ? 0.28 : 0.65) *
         inspectionFrame.shellOpacity *
         (inspection?.opacity ?? 1);
+    if (selectedHaloMaterial.current)
+      selectedHaloMaterial.current.opacity =
+        0.23 * inspectionFrame.shellOpacity * (inspection?.opacity ?? 1);
     if (electronMaterial.current)
       electronMaterial.current.opacity =
         inspectionFrame.shellOpacity * (inspection?.opacity ?? 1);
@@ -114,7 +118,13 @@ function Shell({
         {selected === true && (
           <mesh>
             <torusGeometry args={[radius, 0.029, 8, 96]} />
-            <meshBasicMaterial color={color} transparent opacity={0.23} depthWrite={false} />
+            <meshBasicMaterial
+              ref={selectedHaloMaterial}
+              color={color}
+              transparent
+              opacity={0.23}
+              depthWrite={false}
+            />
           </mesh>
         )}
         <instancedMesh ref={electrons} args={[undefined, undefined, count]} frustumCulled={false}>
