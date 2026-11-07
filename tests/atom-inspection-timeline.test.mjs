@@ -9,6 +9,9 @@ test("atom inspection timeline progressively separates shells and nucleus", () =
   assert.ok(exposed.nucleusSpread > assembled.nucleusSpread);
   assert.ok(exposed.shells[2].offset > exposed.shells[0].offset);
   assert.ok(exposed.shells[2].opacity < exposed.shells[0].opacity);
+  assert.equal(assembled.cloudOpacity, 1);
+  assert.equal(exposed.cloudOpacity, 0);
+  assert.ok(exposed.shellOpacity < assembled.shellOpacity);
 });
 
 test("timeline clamps invalid values and labels each teaching stage", () => {
