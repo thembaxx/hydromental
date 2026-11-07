@@ -10,10 +10,7 @@ export interface AtomInspectionFrame {
  * the same progress and shell count always produce the same inspection frame.
  * It intentionally visualises a teaching model, not literal orbital trajectories.
  */
-export function sampleAtomInspection(
-  progress: number,
-  shellCount: number,
-): AtomInspectionFrame {
+export function sampleAtomInspection(progress: number, shellCount: number): AtomInspectionFrame {
   const amount = Math.max(0, Math.min(1, Number.isFinite(progress) ? progress : 0));
   const count = Math.max(0, Math.min(7, Math.floor(Number.isFinite(shellCount) ? shellCount : 0)));
   const eased = amount * amount * (3 - 2 * amount);
