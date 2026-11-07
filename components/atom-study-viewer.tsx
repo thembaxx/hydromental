@@ -42,11 +42,13 @@ const AtomStudyScene = dynamic(() => import("@/components/canvas/atom-study-scen
   ),
 });
 
+/** Subscribes to fullscreen changes and returns the matching cleanup callback. */
 function subscribeFullscreen(notify: () => void) {
   document.addEventListener("fullscreenchange", notify);
   return () => document.removeEventListener("fullscreenchange", notify);
 }
 
+/** Renders the selected element's interactive 3D viewport and accessible guidance. */
 function Viewport({
   element,
   selectedShell,
@@ -138,6 +140,7 @@ function Viewport({
   );
 }
 
+/** Provides the atom viewer, inspection timeline, and accessible interaction controls. */
 export function AtomStudyViewer({
   element,
   selectedShell = null,
