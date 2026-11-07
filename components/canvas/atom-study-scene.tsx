@@ -16,7 +16,10 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { advanceModelMotion, nucleusLayout, type ModelMotion } from "@/lib/model-motion";
 import IllustrativeElectronCloud from "./illustrative-electron-cloud";
-import { sampleAtomInspection } from "@/lib/atom-inspection-timeline";
+import {
+  sampleAtomInspection,
+  type AtomInspectionFrame,
+} from "@/lib/atom-inspection-timeline";
 
 interface Props {
   atomicNumber: number;
@@ -51,16 +54,14 @@ function Shell({
   color,
   selected,
   motion,
-  inspectionProgress,
-  shellCount,
+  inspectionFrame,
 }: {
   index: number;
   count: number;
   color: string;
   selected: boolean | null;
   motion: RefObject<ModelMotion>;
-  inspectionProgress: number;
-  shellCount: number;
+  inspectionFrame: AtomInspectionFrame;
 }) {
   const shell = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Group>(null);
@@ -71,7 +72,6 @@ function Shell({
   const radius = 1.02 + index * 0.31;
   useFrame(() => {
     const state = motion.current;
-    const inspectionFrame = sampleAtomInspection(inspectionProgress, shellCount);
     const inspection = inspectionFrame.shells[index];
     if (shell.current) shell.current.position.z = inspection?.offset ?? 0;
     if (ring.current)
@@ -156,6 +156,10 @@ function StudyAtom({
   const body = useRef<THREE.Group>(null);
   const core = useRef<THREE.InstancedMesh>(null);
   const layout = useMemo(() => nucleusLayout(atomicNumber, massNumber), [atomicNumber, massNumber]);
+  const inspectionFrame = useMemo(
+    () => sampleAtomInspection(inspectionProgress, shells.length),
+    [inspectionProgress, shells.length],
+  );
   useEffect(() => {
     const context = gl.getContext();
     const debug = context.getExtension("WEBGL_debug_renderer_info");
@@ -205,14 +209,13 @@ function StudyAtom({
     advanceModelMotion(motion.current, delta, still);
     if (!body.current) return;
     const state = motion.current;
-    const inspection = sampleAtomInspection(inspectionProgress, shells.length);
     const radius = 1.15 + (shells.length - 1) * 0.31;
     const fit = (Math.min(viewport.width, viewport.height) * 0.32) / radius;
     body.current.scale.setScalar(fit * state.zoom.value * (1 + state.pulse.value * 0.035));
     body.current.rotation.set(state.x, state.y, 0);
     if (core.current) {
       core.current.rotation.set(state.time * 0.035, -state.time * 0.06, 0);
-      core.current.scale.setScalar(inspection.nucleusSpread * (1 + state.pulse.value * 0.1));
+      core.current.scale.setScalar(inspectionFrame.nucleusSpread * (1 + state.pulse.value * 0.1));
     }
   });
   return (
@@ -241,7 +244,7 @@ function StudyAtom({
           selectedShell={selectedShell}
           motion={motion}
           still={still}
-          inspectionProgress={inspectionProgress}
+          inspectionFrame={inspectionFrame}
         />
         {shells.map((count, index) => (
           <Shell
@@ -251,8 +254,7 @@ function StudyAtom({
             color={color}
             selected={selectedShell === null ? null : selectedShell === index + 1}
             motion={motion}
-            inspectionProgress={inspectionProgress}
-            shellCount={shells.length}
+            inspectionFrame={inspectionFrame}
           />
         ))}
       </group>
