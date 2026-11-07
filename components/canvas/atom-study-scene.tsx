@@ -239,6 +239,7 @@ function StudyAtom({
           selectedShell={selectedShell}
           motion={motion}
           still={still}
+          inspectionProgress={inspectionProgress}
         />
         {shells.map((count, index) => (
           <Shell
