@@ -1,5 +1,5 @@
 {
-  "retrievedAt": "2026-10-15",
+  "retrievedAt": "2026-11-17",
   "source": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/JSON",
   "records": [
     {
@@ -116,7 +116,7 @@
           "value": "0.00008988",
           "unit": "g/cm³",
           "note": "PubChem reported value. Temperature, pressure, allotrope and measurement uncertainty are not specified in the table; gas densities are especially condition-dependent.",
-          "numericValue": 8.988e-5,
+          "numericValue": 0.00008988,
           "interval": null,
           "uncertainty": null,
           "status": "reported",
@@ -10806,13 +10806,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "96.90636",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 96.90636,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -15839,13 +15838,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "144.91276",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 144.91276,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -22050,13 +22048,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "208.98243",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 208.98243,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -22280,13 +22277,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "209.98715",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 209.98715,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -22509,13 +22505,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "222.01758",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 222.01758,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -22737,13 +22732,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "223.01973",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 223.01973,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -22965,13 +22959,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "226.02541",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 226.02541,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -23194,13 +23187,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "227.02775",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 227.02775,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -24136,13 +24128,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "237.048172",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 237.048172,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -24365,13 +24356,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "244.06420",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 244.0642,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -24594,13 +24584,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "243.061380",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 243.06138,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -24823,13 +24812,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "247.07035",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 247.07035,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -25052,13 +25040,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "247.07031",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 247.07031,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -25280,13 +25267,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "251.07959",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 251.07959,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -25507,13 +25493,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "252.0830",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 252.083,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -25734,13 +25719,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "257.09511",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 257.09511,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -25960,13 +25944,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "258.09843",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 258.09843,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -26186,13 +26169,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "259.10100",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 259.101,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -26412,13 +26394,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "266.120",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 266.12,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -26637,13 +26618,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "267.122",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 267.122,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -26860,13 +26840,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "268.126",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 268.126,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -27083,13 +27062,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "269.128",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 269.128,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -27306,13 +27284,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "270.133",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 270.133,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -27529,13 +27506,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "269.1336",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 269.1336,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -27752,13 +27728,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "277.154",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 277.154,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -27975,13 +27950,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "282.166",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 282.166,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -28198,13 +28172,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "282.169",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 282.169,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -28421,13 +28394,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "286.179",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 286.179,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -28644,13 +28616,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "286.182",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 286.182,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -28867,13 +28838,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "290.192",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 290.192,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -29090,13 +29060,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "290.196",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 290.196,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -29313,13 +29282,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "293.205",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 293.205,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -29536,13 +29504,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "294.211",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 294.211,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -29759,13 +29726,12 @@
       "properties": [
         {
           "label": "Atomic mass",
-          "value": "295.216",
-          "unit": "u",
+          "value": "Not reported",
           "note": "PubChem value for an element without stable isotopes. This is not a standard atomic weight and may be rounded to an isotope mass number; uncertainty is not supplied. CIAAW assigns no standard atomic weight to this element. The PubChem isotope is not necessarily the longest-lived isotope.",
-          "numericValue": 295.216,
+          "numericValue": null,
           "interval": null,
           "uncertainty": null,
-          "status": "reported",
+          "status": "not-reported",
           "conditions": {
             "temperatureK": null,
             "pressurePa": null,
@@ -29974,15 +29940,15 @@
       "label": "PubChem periodic table",
       "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/JSON",
       "edition": "Live periodic table",
-      "retrievedAt": "2026-10-15",
+      "retrievedAt": "2026-11-17",
       "reviewedAt": null,
-      "sha256": "ff0f75976583b8a6493b18d0b42e83e1b68bd6e112b45d33578d98494ed5d321"
+      "sha256": "6abc1932a117fccc4c61bf9cdbcf96a0355beac82cddba82bd436e6ce4aee72a"
     },
     "ciaaw": {
       "label": "CIAAW standard atomic weights",
       "url": "https://ciaaw.org/atomic-weights.htm",
       "edition": "2024",
-      "retrievedAt": "2026-10-15",
+      "retrievedAt": "2026-11-17",
       "reviewedAt": null,
       "sha256": "b48282594b1fb01eee3cbc9d469ce5e3483b628157ea1b09ede33e3476895cf2"
     },
@@ -29990,15 +29956,15 @@
       "label": "NIST isotopic compositions",
       "url": "https://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&all=all&ascii=ascii2&isotype=all",
       "edition": "NIST SRD 144 (2015 evaluation)",
-      "retrievedAt": "2026-10-15",
+      "retrievedAt": "2026-11-17",
       "reviewedAt": null,
-      "sha256": "4a4093ba962b18f237545289f9b9caeba9ae1fe3130999c8f4143aba3fa9adaf"
+      "sha256": "de3038aa8c2488ec63235a582f605f6118b875ec1c558d84262851fc27b0d3d4"
     },
     "nubase": {
       "label": "NUBASE2020 evaluated nuclear properties",
       "url": "https://www-nds.iaea.org/amdc/ame2020/nubase_4.mas20.txt",
       "edition": "NUBASE2020; Kondev et al., Chinese Physics C 45, 030001 (2021)",
-      "retrievedAt": "2026-10-15",
+      "retrievedAt": "2026-11-17",
       "reviewedAt": null,
       "sha256": "1585a5eea86c5e17e90307c7e6e786d060049c4039e392a261ff6db977df9859"
     }
